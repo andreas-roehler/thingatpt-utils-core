@@ -40,19 +40,17 @@
 ;; implemented:
 
 ;; ar-THING-atpt
-;; ar-THING-bounds-atpt
-;; ar-THING-beginning-position-atpt
-;; ar-THING-end-position-atpt
-;; ar-THING-beginning-atpt
-;; ar-THING-end-atpt
-;; ar-THING-length-atpt
-;; ar-THING-copy-atpt
-;; ar-THING-kill-atpt
-;; ar-THING-forward-atpt
 ;; ar-THING-backward-atpt
-;; ar-THING-transpose-atpt
-;; ar-THING-sort-atpt
+;; ar-THING-beginning-position-atpt
+;; ar-THING-bounds-atpt
 ;; ar-THING-check-atpt
+;; ar-THING-copy-atpt
+;; ar-THING-end-position-atpt
+;; ar-THING-forward-atpt
+;; ar-THING-kill-atpt
+;; ar-THING-length-atpt
+;; ar-THING-sort-atpt
+;; ar-THING-transpose-atpt
 
 ;; Beside of the mentioned above, esists still a couple of
 ;; functions, whose use is much less probable:
