@@ -6,8 +6,6 @@
 ;; Author: Andreas Röhler <andreas.roehler@easy-emacs.de>, unless
 ;; indicated otherwise
 
-;; Source: https://github.com/andreas-roehler/werkstatt/tree/master/thingatpt-utils-core
-
 ;; This file is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
 ;; the Free Software Foundation; either version 2, or (at your option)
@@ -40,17 +38,19 @@
 ;; implemented:
 
 ;; ar-THING-atpt
-;; ar-THING-backward-atpt
-;; ar-THING-beginning-position-atpt
 ;; ar-THING-bounds-atpt
-;; ar-THING-check-atpt
-;; ar-THING-copy-atpt
+;; ar-THING-beginning-position-atpt
 ;; ar-THING-end-position-atpt
-;; ar-THING-forward-atpt
-;; ar-THING-kill-atpt
+;; ar-THING-beginning-atpt
+;; ar-THING-end-atpt
 ;; ar-THING-length-atpt
-;; ar-THING-sort-atpt
+;; ar-THING-copy-atpt
+;; ar-THING-kill-atpt
+;; ar-THING-forward-atpt
+;; ar-THING-backward-atpt
 ;; ar-THING-transpose-atpt
+;; ar-THING-sort-atpt
+;; ar-THING-check-atpt
 
 ;; Beside of the mentioned above, esists still a couple of
 ;; functions, whose use is much less probable:
@@ -253,6 +253,7 @@
 
 ;;; Code:
 
+(require beg-end)
 (require 'ar-subr)
 (require 'hideshow)
 (defconst Emacs-Werkstatt-version "1.5")
@@ -1640,7 +1641,7 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
 		  (and (eq (char-before) ?#)
 		       (progn
 			 (forward-char -1)
-			 (looking-at "#x[0-9]+"))
+			 (looking-at "#x[0-9a-f]+"))
 		       (point)))
 		 ((eq (char-after) ?o)
 		  (and (eq (char-before) ?#)
