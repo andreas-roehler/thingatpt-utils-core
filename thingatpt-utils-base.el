@@ -253,7 +253,6 @@
 
 ;;; Code:
 
-(require beg-end)
 (require 'ar-subr)
 (require 'hideshow)
 (defconst Emacs-Werkstatt-version "1.5")
@@ -434,6 +433,561 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
     :type 'regexp
     :group 'werkstatt))
 
+
+;; ar-insert-put-classes start
+
+;; Alnum
+(put 'alnum 'beginning-op-at
+     (lambda ()
+       (when (or
+	      (< 0 (abs (skip-chars-backward "[:alnum:]")))
+	      (looking-at "[[:alnum:]]"))
+	 (cons (point) (1+ (point))))))
+
+(put 'alnum 'end-op-at
+     (lambda ()
+       (and (< 0 (skip-chars-forward "[:alnum:]"))
+	    (cons (1- (point)) (point)))))
+
+(put 'alnum 'forward-op-at
+     (lambda ()
+       (if (< 0 (skip-chars-forward "[:alnum:]"))
+	   (point)
+	 (when (< 0 (skip-chars-forward "^[:alnum:]"))
+	   (and (< 0 (skip-chars-forward "[:alnum:]"))
+		(point))))))
+
+(put 'alnum 'backward-op-at
+     (lambda ()
+       (if (< 0 (abs (skip-chars-backward "[:alnum:]")))
+	   (point)
+	 (when (< 0 (abs (skip-chars-backward "^[:alnum:]")))
+	   (and
+	    (< 0 (abs (skip-chars-backward "[:alnum:]")))
+	    (point))))))
+
+;; Alpha
+(put 'alpha 'beginning-op-at
+     (lambda ()
+       (when (or
+	      (< 0 (abs (skip-chars-backward "[:alpha:]")))
+	      (looking-at "[[:alpha:]]"))
+	 (cons (point) (1+ (point))))))
+
+(put 'alpha 'end-op-at
+     (lambda ()
+       (and (< 0 (skip-chars-forward "[:alpha:]"))
+	    (cons (1- (point)) (point)))))
+
+(put 'alpha 'forward-op-at
+     (lambda ()
+       (if (< 0 (skip-chars-forward "[:alpha:]"))
+	   (point)
+	 (when (< 0 (skip-chars-forward "^[:alpha:]"))
+	   (and (< 0 (skip-chars-forward "[:alpha:]"))
+		(point))))))
+
+(put 'alpha 'backward-op-at
+     (lambda ()
+       (if (< 0 (abs (skip-chars-backward "[:alpha:]")))
+	   (point)
+	 (when (< 0 (abs (skip-chars-backward "^[:alpha:]")))
+	   (and
+	    (< 0 (abs (skip-chars-backward "[:alpha:]")))
+	    (point))))))
+
+;; Ascii
+(put 'ascii 'beginning-op-at
+     (lambda ()
+       (when (or
+	      (< 0 (abs (skip-chars-backward "[:ascii:]")))
+	      (looking-at "[[:ascii:]]"))
+	 (cons (point) (1+ (point))))))
+
+(put 'ascii 'end-op-at
+     (lambda ()
+       (and (< 0 (skip-chars-forward "[:ascii:]"))
+	    (cons (1- (point)) (point)))))
+
+(put 'ascii 'forward-op-at
+     (lambda ()
+       (if (< 0 (skip-chars-forward "[:ascii:]"))
+	   (point)
+	 (when (< 0 (skip-chars-forward "^[:ascii:]"))
+	   (and (< 0 (skip-chars-forward "[:ascii:]"))
+		(point))))))
+
+(put 'ascii 'backward-op-at
+     (lambda ()
+       (if (< 0 (abs (skip-chars-backward "[:ascii:]")))
+	   (point)
+	 (when (< 0 (abs (skip-chars-backward "^[:ascii:]")))
+	   (and
+	    (< 0 (abs (skip-chars-backward "[:ascii:]")))
+	    (point))))))
+
+;; Blank
+(put 'blank 'beginning-op-at
+     (lambda ()
+       (when (or
+	      (< 0 (abs (skip-chars-backward "[:blank:]")))
+	      (looking-at "[[:blank:]]"))
+	 (cons (point) (1+ (point))))))
+
+(put 'blank 'end-op-at
+     (lambda ()
+       (and (< 0 (skip-chars-forward "[:blank:]"))
+	    (cons (1- (point)) (point)))))
+
+(put 'blank 'forward-op-at
+     (lambda ()
+       (if (< 0 (skip-chars-forward "[:blank:]"))
+	   (point)
+	 (when (< 0 (skip-chars-forward "^[:blank:]"))
+	   (and (< 0 (skip-chars-forward "[:blank:]"))
+		(point))))))
+
+(put 'blank 'backward-op-at
+     (lambda ()
+       (if (< 0 (abs (skip-chars-backward "[:blank:]")))
+	   (point)
+	 (when (< 0 (abs (skip-chars-backward "^[:blank:]")))
+	   (and
+	    (< 0 (abs (skip-chars-backward "[:blank:]")))
+	    (point))))))
+
+;; Cntrl
+(put 'cntrl 'beginning-op-at
+     (lambda ()
+       (when (or
+	      (< 0 (abs (skip-chars-backward "[:cntrl:]")))
+	      (looking-at "[[:cntrl:]]"))
+	 (cons (point) (1+ (point))))))
+
+(put 'cntrl 'end-op-at
+     (lambda ()
+       (and (< 0 (skip-chars-forward "[:cntrl:]"))
+	    (cons (1- (point)) (point)))))
+
+(put 'cntrl 'forward-op-at
+     (lambda ()
+       (if (< 0 (skip-chars-forward "[:cntrl:]"))
+	   (point)
+	 (when (< 0 (skip-chars-forward "^[:cntrl:]"))
+	   (and (< 0 (skip-chars-forward "[:cntrl:]"))
+		(point))))))
+
+(put 'cntrl 'backward-op-at
+     (lambda ()
+       (if (< 0 (abs (skip-chars-backward "[:cntrl:]")))
+	   (point)
+	 (when (< 0 (abs (skip-chars-backward "^[:cntrl:]")))
+	   (and
+	    (< 0 (abs (skip-chars-backward "[:cntrl:]")))
+	    (point))))))
+
+;; Digit
+(put 'digit 'beginning-op-at
+     (lambda ()
+       (when (or
+	      (< 0 (abs (skip-chars-backward "[:digit:]")))
+	      (looking-at "[[:digit:]]"))
+	 (cons (point) (1+ (point))))))
+
+(put 'digit 'end-op-at
+     (lambda ()
+       (and (< 0 (skip-chars-forward "[:digit:]"))
+	    (cons (1- (point)) (point)))))
+
+(put 'digit 'forward-op-at
+     (lambda ()
+       (if (< 0 (skip-chars-forward "[:digit:]"))
+	   (point)
+	 (when (< 0 (skip-chars-forward "^[:digit:]"))
+	   (and (< 0 (skip-chars-forward "[:digit:]"))
+		(point))))))
+
+(put 'digit 'backward-op-at
+     (lambda ()
+       (if (< 0 (abs (skip-chars-backward "[:digit:]")))
+	   (point)
+	 (when (< 0 (abs (skip-chars-backward "^[:digit:]")))
+	   (and
+	    (< 0 (abs (skip-chars-backward "[:digit:]")))
+	    (point))))))
+
+;; Graph
+(put 'graph 'beginning-op-at
+     (lambda ()
+       (when (or
+	      (< 0 (abs (skip-chars-backward "[:graph:]")))
+	      (looking-at "[[:graph:]]"))
+	 (cons (point) (1+ (point))))))
+
+(put 'graph 'end-op-at
+     (lambda ()
+       (and (< 0 (skip-chars-forward "[:graph:]"))
+	    (cons (1- (point)) (point)))))
+
+(put 'graph 'forward-op-at
+     (lambda ()
+       (if (< 0 (skip-chars-forward "[:graph:]"))
+	   (point)
+	 (when (< 0 (skip-chars-forward "^[:graph:]"))
+	   (and (< 0 (skip-chars-forward "[:graph:]"))
+		(point))))))
+
+(put 'graph 'backward-op-at
+     (lambda ()
+       (if (< 0 (abs (skip-chars-backward "[:graph:]")))
+	   (point)
+	 (when (< 0 (abs (skip-chars-backward "^[:graph:]")))
+	   (and
+	    (< 0 (abs (skip-chars-backward "[:graph:]")))
+	    (point))))))
+
+;; Lower
+(put 'lower 'beginning-op-at
+     (lambda ()
+       (when (or
+	      (< 0 (abs (skip-chars-backward "[:lower:]")))
+	      (looking-at "[[:lower:]]"))
+	 (cons (point) (1+ (point))))))
+
+(put 'lower 'end-op-at
+     (lambda ()
+       (and (< 0 (skip-chars-forward "[:lower:]"))
+	    (cons (1- (point)) (point)))))
+
+(put 'lower 'forward-op-at
+     (lambda ()
+       (if (< 0 (skip-chars-forward "[:lower:]"))
+	   (point)
+	 (when (< 0 (skip-chars-forward "^[:lower:]"))
+	   (and (< 0 (skip-chars-forward "[:lower:]"))
+		(point))))))
+
+(put 'lower 'backward-op-at
+     (lambda ()
+       (if (< 0 (abs (skip-chars-backward "[:lower:]")))
+	   (point)
+	 (when (< 0 (abs (skip-chars-backward "^[:lower:]")))
+	   (and
+	    (< 0 (abs (skip-chars-backward "[:lower:]")))
+	    (point))))))
+
+;; Nonascii
+(put 'nonascii 'beginning-op-at
+     (lambda ()
+       (when (or
+	      (< 0 (abs (skip-chars-backward "[:nonascii:]")))
+	      (looking-at "[[:nonascii:]]"))
+	 (cons (point) (1+ (point))))))
+
+(put 'nonascii 'end-op-at
+     (lambda ()
+       (and (< 0 (skip-chars-forward "[:nonascii:]"))
+	    (cons (1- (point)) (point)))))
+
+(put 'nonascii 'forward-op-at
+     (lambda ()
+       (if (< 0 (skip-chars-forward "[:nonascii:]"))
+	   (point)
+	 (when (< 0 (skip-chars-forward "^[:nonascii:]"))
+	   (and (< 0 (skip-chars-forward "[:nonascii:]"))
+		(point))))))
+
+(put 'nonascii 'backward-op-at
+     (lambda ()
+       (if (< 0 (abs (skip-chars-backward "[:nonascii:]")))
+	   (point)
+	 (when (< 0 (abs (skip-chars-backward "^[:nonascii:]")))
+	   (and
+	    (< 0 (abs (skip-chars-backward "[:nonascii:]")))
+	    (point))))))
+
+;; Print
+(put 'print 'beginning-op-at
+     (lambda ()
+       (when (or
+	      (< 0 (abs (skip-chars-backward "[:print:]")))
+	      (looking-at "[[:print:]]"))
+	 (cons (point) (1+ (point))))))
+
+(put 'print 'end-op-at
+     (lambda ()
+       (and (< 0 (skip-chars-forward "[:print:]"))
+	    (cons (1- (point)) (point)))))
+
+(put 'print 'forward-op-at
+     (lambda ()
+       (if (< 0 (skip-chars-forward "[:print:]"))
+	   (point)
+	 (when (< 0 (skip-chars-forward "^[:print:]"))
+	   (and (< 0 (skip-chars-forward "[:print:]"))
+		(point))))))
+
+(put 'print 'backward-op-at
+     (lambda ()
+       (if (< 0 (abs (skip-chars-backward "[:print:]")))
+	   (point)
+	 (when (< 0 (abs (skip-chars-backward "^[:print:]")))
+	   (and
+	    (< 0 (abs (skip-chars-backward "[:print:]")))
+	    (point))))))
+
+;; Punct
+(put 'punct 'beginning-op-at
+     (lambda ()
+       (when (or
+	      (< 0 (abs (skip-chars-backward "[:punct:]")))
+	      (looking-at "[[:punct:]]"))
+	 (cons (point) (1+ (point))))))
+
+(put 'punct 'end-op-at
+     (lambda ()
+       (and (< 0 (skip-chars-forward "[:punct:]"))
+	    (cons (1- (point)) (point)))))
+
+(put 'punct 'forward-op-at
+     (lambda ()
+       (if (< 0 (skip-chars-forward "[:punct:]"))
+	   (point)
+	 (when (< 0 (skip-chars-forward "^[:punct:]"))
+	   (and (< 0 (skip-chars-forward "[:punct:]"))
+		(point))))))
+
+(put 'punct 'backward-op-at
+     (lambda ()
+       (if (< 0 (abs (skip-chars-backward "[:punct:]")))
+	   (point)
+	 (when (< 0 (abs (skip-chars-backward "^[:punct:]")))
+	   (and
+	    (< 0 (abs (skip-chars-backward "[:punct:]")))
+	    (point))))))
+
+;; Space
+(put 'space 'beginning-op-at
+     (lambda ()
+       (when (or
+	      (< 0 (abs (skip-chars-backward "[:space:]")))
+	      (looking-at "[[:space:]]"))
+	 (cons (point) (1+ (point))))))
+
+(put 'space 'end-op-at
+     (lambda ()
+       (and (< 0 (skip-chars-forward "[:space:]"))
+	    (cons (1- (point)) (point)))))
+
+(put 'space 'forward-op-at
+     (lambda ()
+       (if (< 0 (skip-chars-forward "[:space:]"))
+	   (point)
+	 (when (< 0 (skip-chars-forward "^[:space:]"))
+	   (and (< 0 (skip-chars-forward "[:space:]"))
+		(point))))))
+
+(put 'space 'backward-op-at
+     (lambda ()
+       (if (< 0 (abs (skip-chars-backward "[:space:]")))
+	   (point)
+	 (when (< 0 (abs (skip-chars-backward "^[:space:]")))
+	   (and
+	    (< 0 (abs (skip-chars-backward "[:space:]")))
+	    (point))))))
+
+;; Upper
+(put 'upper 'beginning-op-at
+     (lambda ()
+       (when (or
+	      (< 0 (abs (skip-chars-backward "[:upper:]")))
+	      (looking-at "[[:upper:]]"))
+	 (cons (point) (1+ (point))))))
+
+(put 'upper 'end-op-at
+     (lambda ()
+       (and (< 0 (skip-chars-forward "[:upper:]"))
+	    (cons (1- (point)) (point)))))
+
+(put 'upper 'forward-op-at
+     (lambda ()
+       (if (< 0 (skip-chars-forward "[:upper:]"))
+	   (point)
+	 (when (< 0 (skip-chars-forward "^[:upper:]"))
+	   (and (< 0 (skip-chars-forward "[:upper:]"))
+		(point))))))
+
+(put 'upper 'backward-op-at
+     (lambda ()
+       (if (< 0 (abs (skip-chars-backward "[:upper:]")))
+	   (point)
+	 (when (< 0 (abs (skip-chars-backward "^[:upper:]")))
+	   (and
+	    (< 0 (abs (skip-chars-backward "[:upper:]")))
+	    (point))))))
+
+;; Xdigit
+(put 'xdigit 'beginning-op-at
+     (lambda ()
+       (when (or
+	      (< 0 (abs (skip-chars-backward "[:xdigit:]")))
+	      (looking-at "[[:xdigit:]]"))
+	 (cons (point) (1+ (point))))))
+
+(put 'xdigit 'end-op-at
+     (lambda ()
+       (and (< 0 (skip-chars-forward "[:xdigit:]"))
+	    (cons (1- (point)) (point)))))
+
+(put 'xdigit 'forward-op-at
+     (lambda ()
+       (if (< 0 (skip-chars-forward "[:xdigit:]"))
+	   (point)
+	 (when (< 0 (skip-chars-forward "^[:xdigit:]"))
+	   (and (< 0 (skip-chars-forward "[:xdigit:]"))
+		(point))))))
+
+(put 'xdigit 'backward-op-at
+     (lambda ()
+       (if (< 0 (abs (skip-chars-backward "[:xdigit:]")))
+	   (point)
+	 (when (< 0 (abs (skip-chars-backward "^[:xdigit:]")))
+	   (and
+	    (< 0 (abs (skip-chars-backward "[:xdigit:]")))
+	    (point))))))
+
+;; Delimited forms start
+
+;; Braced
+(put 'braced 'beginning-op-at
+     (lambda ()
+       (if (char-equal ?{ (char-after))
+	   (list (point) (1+ (point)))
+	 (beginning-of-form-base "{" "}" nil 'move 1 nil nil 'ar-syntax t))))
+
+(put 'braced 'end-op-at
+     (lambda ()
+       (when (char-equal ?{ (char-after))
+	 (forward-char 1))
+       (end-of-form-base "{" "}" nil 'move 1 nil nil 'ar-syntax t)))
+
+(put 'braced 'forward-op-at
+     (lambda ()
+       (when (char-equal ?{ (char-after))
+	 (forward-char 1))
+       (ar-char-delimiters-end ?} t)
+       (when (char-equal ?} (char-before)) (forward-char -1)
+	     (point))))
+
+;; Bracketed
+(put 'bracketed 'beginning-op-at
+     (lambda ()
+       (if (char-equal ?\[ (char-after))
+	   (list (point) (1+ (point)))
+	 (beginning-of-form-base "\\[" "\]" nil 'move 1 nil t 'ar-syntax t))))
+
+(put 'bracketed 'end-op-at
+     (lambda ()
+       (when (char-equal ?\[ (char-after))
+	 (forward-char 1))
+       (end-of-form-base "\\[" "\]" nil 'move 1 nil t 'ar-syntax t)))
+
+(put 'bracketed 'forward-op-at
+     (lambda ()
+       (when (char-equal ?\[ (char-after))
+	 (forward-char 1))
+       (ar-char-delimiters-end ?\] t)
+       (when (char-equal ?\] (char-before)) (forward-char -1)
+	     (point))))
+
+;; Lesser-Angled
+(put 'lesser-angled 'beginning-op-at
+     (lambda ()
+       (if (char-equal ?< (char-after))
+	   (list (point) (1+ (point)))
+	 (beginning-of-form-base "<" ">" nil 'move 1 nil nil 'ar-syntax t))))
+
+(put 'lesser-angled 'end-op-at
+     (lambda ()
+       (when (char-equal ?< (char-after))
+	 (forward-char 1))
+       (end-of-form-base "<" ">" nil 'move 1 nil nil 'ar-syntax t)))
+
+(put 'lesser-angled 'forward-op-at
+     (lambda ()
+       (when (char-equal ?< (char-after))
+	 (forward-char 1))
+       (ar-char-delimiters-end ?> t)
+       (when (char-equal ?> (char-before)) (forward-char -1)
+	     (point))))
+
+;; Greater-Angled
+(put 'greater-angled 'beginning-op-at
+     (lambda ()
+       (if (char-equal ?> (char-after))
+	   (list (point) (1+ (point)))
+	 (beginning-of-form-base ">" "<" nil 'move 1 nil nil 'ar-syntax t))))
+
+(put 'greater-angled 'end-op-at
+     (lambda ()
+       (when (char-equal ?> (char-after))
+	 (forward-char 1))
+       (end-of-form-base ">" "<" nil 'move 1 nil nil 'ar-syntax t)))
+
+(put 'greater-angled 'forward-op-at
+     (lambda ()
+       (when (char-equal ?> (char-after))
+	 (forward-char 1))
+       (ar-char-delimiters-end ?< t)
+       (when (char-equal ?< (char-before)) (forward-char -1)
+	     (point))))
+
+;; Left-Right-Singlequoted
+(put 'left-right-singlequoted 'beginning-op-at
+     (lambda ()
+       (if (char-equal ?‘ (char-after))
+	   (list (point) (1+ (point)))
+	 (beginning-of-form-base "‘" "’" nil 'move 1 nil nil 'ar-syntax t))))
+
+(put 'left-right-singlequoted 'end-op-at
+     (lambda ()
+       (when (char-equal ?‘ (char-after))
+	 (forward-char 1))
+       (end-of-form-base "‘" "’" nil 'move 1 nil nil 'ar-syntax t)))
+
+(put 'left-right-singlequoted 'forward-op-at
+     (lambda ()
+       (when (char-equal ?‘ (char-after))
+	 (forward-char 1))
+       (ar-char-delimiters-end ?’ t)
+       (when (char-equal ?’ (char-before)) (forward-char -1)
+	     (point))))
+
+;; Parentized
+(put 'parentized 'beginning-op-at
+     (lambda ()
+       (if (char-equal ?\( (char-after))
+	   (list (point) (1+ (point)))
+	 (beginning-of-form-base "\(" "\)" nil 'move 1 nil nil 'ar-syntax t))))
+
+(put 'parentized 'end-op-at
+     (lambda ()
+       (when (char-equal ?\( (char-after))
+	 (forward-char 1))
+       (end-of-form-base "\(" "\)" nil 'move 1 nil nil 'ar-syntax t)))
+
+(put 'parentized 'forward-op-at
+     (lambda ()
+       (when (char-equal ?\( (char-after))
+	 (forward-char 1))
+       (ar-char-delimiters-end ?\) t)
+       (when (char-equal ?\) (char-before)) (forward-char -1)
+	     (point))))
+
+
+;; Delimited forms end
+
+;; ar-unpaired-delimited-raw start
 
 ;; Backslashed
 (put 'backslashed 'beginning-op-at
@@ -1681,7 +2235,8 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
 
 (put 'number 'forward-op-at
      (lambda ()
-       (let ((case-fold-search t))
+       (let ((case-fold-search t)
+	     erg)
 	 (cond ((looking-at "#?x?[0-9a-f]+")
 		(forward-char 2)
 		(skip-chars-forward "0-9a-f" (line-end-position))
@@ -1694,10 +2249,42 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
 		(skip-chars-forward "0-9" (line-end-position))
 		(and (< 0 (skip-chars-forward "^0-9"))(point)))
 	       (t
-		(when
-		    (re-search-forward "#?[xo]?[a-f0-9]+" nil t 1)
-		  (forward-char -1)
-		  (point)))))))
+		(while
+		    (or
+		     (and
+		      (re-search-forward "#?[xo]?[a-f0-9]+" nil t 1)
+		      (nth 8 (parse-partial-sexp (point-min) (point))))
+		     (forward-char -1)
+		     (cond ((looking-at "#[xX][a-fA-F0-9]+")
+			    (setq erg (point))
+			    nil)
+			   ((looking-at "#o[0-9]+")
+			    (setq erg (point))
+			    nil)
+			   ((looking-at "[0-9]+")
+			    (setq erg (point))
+			    nil)
+			   (t (forward-char 1)
+			      (unless (eobp)
+				(forward-char 1)
+				(not (eobp)))))))))
+	 erg)))
+
+(put 'number 'backward-op-at
+     (lambda ()
+       (let ((case-fold-search t)
+	     erg)
+	 (cond ((and (looking-back "#?x?[0-9a-f]+")
+		     (goto-char (match-beginning 0))
+		     (ar-number-atpt)))
+	       (t
+		(while
+		    (or
+		     (and
+		      (re-search-backward "#?[xo]?[a-f0-9]+" nil t 1)
+		      (goto-char (match-beginning 0))
+		      (not (setq erg (ar-number-atpt))))))))
+	 erg)))
 
 ;; Name
 (defcustom ar-name-chars-atpt "a-zA-Z_;-"
@@ -2252,6 +2839,7 @@ it would doublequote a word at point "
 
 ;; ar-insert-thingatpt-th-funktionen start
 
+;;;###autoload
 (defun ar-th (thing &optional arg no-delimiters iact)
   "Returns a buffer substring according to THING.
   THING may be a well known form as `symbol',
@@ -2324,6 +2912,7 @@ it would doublequote a word at point "
 	(push beg erg))
       erg)))
 
+;;;###autoload
 (defun ar-th-bounds (thing &optional no-delimiters iact no-check)
   "Determine the start and end buffer locations for the THING at point.
   THING is a symbol which specifies the kind entity you want.
@@ -2357,6 +2946,7 @@ Returns two lists composed of positions of delimiters "
 	beg)
     (error nil)))
 
+;;;###autoload
 (defun ar-th-end (thing &optional arg iact)
   (condition-case nil
       (let* ((bounds (ar-th-bounds thing arg))
@@ -2366,6 +2956,7 @@ Returns two lists composed of positions of delimiters "
 	end)
     (error nil)))
 
+;;;###autoload
 (defun ar-th-gotobeg (thing &optional arg iact)
   "Goto char beginning, core function "
   (condition-case nil
@@ -2376,6 +2967,7 @@ Returns two lists composed of positions of delimiters "
 	(goto-char beg))
     (error nil)))
 
+;;;###autoload
 (defun ar-th-gotoend (thing &optional arg iact)
   "Goto char end, core function "
   (condition-case nil
@@ -2388,6 +2980,7 @@ Returns two lists composed of positions of delimiters "
 	  (goto-char end)))
     (error nil)))
 
+;;;###autoload
 (defun ar-th-length (thing &optional arg iact)
   (ignore-errors
     (let* ((bounds (ar-th-bounds thing arg))
@@ -2398,6 +2991,7 @@ Returns two lists composed of positions of delimiters "
         (message "   %s " (format "%s" length)))
       length)))
 
+;;;###autoload
 (defun ar-th-ratio-base (cla elt &optional beg end ratio iact)
   (let ((beg
          (cond (beg beg)
@@ -2413,6 +3007,7 @@ Returns two lists composed of positions of delimiters "
                 (condition-case nil (copy-marker (funcall (intern-soft (concat "ar-" (format "%s" elt) "-end-position-atpt")))) (error nil))))))
     (ar-th-ratio elt cla beg end ratio iact)))
 
+;;;###autoload
 (defun ar-th-ratio (thing cla &optional beg end ratio iact)
   (save-excursion
     (ignore-errors
@@ -2447,6 +3042,7 @@ Returns two lists composed of positions of delimiters "
         (when iact (message "%s" erg))
         erg))))
 
+;;;###autoload
 (defun ar-th-copy (thing &optional arg iact)
   (condition-case nil
       (let ((newcopy (ar-th thing)))
@@ -2458,6 +3054,7 @@ Returns two lists composed of positions of delimiters "
             newcopy)))
     (error nil)))
 
+;;;###autoload
 (defun ar-th-trim (thing &optional left right)
   "Trims given THING at point.
 If boundaries of thing are know, use `ar-th-trim-base' directly. "
@@ -2466,6 +3063,7 @@ If boundaries of thing are know, use `ar-th-trim-base' directly. "
          (end (or (ignore-errors (cadr (cadr bounds)))(ignore-errors (cdr (cadr bounds)))(ignore-errors (cdr bounds)))))
     (ar-th-trim-base beg end left right)))
 
+;;;###autoload
 (defun ar-th-trim-base (beg end left right)
   "Trim buffer-substring resp. to args starting-point, end-point, left-trim, right-trim. "
   (cond ((and left right)
@@ -2484,12 +3082,15 @@ If boundaries of thing are know, use `ar-th-trim-base' directly. "
            (goto-char beg)
            (delete-char 1))))
 
+;;;###autoload
 (defun ar-th-trim-left (thing)
   (ar-th-trim thing t))
 
+;;;###autoload
 (defun ar-th-trim-right (thing)
   (ar-th-trim thing nil t))
 
+;;;###autoload
 (defun ar-th-peel (thing &optional arg iact)
   "Remove the outer element of an hierarchical form.
 
@@ -2515,6 +3116,7 @@ Inspired by stuff like `paredit-splice-sexp-killing-backward'; however, instead 
       (goto-char inner)
       (delete-region (car outer) (point)))))
 
+;;;###autoload
 (defun ar-th-comment (thing &optional arg iact)
   "Comment or uncomment THING "
   (condition-case nil
@@ -2526,6 +3128,7 @@ Inspired by stuff like `paredit-splice-sexp-killing-backward'; however, instead 
 	  (comment-region beg end)))
     (error nil)))
 
+;;;###autoload
 (defun ar-th-mark (thing &optional bounds beg end)
   " "
   (condition-case nil
@@ -2540,6 +3143,7 @@ Inspired by stuff like `paredit-splice-sexp-killing-backward'; however, instead 
     (error nil)))
 
 ;; uses sgml-tag from sgml-mode.el
+;;;###autoload
 (defun ar-th-hide (thing &optional beg end)
   "Hide visibility of existing things at point. "
   (let ((modified (buffer-modified-p))
@@ -2554,6 +3158,7 @@ Inspired by stuff like `paredit-splice-sexp-killing-backward'; however, instead 
           (set-buffer-modified-p modified))
       (error (concat "No " (format "%s" thing) " at point!")))))
 
+;;;###autoload
 (defun ar-th-show (thing &optional beg end)
   "Remove invisibility of existing things at point. "
   (let ((modified (buffer-modified-p))
@@ -2568,6 +3173,7 @@ Inspired by stuff like `paredit-splice-sexp-killing-backward'; however, instead 
           (set-buffer-modified-p modified))
       (error (concat "No " (format "%s" thing) " at point!")))))
 
+;;;###autoload
 (defun ar-th-hide-show (&optional thing beg end)
   "Toggle visibility of existing things at point. "
   (interactive)
@@ -2585,6 +3191,7 @@ Inspired by stuff like `paredit-splice-sexp-killing-backward'; however, instead 
       (hs-make-overlay beg end 'code))
     (set-buffer-modified-p modified)))
 
+;;;###autoload
 (defun ar-th-separate (thing &optional arg iact)
   " "
   (let* ((bounds (ar-th-bounds thing))
@@ -2604,6 +3211,7 @@ Inspired by stuff like `paredit-splice-sexp-killing-backward'; however, instead 
       (indent-according-to-mode)
       (list beg end))))
 
+;;;###autoload
 (defun ar-thing-in-thing (thing-1th thing-2th th-function &optional iact beg-2th end-2th)
   "Addresses things of 1th kind within the borders of the 2th,
 If optional positions BEG-2TH END-2TH are given, works on them instead.
@@ -2629,6 +3237,7 @@ With optional arg IACT, the resulting list is sent to the message-buffer too. "
             (when (< (point) orig)(goto-char orig))))))
     erg-thing-in-thing))
 
+;;;###autoload
 (defun ar-th-kill (thing &optional arg iact)
   " "
   (condition-case nil
@@ -2638,6 +3247,7 @@ With optional arg IACT, the resulting list is sent to the message-buffer too. "
 	(kill-region beg end))
     (error nil)))
 
+;;;###autoload
 (defun ar-th-kill-backward (thing &optional arg iact)
   " "
   (ar-th-backward thing arg iact)
@@ -2648,6 +3258,7 @@ With optional arg IACT, the resulting list is sent to the message-buffer too. "
 	(kill-region beg end))
     (error nil)))
 
+;;;###autoload
 (defun ar-th-delete (thing &optional arg iact)
   " "
   (condition-case nil
@@ -2657,6 +3268,7 @@ With optional arg IACT, the resulting list is sent to the message-buffer too. "
 	(delete-region beg end))
     (error nil)))
 
+;;;###autoload
 (defun ar-th-delete-in-region (thing beg end &optional iact)
   "Delete THING in region. Delete line, if empty afterwards. "
   (condition-case nil
@@ -2670,6 +3282,7 @@ With optional arg IACT, the resulting list is sent to the message-buffer too. "
 	      (when (and (empty-line-p) (not (eobp)))
 		(delete-region (line-beginning-position) (1+ (line-end-position))))))))))
 
+;;;###autoload
 (defun ar-th-commatize (thing &optional arg iact)
   " "
   (condition-case nil
@@ -2680,6 +3293,7 @@ With optional arg IACT, the resulting list is sent to the message-buffer too. "
         (insert ","))
     (error nil)))
 
+;;;###autoload
 (defun ar-th-quote (thing &optional arg iact)
   " "
   (condition-case nil
@@ -2690,18 +3304,21 @@ With optional arg IACT, the resulting list is sent to the message-buffer too. "
         (insert "'"))
     (error nil)))
 
+;;;###autoload
 (defun ar-th-interactive-backward-form (ap ep)
   (goto-char ep)
   (push-mark ap)
   (exchange-point-and-mark)
   (kill-new (buffer-substring-no-properties ap ep)))
 
+;;;###autoload
 (defun ar-th-set-bounds (thing)
   "Sets values of `bounds', `ap' and `ep' -- beg- and endpoint. "
   (setq bounds (ar-th-bounds thing))
   (setq ap (caar bounds))
   (setq ep (cadr (cadr bounds))))
 
+;;;###autoload
 (defun ar-th-backward-fallback (arg thing)
   (let (bounds ap ep last)
     (while
@@ -2714,6 +3331,7 @@ With optional arg IACT, the resulting list is sent to the message-buffer too. "
 	(goto-char ap))
       (point))))
 
+;;;###autoload
 (defun ar-th-forward-fallback (arg after thing)
   (let (bounds ap ep last)
     (while (< 0 arg)
@@ -2724,6 +3342,7 @@ With optional arg IACT, the resulting list is sent to the message-buffer too. "
 	(setq last (point))))
     last))
 
+;;;###autoload
 (defun ar-th-forward-function-call (thing arg)
   (let (erg)
     (while (< 0 arg)
@@ -2731,6 +3350,7 @@ With optional arg IACT, the resulting list is sent to the message-buffer too. "
       (setq arg (1- arg)))
     erg))
 
+;;;###autoload
 (defun ar-th-backward-function-call (arg thing)
   (let (erg)
     (while
@@ -2739,6 +3359,7 @@ With optional arg IACT, the resulting list is sent to the message-buffer too. "
       (setq arg (1+ arg)))
     erg))
 
+;;;###autoload
 (defun ar-th-forward (thing &optional arg iact after)
   "Return end-position, if successful, nil otherwise.
 
@@ -2759,6 +3380,7 @@ searches backward with negative argument "
       ;; (and erg (consp erg) (setq erg (cdr erg)))
       (when (> orig erg) erg))))
 
+;;;###autoload
 (defun ar-th-un-ml (thing &optional beg end)
   (save-excursion
     (save-restriction
@@ -2783,12 +3405,14 @@ searches backward with negative argument "
 	       (list thisbeg thisend))))
     (widen)))
 
+;;;###autoload
 (defun ar-th-backward (thing &optional arg iact)
   "Returns beg and end of THING before point as a list. "
   (condition-case nil
       (ar-th-forward thing (- (or arg 1)) iact)
     (error nil)))
 
+;;;###autoload
 (defun ar-th-before (thing &optional arg iact)
   " "
   (let* ((arg (or arg -1))
@@ -2799,6 +3423,7 @@ searches backward with negative argument "
     (setq bounds (ar-th-backward thing (abs arg)))
     (ar-th thing arg iact)))
 
+;;;###autoload
 (defun ar-th-bounds-before (thing &optional arg iact)
   " "
   (save-excursion
@@ -2814,6 +3439,7 @@ searches backward with negative argument "
       (when iact (message "%s" bounds))
       bounds)))
 
+;;;###autoload
 (defun ar-th-before-beg-pos (thing &optional arg iact)
   " "
   (save-excursion
@@ -2826,6 +3452,7 @@ searches backward with negative argument "
       (let ((beg (car (ar-th-bounds thing))))
 	(when iact (message "%s" beg)) beg))))
 
+;;;###autoload
 (defun ar-th-before-end-pos (thing &optional arg iact)
   " "
   (save-excursion
@@ -2838,6 +3465,7 @@ searches backward with negative argument "
       (let ((end (cdr-safe (ar-th-bounds thing))))
 	(when iact (message "%s" end)) end))))
 
+;;;###autoload
 (defun ar-th-after (thing &optional arg iact)
   " "
   (let* ((arg (or arg 1))
@@ -2848,6 +3476,7 @@ searches backward with negative argument "
     (ar-th-forward thing arg)
     (ar-th thing arg iact)))
 
+;;;###autoload
 (defun ar-th-bounds-after (thing &optional no-delimiters iact)
   " "
   (save-excursion
@@ -2857,6 +3486,7 @@ searches backward with negative argument "
              (ar-th-bounds thing no-delimiters))))
       (when iact (message "%s" bounds)) bounds)))
 
+;;;###autoload
 (defun ar-th-after-beg-pos (thing &optional arg iact)
   " "
   (save-excursion
@@ -2870,6 +3500,7 @@ searches backward with negative argument "
 	      (beg (car-safe bounds)))
 	(when iact (message "%s" beg)) beg))))
 
+;;;###autoload
 (defun ar-th-after-end-pos (thing &optional arg iact)
   " "
   (save-excursion
@@ -2886,6 +3517,7 @@ searches backward with negative argument "
 
 (defvar paired-start-pos nil)
 
+;;;###autoload
 (defun ar-th-transpose (thing &optional arg iact)
   "Returns position, when called from a program
  end of transposed section. "
@@ -11090,561 +11722,6 @@ it defaults to `<', otherwise it defaults to `string<'."
 	  ;; (insert "]")
 	  (insert (ar--transform-return-closing-delimiter-according-to-type new-delimiter)))
       (message (concat "Can't see " from)))))
-
-;; ar-insert-put-classes start
-
-;; Alnum
-(put 'alnum 'beginning-op-at
-     (lambda ()
-       (when (or
-	      (< 0 (abs (skip-chars-backward "[:alnum:]")))
-	      (looking-at "[[:alnum:]]"))
-	 (cons (point) (1+ (point))))))
-
-(put 'alnum 'end-op-at
-     (lambda ()
-       (and (< 0 (skip-chars-forward "[:alnum:]"))
-	    (cons (1- (point)) (point)))))
-
-(put 'alnum 'forward-op-at
-     (lambda ()
-       (if (< 0 (skip-chars-forward "[:alnum:]"))
-	   (point)
-	 (when (< 0 (skip-chars-forward "^[:alnum:]"))
-	   (and (< 0 (skip-chars-forward "[:alnum:]"))
-		(point))))))
-
-(put 'alnum 'backward-op-at
-     (lambda ()
-       (if (< 0 (abs (skip-chars-backward "[:alnum:]")))
-	   (point)
-	 (when (< 0 (abs (skip-chars-backward "^[:alnum:]")))
-	   (and
-	    (< 0 (abs (skip-chars-backward "[:alnum:]")))
-	    (point))))))
-
-;; Alpha
-(put 'alpha 'beginning-op-at
-     (lambda ()
-       (when (or
-	      (< 0 (abs (skip-chars-backward "[:alpha:]")))
-	      (looking-at "[[:alpha:]]"))
-	 (cons (point) (1+ (point))))))
-
-(put 'alpha 'end-op-at
-     (lambda ()
-       (and (< 0 (skip-chars-forward "[:alpha:]"))
-	    (cons (1- (point)) (point)))))
-
-(put 'alpha 'forward-op-at
-     (lambda ()
-       (if (< 0 (skip-chars-forward "[:alpha:]"))
-	   (point)
-	 (when (< 0 (skip-chars-forward "^[:alpha:]"))
-	   (and (< 0 (skip-chars-forward "[:alpha:]"))
-		(point))))))
-
-(put 'alpha 'backward-op-at
-     (lambda ()
-       (if (< 0 (abs (skip-chars-backward "[:alpha:]")))
-	   (point)
-	 (when (< 0 (abs (skip-chars-backward "^[:alpha:]")))
-	   (and
-	    (< 0 (abs (skip-chars-backward "[:alpha:]")))
-	    (point))))))
-
-;; Ascii
-(put 'ascii 'beginning-op-at
-     (lambda ()
-       (when (or
-	      (< 0 (abs (skip-chars-backward "[:ascii:]")))
-	      (looking-at "[[:ascii:]]"))
-	 (cons (point) (1+ (point))))))
-
-(put 'ascii 'end-op-at
-     (lambda ()
-       (and (< 0 (skip-chars-forward "[:ascii:]"))
-	    (cons (1- (point)) (point)))))
-
-(put 'ascii 'forward-op-at
-     (lambda ()
-       (if (< 0 (skip-chars-forward "[:ascii:]"))
-	   (point)
-	 (when (< 0 (skip-chars-forward "^[:ascii:]"))
-	   (and (< 0 (skip-chars-forward "[:ascii:]"))
-		(point))))))
-
-(put 'ascii 'backward-op-at
-     (lambda ()
-       (if (< 0 (abs (skip-chars-backward "[:ascii:]")))
-	   (point)
-	 (when (< 0 (abs (skip-chars-backward "^[:ascii:]")))
-	   (and
-	    (< 0 (abs (skip-chars-backward "[:ascii:]")))
-	    (point))))))
-
-;; Blank
-(put 'blank 'beginning-op-at
-     (lambda ()
-       (when (or
-	      (< 0 (abs (skip-chars-backward "[:blank:]")))
-	      (looking-at "[[:blank:]]"))
-	 (cons (point) (1+ (point))))))
-
-(put 'blank 'end-op-at
-     (lambda ()
-       (and (< 0 (skip-chars-forward "[:blank:]"))
-	    (cons (1- (point)) (point)))))
-
-(put 'blank 'forward-op-at
-     (lambda ()
-       (if (< 0 (skip-chars-forward "[:blank:]"))
-	   (point)
-	 (when (< 0 (skip-chars-forward "^[:blank:]"))
-	   (and (< 0 (skip-chars-forward "[:blank:]"))
-		(point))))))
-
-(put 'blank 'backward-op-at
-     (lambda ()
-       (if (< 0 (abs (skip-chars-backward "[:blank:]")))
-	   (point)
-	 (when (< 0 (abs (skip-chars-backward "^[:blank:]")))
-	   (and
-	    (< 0 (abs (skip-chars-backward "[:blank:]")))
-	    (point))))))
-
-;; Cntrl
-(put 'cntrl 'beginning-op-at
-     (lambda ()
-       (when (or
-	      (< 0 (abs (skip-chars-backward "[:cntrl:]")))
-	      (looking-at "[[:cntrl:]]"))
-	 (cons (point) (1+ (point))))))
-
-(put 'cntrl 'end-op-at
-     (lambda ()
-       (and (< 0 (skip-chars-forward "[:cntrl:]"))
-	    (cons (1- (point)) (point)))))
-
-(put 'cntrl 'forward-op-at
-     (lambda ()
-       (if (< 0 (skip-chars-forward "[:cntrl:]"))
-	   (point)
-	 (when (< 0 (skip-chars-forward "^[:cntrl:]"))
-	   (and (< 0 (skip-chars-forward "[:cntrl:]"))
-		(point))))))
-
-(put 'cntrl 'backward-op-at
-     (lambda ()
-       (if (< 0 (abs (skip-chars-backward "[:cntrl:]")))
-	   (point)
-	 (when (< 0 (abs (skip-chars-backward "^[:cntrl:]")))
-	   (and
-	    (< 0 (abs (skip-chars-backward "[:cntrl:]")))
-	    (point))))))
-
-;; Digit
-(put 'digit 'beginning-op-at
-     (lambda ()
-       (when (or
-	      (< 0 (abs (skip-chars-backward "[:digit:]")))
-	      (looking-at "[[:digit:]]"))
-	 (cons (point) (1+ (point))))))
-
-(put 'digit 'end-op-at
-     (lambda ()
-       (and (< 0 (skip-chars-forward "[:digit:]"))
-	    (cons (1- (point)) (point)))))
-
-(put 'digit 'forward-op-at
-     (lambda ()
-       (if (< 0 (skip-chars-forward "[:digit:]"))
-	   (point)
-	 (when (< 0 (skip-chars-forward "^[:digit:]"))
-	   (and (< 0 (skip-chars-forward "[:digit:]"))
-		(point))))))
-
-(put 'digit 'backward-op-at
-     (lambda ()
-       (if (< 0 (abs (skip-chars-backward "[:digit:]")))
-	   (point)
-	 (when (< 0 (abs (skip-chars-backward "^[:digit:]")))
-	   (and
-	    (< 0 (abs (skip-chars-backward "[:digit:]")))
-	    (point))))))
-
-;; Graph
-(put 'graph 'beginning-op-at
-     (lambda ()
-       (when (or
-	      (< 0 (abs (skip-chars-backward "[:graph:]")))
-	      (looking-at "[[:graph:]]"))
-	 (cons (point) (1+ (point))))))
-
-(put 'graph 'end-op-at
-     (lambda ()
-       (and (< 0 (skip-chars-forward "[:graph:]"))
-	    (cons (1- (point)) (point)))))
-
-(put 'graph 'forward-op-at
-     (lambda ()
-       (if (< 0 (skip-chars-forward "[:graph:]"))
-	   (point)
-	 (when (< 0 (skip-chars-forward "^[:graph:]"))
-	   (and (< 0 (skip-chars-forward "[:graph:]"))
-		(point))))))
-
-(put 'graph 'backward-op-at
-     (lambda ()
-       (if (< 0 (abs (skip-chars-backward "[:graph:]")))
-	   (point)
-	 (when (< 0 (abs (skip-chars-backward "^[:graph:]")))
-	   (and
-	    (< 0 (abs (skip-chars-backward "[:graph:]")))
-	    (point))))))
-
-;; Lower
-(put 'lower 'beginning-op-at
-     (lambda ()
-       (when (or
-	      (< 0 (abs (skip-chars-backward "[:lower:]")))
-	      (looking-at "[[:lower:]]"))
-	 (cons (point) (1+ (point))))))
-
-(put 'lower 'end-op-at
-     (lambda ()
-       (and (< 0 (skip-chars-forward "[:lower:]"))
-	    (cons (1- (point)) (point)))))
-
-(put 'lower 'forward-op-at
-     (lambda ()
-       (if (< 0 (skip-chars-forward "[:lower:]"))
-	   (point)
-	 (when (< 0 (skip-chars-forward "^[:lower:]"))
-	   (and (< 0 (skip-chars-forward "[:lower:]"))
-		(point))))))
-
-(put 'lower 'backward-op-at
-     (lambda ()
-       (if (< 0 (abs (skip-chars-backward "[:lower:]")))
-	   (point)
-	 (when (< 0 (abs (skip-chars-backward "^[:lower:]")))
-	   (and
-	    (< 0 (abs (skip-chars-backward "[:lower:]")))
-	    (point))))))
-
-;; Nonascii
-(put 'nonascii 'beginning-op-at
-     (lambda ()
-       (when (or
-	      (< 0 (abs (skip-chars-backward "[:nonascii:]")))
-	      (looking-at "[[:nonascii:]]"))
-	 (cons (point) (1+ (point))))))
-
-(put 'nonascii 'end-op-at
-     (lambda ()
-       (and (< 0 (skip-chars-forward "[:nonascii:]"))
-	    (cons (1- (point)) (point)))))
-
-(put 'nonascii 'forward-op-at
-     (lambda ()
-       (if (< 0 (skip-chars-forward "[:nonascii:]"))
-	   (point)
-	 (when (< 0 (skip-chars-forward "^[:nonascii:]"))
-	   (and (< 0 (skip-chars-forward "[:nonascii:]"))
-		(point))))))
-
-(put 'nonascii 'backward-op-at
-     (lambda ()
-       (if (< 0 (abs (skip-chars-backward "[:nonascii:]")))
-	   (point)
-	 (when (< 0 (abs (skip-chars-backward "^[:nonascii:]")))
-	   (and
-	    (< 0 (abs (skip-chars-backward "[:nonascii:]")))
-	    (point))))))
-
-;; Print
-(put 'print 'beginning-op-at
-     (lambda ()
-       (when (or
-	      (< 0 (abs (skip-chars-backward "[:print:]")))
-	      (looking-at "[[:print:]]"))
-	 (cons (point) (1+ (point))))))
-
-(put 'print 'end-op-at
-     (lambda ()
-       (and (< 0 (skip-chars-forward "[:print:]"))
-	    (cons (1- (point)) (point)))))
-
-(put 'print 'forward-op-at
-     (lambda ()
-       (if (< 0 (skip-chars-forward "[:print:]"))
-	   (point)
-	 (when (< 0 (skip-chars-forward "^[:print:]"))
-	   (and (< 0 (skip-chars-forward "[:print:]"))
-		(point))))))
-
-(put 'print 'backward-op-at
-     (lambda ()
-       (if (< 0 (abs (skip-chars-backward "[:print:]")))
-	   (point)
-	 (when (< 0 (abs (skip-chars-backward "^[:print:]")))
-	   (and
-	    (< 0 (abs (skip-chars-backward "[:print:]")))
-	    (point))))))
-
-;; Punct
-(put 'punct 'beginning-op-at
-     (lambda ()
-       (when (or
-	      (< 0 (abs (skip-chars-backward "[:punct:]")))
-	      (looking-at "[[:punct:]]"))
-	 (cons (point) (1+ (point))))))
-
-(put 'punct 'end-op-at
-     (lambda ()
-       (and (< 0 (skip-chars-forward "[:punct:]"))
-	    (cons (1- (point)) (point)))))
-
-(put 'punct 'forward-op-at
-     (lambda ()
-       (if (< 0 (skip-chars-forward "[:punct:]"))
-	   (point)
-	 (when (< 0 (skip-chars-forward "^[:punct:]"))
-	   (and (< 0 (skip-chars-forward "[:punct:]"))
-		(point))))))
-
-(put 'punct 'backward-op-at
-     (lambda ()
-       (if (< 0 (abs (skip-chars-backward "[:punct:]")))
-	   (point)
-	 (when (< 0 (abs (skip-chars-backward "^[:punct:]")))
-	   (and
-	    (< 0 (abs (skip-chars-backward "[:punct:]")))
-	    (point))))))
-
-;; Space
-(put 'space 'beginning-op-at
-     (lambda ()
-       (when (or
-	      (< 0 (abs (skip-chars-backward "[:space:]")))
-	      (looking-at "[[:space:]]"))
-	 (cons (point) (1+ (point))))))
-
-(put 'space 'end-op-at
-     (lambda ()
-       (and (< 0 (skip-chars-forward "[:space:]"))
-	    (cons (1- (point)) (point)))))
-
-(put 'space 'forward-op-at
-     (lambda ()
-       (if (< 0 (skip-chars-forward "[:space:]"))
-	   (point)
-	 (when (< 0 (skip-chars-forward "^[:space:]"))
-	   (and (< 0 (skip-chars-forward "[:space:]"))
-		(point))))))
-
-(put 'space 'backward-op-at
-     (lambda ()
-       (if (< 0 (abs (skip-chars-backward "[:space:]")))
-	   (point)
-	 (when (< 0 (abs (skip-chars-backward "^[:space:]")))
-	   (and
-	    (< 0 (abs (skip-chars-backward "[:space:]")))
-	    (point))))))
-
-;; Upper
-(put 'upper 'beginning-op-at
-     (lambda ()
-       (when (or
-	      (< 0 (abs (skip-chars-backward "[:upper:]")))
-	      (looking-at "[[:upper:]]"))
-	 (cons (point) (1+ (point))))))
-
-(put 'upper 'end-op-at
-     (lambda ()
-       (and (< 0 (skip-chars-forward "[:upper:]"))
-	    (cons (1- (point)) (point)))))
-
-(put 'upper 'forward-op-at
-     (lambda ()
-       (if (< 0 (skip-chars-forward "[:upper:]"))
-	   (point)
-	 (when (< 0 (skip-chars-forward "^[:upper:]"))
-	   (and (< 0 (skip-chars-forward "[:upper:]"))
-		(point))))))
-
-(put 'upper 'backward-op-at
-     (lambda ()
-       (if (< 0 (abs (skip-chars-backward "[:upper:]")))
-	   (point)
-	 (when (< 0 (abs (skip-chars-backward "^[:upper:]")))
-	   (and
-	    (< 0 (abs (skip-chars-backward "[:upper:]")))
-	    (point))))))
-
-;; Xdigit
-(put 'xdigit 'beginning-op-at
-     (lambda ()
-       (when (or
-	      (< 0 (abs (skip-chars-backward "[:xdigit:]")))
-	      (looking-at "[[:xdigit:]]"))
-	 (cons (point) (1+ (point))))))
-
-(put 'xdigit 'end-op-at
-     (lambda ()
-       (and (< 0 (skip-chars-forward "[:xdigit:]"))
-	    (cons (1- (point)) (point)))))
-
-(put 'xdigit 'forward-op-at
-     (lambda ()
-       (if (< 0 (skip-chars-forward "[:xdigit:]"))
-	   (point)
-	 (when (< 0 (skip-chars-forward "^[:xdigit:]"))
-	   (and (< 0 (skip-chars-forward "[:xdigit:]"))
-		(point))))))
-
-(put 'xdigit 'backward-op-at
-     (lambda ()
-       (if (< 0 (abs (skip-chars-backward "[:xdigit:]")))
-	   (point)
-	 (when (< 0 (abs (skip-chars-backward "^[:xdigit:]")))
-	   (and
-	    (< 0 (abs (skip-chars-backward "[:xdigit:]")))
-	    (point))))))
-
-;; Delimited forms start
-
-;; Braced
-(put 'braced 'beginning-op-at
-     (lambda ()
-       (if (char-equal ?{ (char-after))
-	   (list (point) (1+ (point)))
-	 (beginning-of-form-base "{" "}" nil 'move 1 nil nil 'ar-syntax t))))
-
-(put 'braced 'end-op-at
-     (lambda ()
-       (when (char-equal ?{ (char-after))
-	 (forward-char 1))
-       (end-of-form-base "{" "}" nil 'move 1 nil nil 'ar-syntax t)))
-
-(put 'braced 'forward-op-at
-     (lambda ()
-       (when (char-equal ?{ (char-after))
-	 (forward-char 1))
-       (ar-char-delimiters-end ?} t)
-       (when (char-equal ?} (char-before)) (forward-char -1)
-	     (point))))
-
-;; Bracketed
-(put 'bracketed 'beginning-op-at
-     (lambda ()
-       (if (char-equal ?\[ (char-after))
-	   (list (point) (1+ (point)))
-	 (beginning-of-form-base "\\[" "\]" nil 'move 1 nil t 'ar-syntax t))))
-
-(put 'bracketed 'end-op-at
-     (lambda ()
-       (when (char-equal ?\[ (char-after))
-	 (forward-char 1))
-       (end-of-form-base "\\[" "\]" nil 'move 1 nil t 'ar-syntax t)))
-
-(put 'bracketed 'forward-op-at
-     (lambda ()
-       (when (char-equal ?\[ (char-after))
-	 (forward-char 1))
-       (ar-char-delimiters-end ?\] t)
-       (when (char-equal ?\] (char-before)) (forward-char -1)
-	     (point))))
-
-;; Lesser-Angled
-(put 'lesser-angled 'beginning-op-at
-     (lambda ()
-       (if (char-equal ?< (char-after))
-	   (list (point) (1+ (point)))
-	 (beginning-of-form-base "<" ">" nil 'move 1 nil nil 'ar-syntax t))))
-
-(put 'lesser-angled 'end-op-at
-     (lambda ()
-       (when (char-equal ?< (char-after))
-	 (forward-char 1))
-       (end-of-form-base "<" ">" nil 'move 1 nil nil 'ar-syntax t)))
-
-(put 'lesser-angled 'forward-op-at
-     (lambda ()
-       (when (char-equal ?< (char-after))
-	 (forward-char 1))
-       (ar-char-delimiters-end ?> t)
-       (when (char-equal ?> (char-before)) (forward-char -1)
-	     (point))))
-
-;; Greater-Angled
-(put 'greater-angled 'beginning-op-at
-     (lambda ()
-       (if (char-equal ?> (char-after))
-	   (list (point) (1+ (point)))
-	 (beginning-of-form-base ">" "<" nil 'move 1 nil nil 'ar-syntax t))))
-
-(put 'greater-angled 'end-op-at
-     (lambda ()
-       (when (char-equal ?> (char-after))
-	 (forward-char 1))
-       (end-of-form-base ">" "<" nil 'move 1 nil nil 'ar-syntax t)))
-
-(put 'greater-angled 'forward-op-at
-     (lambda ()
-       (when (char-equal ?> (char-after))
-	 (forward-char 1))
-       (ar-char-delimiters-end ?< t)
-       (when (char-equal ?< (char-before)) (forward-char -1)
-	     (point))))
-
-;; Left-Right-Singlequoted
-(put 'left-right-singlequoted 'beginning-op-at
-     (lambda ()
-       (if (char-equal ?‘ (char-after))
-	   (list (point) (1+ (point)))
-	 (beginning-of-form-base "‘" "’" nil 'move 1 nil nil 'ar-syntax t))))
-
-(put 'left-right-singlequoted 'end-op-at
-     (lambda ()
-       (when (char-equal ?‘ (char-after))
-	 (forward-char 1))
-       (end-of-form-base "‘" "’" nil 'move 1 nil nil 'ar-syntax t)))
-
-(put 'left-right-singlequoted 'forward-op-at
-     (lambda ()
-       (when (char-equal ?‘ (char-after))
-	 (forward-char 1))
-       (ar-char-delimiters-end ?’ t)
-       (when (char-equal ?’ (char-before)) (forward-char -1)
-	     (point))))
-
-;; Parentized
-(put 'parentized 'beginning-op-at
-     (lambda ()
-       (if (char-equal ?\( (char-after))
-	   (list (point) (1+ (point)))
-	 (beginning-of-form-base "\(" "\)" nil 'move 1 nil nil 'ar-syntax t))))
-
-(put 'parentized 'end-op-at
-     (lambda ()
-       (when (char-equal ?\( (char-after))
-	 (forward-char 1))
-       (end-of-form-base "\(" "\)" nil 'move 1 nil nil 'ar-syntax t)))
-
-(put 'parentized 'forward-op-at
-     (lambda ()
-       (when (char-equal ?\( (char-after))
-	 (forward-char 1))
-       (ar-char-delimiters-end ?\) t)
-       (when (char-equal ?\) (char-before)) (forward-char -1)
-	     (point))))
-
-
-;; Delimited forms end
-
-;; ar-unpaired-delimited-raw start
 ;; Listen start
 
 (setq ar-atpt-unpaired-delimited-extended-list

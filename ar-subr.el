@@ -381,5 +381,65 @@ Return the shortened string"
     (setq right (- laenge right))
     (substring string left right)))
 
+(defalias 'ar-beginning-of-defun 'ar-backward-defun)
+(defun ar-backward-defun (&optional arg done)
+  "Move to the beginning of a function definition.
+
+When `beginning-of-defun-function' is set, call with optional ARG "
+  (interactive "P")
+  (let ((done done)
+	(pps (parse-partial-sexp (point-min) (point))))
+    (unless (bobp)
+      (if beginning-of-defun-function
+	  (funcall beginning-of-defun-function arg done)
+	(when (nth 4 pps) (ar-backward-comment))
+	(let ((liststart (nth 1 pps)))
+	  (if liststart
+	      (progn
+		(goto-char liststart)
+		(while (and (not (looking-at ar-beginning-of-defun-re))(setq liststart (nth 1 (parse-partial-sexp (point-min) (point)))))
+		  (goto-char liststart)))
+	    (unless done
+	      (when (or (eq ?\)(char-before)) (< 0 (abs (skip-chars-backward "^)"))))
+		(setq done t)
+		(forward-char -1)
+		(ar-beginning-of-defun arg done)))))))))
+
+
+(defalias 'ar-end-of-defun 'ar-forward-defun)
+(defun ar-forward-defun (&optional arg move)
+  "Move to the end of a function definition.
+
+Return position if successful, nil otherwise
+When `end-of-defun-function' is set, call it with optional ARG "
+  (interactive "P")
+  (unless (eobp)
+    (skip-chars-forward " \t\r\n\f")
+    (let* ((pps (parse-partial-sexp (point-min) (point)))
+	   (nesting (nth 0 pps))
+	   (in-comment (or (nth 4 pps) (looking-at comment-start)))
+	   ;; clear emacs-lisps setting
+	   (end-of-defun-function (if (eq major-mode 'emacs-lisp-mode)
+				      nil
+				    end-of-defun-function))
+	   erg)
+      (if end-of-defun-function
+	  (funcall end-of-defun-function arg)
+	(when move (skip-syntax-forward "^\\s("))
+	(cond
+	 ((eq 4 (car (syntax-after (point))))
+	  (forward-sexp)
+	  (if (< 0 (nth 0 (parse-partial-sexp (point-min) (point))))
+	      (progn
+		(ar-beginning-of-defun)
+		(ar-end-of-defun))
+	    (setq erg (point))))
+	 ((< 0 nesting)
+	  (ar-beginning-of-defun)
+	  (ar-end-of-defun))
+	 (in-comment
+	  (ar-forward-comment))
+	 (t (ar-end-of-defun arg 'move)))))))
+
 (provide 'ar-subr)
 ;;; ar-subr.el ends here

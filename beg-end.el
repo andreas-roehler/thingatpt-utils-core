@@ -121,7 +121,7 @@ Set comment to `t' if forms inside comments should match - also for processing c
   (let ((orig (point))
         erg)
     (goto-char (match-beginning 0))
-    (setq erg (looking-back "\\\\s"))
+    (setq erg (looking-back "\\\\s" (line-beginning-position)))
     (goto-char orig)
     (when arg (message "%s" erg))
     erg))
@@ -187,7 +187,7 @@ If IN-STRING is non-nil, forms inside string match.
         (and
          (or first (< 0 nesting)) (not (bobp)))
       (cond
-       ((and (looking-back searchform)
+       ((and (looking-back searchform (line-beginning-position))
              (goto-char (match-beginning 0)))
         (beginning-of-form-base-intern begstr endstr permit-comment permit-string))
        ((and (or regexp (and begstr endstr))
