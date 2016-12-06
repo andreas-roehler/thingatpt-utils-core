@@ -54,5 +54,14 @@
     (should (eq 1 (car erg)))
     (should (eq 4 (cdr erg))))))
 
+(ert-deftest ar-ert-symbol-atpt-2 ()
+  (ar-test-with-elisp-buffer
+      "(defun w ()"
+    (search-backward "w")
+    (let ((erg (ar-th-bounds 'symbol)))
+    (should (eq 8 (car erg)))
+    (should (eq 9 (cdr erg))))))
+
+
 (provide 'ar-core-tests-1)
 ;;; ar-core-tests-1.el ends here

@@ -2520,6 +2520,7 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
 		     (forward-line -1)
 		     (setq erg (point)))
 		   (and (< 0 (abs (skip-syntax-backward "w_.\\")))(setq erg (point)))))
+	   (unless erg (when (looking-at "[^ ]")(setq erg (point))))
 	   erg))))
 
 (put 'symbol 'end-op-at
