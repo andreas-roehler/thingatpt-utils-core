@@ -2511,13 +2511,27 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
 
 ;; Symbol
 (put 'symbol 'beginning-op-at
-     (lambda ()
-       (unless (looking-at "\\s-")
-	 (skip-syntax-backward "w_.\\")(point))))
+     (unless (looking-at "\\s-")
+       (lambda ()
+	 (let (erg)
+	   (while
+	       (or (when
+		       (ar-escaped (if (bobp) (point)(1- (point))))
+		     (forward-line -1)
+		     (setq erg (point)))
+		   (and (< 0 (abs (skip-syntax-backward "w_.\\")))(setq erg (point)))))
+	   erg))))
 
 (put 'symbol 'end-op-at
      (lambda ()
-       (skip-syntax-forward "w_.\\")(point)))
+       (let (erg)
+	 (while
+	     (or (when
+		     (ar-escaped)
+		   (forward-char 1)
+		   (setq erg (point)))
+		 (and (< 0 (skip-syntax-forward "w_.\\"))(setq erg (point)))))
+	 erg)))
 
 ;; Triplequoted
 (put 'triplequoted 'beginning-op-at

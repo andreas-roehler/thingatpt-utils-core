@@ -46,5 +46,13 @@
     ;; (should (eq 118 (1+ (car (read-from-string (number-at-point))))
     (should (eq 118 (1+ (number-at-point))))))
 
+(ert-deftest ar-ert-symbol-atpt-1 ()
+  (ar-test-with-elisp-buffer
+      "o\\\""
+    (forward-char -1)
+    (let ((erg (ar-th-bounds 'symbol)))
+    (should (eq 1 (car erg)))
+    (should (eq 4 (cdr erg))))))
+
 (provide 'ar-core-tests-1)
 ;;; ar-core-tests-1.el ends here

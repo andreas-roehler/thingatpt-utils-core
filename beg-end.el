@@ -111,15 +111,17 @@ Set comment to `t' if forms inside comments should match - also for processing c
       (setq indx (string-match collected unquoted-end))
       (setq stringcount (1- stringcount)))))
 
-(defun ar-escaped ()
-  "Return t if char is preceded by an odd number of backslashes. "
-  (save-excursion (< 0 (% (abs (skip-chars-backward "\\\\")) 2))))
+(defun ar-escaped (&optional pos)
+  "Return t if char at POS is preceded by an odd number of backslashes. "
+  (save-excursion
+    (when pos (goto-char pos))
+    (< 0 (% (abs (skip-chars-backward "\\\\")) 2))))
 
 (defun ar-syntax (&optional arg)
   "Return t if char meant as syntax-symbol. "
   (interactive "p")
   (let ((orig (point))
-        erg)
+	erg)
     (goto-char (match-beginning 0))
     (setq erg (looking-back "\\\\s" (line-beginning-position)))
     (goto-char orig)

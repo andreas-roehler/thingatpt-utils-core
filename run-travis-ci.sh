@@ -26,7 +26,7 @@ TESTDIR1=$WERKSTATT/$DIR1/test
 
 FILE1=$WERKSTATT/$DIR1/beg-end.el
 FILE2=$WERKSTATT/$DIR1/ar-subr.el
-FILE3=$WERKSTATT/$DIR1/ar-navigate.el
+FILE3=$WERKSTATT/$DIR1/thingatpt-utils-base.el
 
 TEST1=$TESTDIR1/ar-setup-ert-tests.el
 TEST2=$TESTDIR1/ar-subr-ert-tests.el
@@ -49,6 +49,7 @@ hier () {
 --eval "(add-to-list 'load-path (getenv \"TESTDIR1\"))" \
 -load $FILE1 \
 -load $FILE2 \
+-load $FILE3 \
 \
 -load $TEST1 \
 -load $TEST2 \
@@ -64,6 +65,7 @@ entfernt () {
 --eval "(add-to-list 'load-path (getenv \"TESTDIR1\"))" \
 -load $FILE1 \
 -load $FILE2 \
+-load $FILE3 \
 \
 -load $TEST1 \
 -load $TEST2 \
