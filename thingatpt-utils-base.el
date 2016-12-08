@@ -2519,7 +2519,7 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
 		       (ar-escaped (if (bobp) (point)(1- (point))))
 		     (forward-line -1)
 		     (setq erg (point)))
-		   (and (< 0 (abs (skip-syntax-backward "w_.\\")))(setq erg (point)))))
+		   (and (< 0 (abs (skip-syntax-backward "w_.'\\")))(setq erg (point)))))
 	   (unless erg (when (looking-at "[^ ]")(setq erg (point))))
 	   erg))))
 
@@ -2531,7 +2531,7 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
 		     (ar-escaped)
 		   (forward-char 1)
 		   (setq erg (point)))
-		 (and (< 0 (skip-syntax-forward "w_.\\"))(setq erg (point)))))
+		 (and (< 0 (skip-syntax-forward "w_.'\\"))(setq erg (point)))))
 	 erg)))
 
 ;; Triplequoted
