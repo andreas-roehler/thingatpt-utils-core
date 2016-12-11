@@ -1,4 +1,4 @@
-;;; ar-subr-ert-tests.el --- -*- lexical-binding: t; -*- 
+;;; ar-subr-ert-tests.el --- -*- lexical-binding: t; -*-
 
 
 ;; Copyright (C) 2013-2016 Free Software Foundation, Inc.
@@ -102,6 +102,19 @@ vorhanden() {
 ")
 
 
+(setq ar-subr-test-string3 "(defun foo ()
+  \"Test on nested functions
+(defun bar ()
+  (interactive)
+  (message \\\"%s\\\" \\\"Bar here\\\"))\"
+;; (defun bar ()
+;;   (interactive)
+;;   (message \"%s\" \"Bar here\"))
+  (interactive)
+  (message \"%s\" \"Being foo\")
+  (defun bar ()
+    (interactive)
+    (message \"%s\" \"Bar here\")))")
 
 (ert-deftest ar-forward-comment-elisp-test ()
   (ar-test-with-elisp-buffer
@@ -121,6 +134,26 @@ vorhanden() {
 \"
 ;;;\""
     (should (not (ar-in-comment-p)))))
+
+(ert-deftest ar-backward-nested-defun-test-1 ()
+  (ar-test-with-elisp-buffer
+      ar-subr-test-string3
+    (ar-backward-defun)
+    (should (eq 1 (point)))))
+
+(ert-deftest ar-forward-nested-defun-test-1 ()
+  (ar-test-with-elisp-buffer
+      ar-subr-test-string3
+    (search-backward "Bar")
+    (ar-forward-defun)
+    (should (looking-back "(message \"%s\" \"Bar here\"))"))))
+
+(ert-deftest ar-forward-nested-defun-test-2 ()
+  (ar-test-with-elisp-buffer
+      ar-subr-test-string3
+    (search-backward "Being")
+    (ar-forward-defun)
+    (should (looking-back "(message \"%s\" \"Bar here\")))"))))
 
 (provide 'ar-subr-ert-tests)
 ;;; ar-subr-ert-tests.el ends here

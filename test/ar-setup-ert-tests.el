@@ -1,6 +1,6 @@
-;;; sh-werk-setup-ert-tests.el --- Provide needed forms -*- lexical-binding: t; -*- 
+;;; ar-setup-ert-tests.el --- Provide needed forms -*- lexical-binding: t; -*- 
 
-;; Copyright (C) 2015  Andreas Röhler
+;; Copyright (C) 2015-2016  Andreas Röhler
 
 ;; Author: Andreas Röhler <andreas.roehler@easy-emacs.de>
 
@@ -315,4 +315,4 @@ BODY is code to be executed within the temp buffer.  Point is
      (sit-for 0.1)))
 
 (provide 'ar-setup-ert-tests)
-;; sh-werk-setup-ert-tests.el ends here
+;; ar-setup-ert-tests.el ends here
