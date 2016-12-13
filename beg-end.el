@@ -1,4 +1,4 @@
-;;; beg-end.el
+;;; beg-end.el --- Detecting nested forms  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2009-2016  Andreas Röhler
 
@@ -28,7 +28,7 @@
 ;; forward or backward.  With argument as many times.
 
 ;; FixMe: `ar-in-comment-p-atpt' uses
-;; thingatpt-utils-base while required from
+;; thingatpt-utils-core while required from
 
 ;;; Code:
 
@@ -128,7 +128,7 @@ Set comment to `t' if forms inside comments should match - also for processing c
     (when arg (message "%s" erg))
     erg))
 
-(defun beginning-of-form-base-intern (begstr endstr permit-comment permit-string)
+(defun beginning-of-form-base-intern (begstr endstr permit-comment permit-string condition)
   (let ((pps (parse-partial-sexp (point-min) (point))))
     ;; in string not permitted, leave it
     (if (and (not permit-string) (nth 3 pps)(nth 8 pps))
@@ -191,19 +191,19 @@ If IN-STRING is non-nil, forms inside string match.
       (cond
        ((and (looking-back searchform (line-beginning-position))
              (goto-char (match-beginning 0)))
-        (beginning-of-form-base-intern begstr endstr permit-comment permit-string))
+        (beginning-of-form-base-intern begstr endstr permit-comment permit-string condition))
        ((and (or regexp (and begstr endstr))
              (re-search-backward searchform bound noerror nesting))
-        (beginning-of-form-base-intern begstr endstr permit-comment permit-string))
+        (beginning-of-form-base-intern begstr endstr permit-comment permit-string condition))
        ((and (not regexp) (not (and begstr endstr))
              (search-backward searchform bound noerror nesting)
              (goto-char (match-beginning 0)))
-        (beginning-of-form-base-intern begstr endstr permit-comment permit-string))
+        (beginning-of-form-base-intern begstr endstr permit-comment permit-string condition))
        (t (goto-char (point-min)))))
     (when (and beg-pos-delimiter end-pos-delimiter)
       (list beg-pos-delimiter end-pos-delimiter))))
 
-(defun end-of-form-base-intern (begstr endstr permit-comment permit-string)
+(defun end-of-form-base-intern (begstr endstr permit-comment permit-string &optional condition regexp)
   (let ((pps (parse-partial-sexp (point-min) (point))))
     ;; in string
     (if (and (not permit-string) (nth 3 pps)(nth 8 pps))
@@ -258,12 +258,10 @@ If IN-STRING is non-nil, forms inside string match.
 	       (goto-char (match-end 0)))
 	(and (string= (prin1-to-string (char-after)) endstr)
 	     (forward-char 1)))
-
-      ;; (end-of-form-base-intern begstr endstr permit-comment permit-string)
       (if
 	  (or (and regexp (re-search-forward searchform bound noerror))
 	      (search-forward searchform bound noerror))
-	  (end-of-form-base-intern begstr endstr permit-comment permit-string)
+	  (end-of-form-base-intern begstr endstr permit-comment permit-string condition)
 	;; if search wasn't successful, reduce
         (setq nesting (1- nesting))))
     (if (and beg-pos-delimiter end-pos-delimiter)

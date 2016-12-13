@@ -1,4 +1,4 @@
-;;; ar-subr.el --- Helper functions
+;;; ar-subr.el --- A reliable beginning-of-defun and other helper functions  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2015  Andreas Röhler
 
@@ -438,6 +438,7 @@ When `end-of-defun-function' is set, call it with optional ARG "
     (let* ((pps (parse-partial-sexp (point-min) (point)))
 	   (nesting (nth 0 pps))
 	   (in-comment (or (nth 4 pps) (looking-at comment-start)))
+	   (orig (point))
 	   erg)
       (cond
        ((nth 1 pps)
@@ -453,8 +454,26 @@ When `end-of-defun-function' is set, call it with optional ARG "
 	(setq erg (point)))
        ((< 0 nesting)
 	(ar-beginning-of-defun)
-	(setq erg (ar-end-of-defun))))
-    erg)))
+	(setq erg (ar-end-of-defun)))
+       ((eq (char-after) ?\()
+	(forward-sexp)
+	(setq erg (point))))
+      (when (< orig (point))
+	erg))))
+
+(defun ar-count-lines (&optional beg end)
+  "Count lines in accessible part of buffer.
+
+See http://debbugs.gnu.org/cgi/bugreport.cgi?bug=7115"
+  (interactive)
+  (let ((beg (or beg (point-min)))
+	(end (or end (point)))
+	erg)
+    (if (bolp)
+	(setq erg (1+ (count-lines beg end)))
+      (setq erg (count-lines beg end)))
+    (when (called-interactively-p) (message "%s" erg))
+    erg))
 
 (provide 'ar-subr)
 ;;; ar-subr.el ends here

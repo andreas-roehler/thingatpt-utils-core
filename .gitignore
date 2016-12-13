@@ -1,0 +1,7 @@
+ablage/
+RCS/
+*~
+devel/
+commit.txt
+test/interpol.rb
+/test/nested-defun.el

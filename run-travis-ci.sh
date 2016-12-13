@@ -26,12 +26,10 @@ TESTDIR1=$WERKSTATT/$DIR1/test
 
 FILE1=$WERKSTATT/$DIR1/beg-end.el
 FILE2=$WERKSTATT/$DIR1/ar-subr.el
-FILE3=$WERKSTATT/$DIR1/thingatpt-utils-base.el
+FILE3=$WERKSTATT/$DIR1/thingatpt-utils-core.el
 
-TEST1=$TESTDIR1/ar-setup-ert-tests.el
-TEST2=$TESTDIR1/ar-subr-ert-tests.el
-# TEST3=$TESTDIR1/ar-ert-tests-1.el
-TEST3=$TESTDIR1/ar-core-tests-1.el
+TEST1=$TESTDIR1/ar-thingatpt-utils-core-setup-tests.el
+TEST2=$TESTDIR1/ar-core-tests-1.el
 
 if [ -s emacs24 ]; then
     EMACS=emacs24
@@ -53,7 +51,6 @@ hier () {
 \
 -load $TEST1 \
 -load $TEST2 \
--load $TEST3 \
 -f ert-run-tests-batch-and-exit
 }
 
@@ -69,7 +66,6 @@ entfernt () {
 \
 -load $TEST1 \
 -load $TEST2 \
--load $TEST3 \
 -f ert-run-tests-batch-and-exit
 }
 
