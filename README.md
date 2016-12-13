@@ -1,5 +1,9 @@
-Delivers a set of functions to return, mover over or
-manipulate a given THING. THING may be a well known
+Thingatpt-utils-core [![Build Status](https://travis-ci.org/thingatpt-utils-core/sh-werk.svg?branch=master)](https://travis-ci.org/andreas-roehler/thingatpt-utils-core)
+===
+
+# Return, mover over or manipulate a THING. 
+
+THING may be a well known
 form as word, paragraph, but also a char class as
 `alnum' or a new defined thing.
 
