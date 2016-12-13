@@ -1,4 +1,4 @@
-;;; thingatpt-utils-base.el --- th-at-point edit functions -*- lexical-binding: t; -*- 
+;;; thingatpt-utils-core.el --- th-at-point edit functions -*- lexical-binding: t; -*- 
 
 ;; Copyright (C) 2010-2016 Andreas Röhler, unless
 ;; indicated otherwise
@@ -11814,5 +11814,5 @@ it defaults to `<', otherwise it defaults to `string<'."
 
 
 
-(provide 'thingatpt-utils-base)
-;;; thingatpt-utils-base.el ends here
+(provide 'thingatpt-utils-core)
+;;; thingatpt-utils-core.el ends here

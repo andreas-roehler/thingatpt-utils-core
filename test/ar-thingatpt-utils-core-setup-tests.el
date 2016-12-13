@@ -1,4 +1,4 @@
-;;; ar-setup-ert-tests.el --- Provide needed forms -*- lexical-binding: t; -*- 
+;;; ar-setup-subr-tests.el --- Provide needed forms -*- lexical-binding: t; -*- 
 
 ;; Copyright (C) 2015-2016  Andreas Röhler
 
@@ -314,5 +314,5 @@ BODY is code to be executed within the temp buffer.  Point is
        ,@body)
      (sit-for 0.1)))
 
-(provide 'ar-setup-ert-tests)
-;; ar-setup-ert-tests.el ends here
+(provide 'ar-setup-subr-tests)
+;; ar-setup-subr-tests.el ends here
