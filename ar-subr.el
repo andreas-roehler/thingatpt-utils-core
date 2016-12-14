@@ -24,8 +24,6 @@
 
 ;;; Code:
 
-(require 'beg-end)
-
 (defvar ar-verbose-p nil)
 
 (defvar ar-line-move-forward t)
@@ -318,8 +316,8 @@ Skip comments, empty lines and strings "
   (end-of-line)
   (skip-chars-backward " \t\r\n\f"))
 
-(defun ar-move-line (&optional arg)
-  "Move line forward or upward.
+(defun ar-move-line-indent (&optional arg)
+  "Move line forward or upward travelling indentation.
 
 \\[universal-argument] toggles direction"
   (interactive "P")
