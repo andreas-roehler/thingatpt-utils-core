@@ -5,3 +5,4 @@ devel/
 commit.txt
 test/interpol.rb
 /test/nested-defun.el
+run-travis-ci.sh

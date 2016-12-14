@@ -1,5 +1,7 @@
 ;;; thingatpt-utils-core.el --- th-at-point edit functions -*- lexical-binding: t; -*- 
 
+;; Version: 0.1
+
 ;; Copyright (C) 2010-2016 Andreas Röhler, unless
 ;; indicated otherwise
 
@@ -11315,6 +11317,7 @@ it defaults to `<', otherwise it defaults to `string<'."
 	
 	map))
 
+;;;###autoload 
 (define-derived-mode werkstatt emacs-lisp-mode "Werk"
   ;; (kill-all-local-variables)
   ;; (setq major-mode 'ar-werkstatt

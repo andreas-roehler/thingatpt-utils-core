@@ -42,11 +42,11 @@
 
     (let ((debug-on-error t)
           (tests (list
-		  "thingatpt-utils-core-ert-tests.el"
+		  "thingatpt-utils-core-tests"
 		  )))
       (load (expand-file-name "thingatpt-utils-core" source-directory))
 
-      (load (expand-file-name "thingatpt-utils-core-setup-ert-tests" current-dir))
+      (load (expand-file-name "thingatpt-utils-core-setup-tests" current-dir))
 
       (dolist (test-file tests)
         (load (expand-file-name test-file current-dir))))
