@@ -255,6 +255,7 @@
 
 ;;; Code:
 
+(require 'beg-end)
 (require 'ar-subr)
 (require 'hideshow)
 (defconst Emacs-Werkstatt-version "1.5")
@@ -1093,7 +1094,7 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
      (lambda ()
        (when (char-equal (char-after) ?\")
          (forward-char 1))
-       (let ((end (ar-char-delimiters-end ?\" t)))
+       (let ((end (ar-char-delimiters-end ?\")))
          (cons (1- end) end))))
 
 (put 'doublequoted 'forward-op-at

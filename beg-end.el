@@ -128,7 +128,7 @@ Set comment to `t' if forms inside comments should match - also for processing c
     (when arg (message "%s" erg))
     erg))
 
-(defun beginning-of-form-base-intern (begstr endstr permit-comment permit-string condition)
+(defun beginning-of-form-base-intern (nesting begstr endstr permit-comment permit-string condition)
   (let ((pps (parse-partial-sexp (point-min) (point))))
     ;; in string not permitted, leave it
     (if (and (not permit-string) (nth 3 pps)(nth 8 pps))
@@ -155,9 +155,9 @@ Set comment to `t' if forms inside comments should match - also for processing c
               (unless (ar-in-comment-p)
 		(if first
 		    (setq first nil)
-		  (setq nesting (1+ nesting)))))))
-        (setq beg-pos-delimiter (match-beginning 0))
-        (setq end-pos-delimiter (match-end 0))))))
+		  (setq nesting (1+ nesting))))))))))
+  nesting)
+
 
 ;; should `parse-sexp-ignore-comments' be usedq?
 (defun beginning-of-form-base (begstr &optional endstr bound noerror nesting permit-comment regexp condition permit-string)
@@ -180,30 +180,31 @@ If IN-STRING is non-nil, forms inside string match.
 				  (concat begstr "\\|" endstr)))
 			       (t begstr))
 		       begstr))
-         (nesting (or  nesting 0))
+         (nesting (or nesting 0))
          (orig (point))
-	 (first t)
          (permit-comment (or permit-comment thing-inside-comments))
-         beg-pos-delimiter end-pos-delimiter )
+         beg-pos-delimiter end-pos-delimiter)
     (while
         (and
-         (or first (< 0 nesting)) (not (bobp)))
-      (cond
-       ((and (looking-back searchform (line-beginning-position))
-             (goto-char (match-beginning 0)))
-        (beginning-of-form-base-intern begstr endstr permit-comment permit-string condition))
-       ((and (or regexp (and begstr endstr))
-             (re-search-backward searchform bound noerror nesting))
-        (beginning-of-form-base-intern begstr endstr permit-comment permit-string condition))
-       ((and (not regexp) (not (and begstr endstr))
-             (search-backward searchform bound noerror nesting)
-             (goto-char (match-beginning 0)))
-        (beginning-of-form-base-intern begstr endstr permit-comment permit-string condition))
-       (t (goto-char (point-min)))))
+         (or (< 0 nesting)) (not (bobp)))
+      (when
+	  (or
+	   (looking-back searchform (line-beginning-position))
+	   (and (or regexp (and begstr endstr))
+		(re-search-backward searchform bound noerror nesting))
+	   (and (not regexp) (not (and begstr endstr))
+		(search-backward searchform bound noerror nesting)))
+        (setq erg (beginning-of-form-base-intern nesting begstr endstr permit-comment permit-string condition))
+	(if (< erg nesting)
+	    (progn
+	      (setq beg-pos-delimiter (match-beginning 0))
+	      (setq end-pos-delimiter (match-end 0))
+	      (setq nesting erg))
+	  (setq nesting erg))))
     (when (and beg-pos-delimiter end-pos-delimiter)
       (list beg-pos-delimiter end-pos-delimiter))))
 
-(defun end-of-form-base-intern (begstr endstr permit-comment permit-string &optional condition regexp)
+(defun end-of-form-base-intern (nesting begstr endstr permit-comment permit-string &optional condition regexp)
   (let ((pps (parse-partial-sexp (point-min) (point))))
     ;; in string
     (if (and (not permit-string) (nth 3 pps)(nth 8 pps))
@@ -214,21 +215,18 @@ If IN-STRING is non-nil, forms inside string match.
       (unless (save-match-data
                 (and condition (funcall condition)))
         (save-match-data
-          (if
-              (string-match endstr
-                            (if regexp (match-string-no-properties 0)
-                              (match-string-no-properties 0)))
-              (if permit-comment
-                  (setq nesting (1- nesting))
-                (unless (ar-in-comment-p)
-                  (setq nesting (1- nesting))))
+          (if (string-match endstr (match-string-no-properties 0))
+	      (progn
+		(if permit-comment
+		    (setq nesting (1- nesting))
+		  (unless (ar-in-comment-p)
+		    (setq nesting (1- nesting))))
+		nesting)
             ;; got another beginning while moving down
             (if permit-comment
                 (setq nesting (1+ nesting))
               (unless (ar-in-comment-p)
-                (setq nesting (1+ nesting))))))
-        (setq beg-pos-delimiter (match-beginning 0))
-        (setq end-pos-delimiter (match-end 0))))))
+                (setq nesting (1+ nesting)))))))))nesting)
 
 (defun end-of-form-base (begstr endstr &optional bound noerror nesting permit-comment regexp condition permit-string)
   "Goto closing of a programming structure in this level.
@@ -249,7 +247,7 @@ If IN-STRING is non-nil, forms inside string match.
          (nesting (or nesting 1))
          (orig (point))
          (permit-comment (or permit-comment thing-inside-comments))
-         beg-pos-delimiter end-pos-delimiter)
+         beg-pos-delimiter end-pos-delimiter erg)
     (while
         (and
          (< 0 nesting) (not (eobp)))
@@ -258,12 +256,17 @@ If IN-STRING is non-nil, forms inside string match.
 	       (goto-char (match-end 0)))
 	(and (string= (prin1-to-string (char-after)) endstr)
 	     (forward-char 1)))
-      (if
+      (when
 	  (or (and regexp (re-search-forward searchform bound noerror))
 	      (search-forward searchform bound noerror))
-	  (end-of-form-base-intern begstr endstr permit-comment permit-string condition)
-	;; if search wasn't successful, reduce
-        (setq nesting (1- nesting))))
+	(setq erg (end-of-form-base-intern nesting begstr endstr permit-comment permit-string condition))
+	(if  (< erg nesting)
+	  (progn
+	    (setq beg-pos-delimiter (match-beginning 0))
+	    (setq end-pos-delimiter (match-end 0))
+	    (setq nesting erg))
+        (setq nesting erg))))
+	;; (list (match-beginning 0) (match-end 0)))
     (if (and beg-pos-delimiter end-pos-delimiter)
         (list beg-pos-delimiter end-pos-delimiter)
       (goto-char orig)
@@ -447,7 +450,7 @@ With FIRST don't check from BOB "
 	(goto-char orig)
 	nil))))
 
-(defun ar-char-delimiters-end-raw (&optional escaped comment)
+(defun ar-char-delimiters-end-raw (char &optional escaped comment)
   (let (erg)
     (cond ((and escaped comment)
 	   (skip-chars-forward (concat "^" (regexp-quote (char-to-string char))))
@@ -477,7 +480,7 @@ With FIRST don't check from BOB "
 With COMMENT, match inside comments.
 If ESCAPED, also match chars which are backslashed. "
   (let ((orig (point)))
-    (ar-char-delimiters-end-raw escaped comment)
+    (ar-char-delimiters-end-raw char escaped comment)
     (unless (eobp)
       (when (and (char-equal char (char-after))(< orig (point)))
 	(unless (eobp) (forward-char 1))
