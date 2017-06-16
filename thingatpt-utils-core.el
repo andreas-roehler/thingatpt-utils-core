@@ -1,7 +1,5 @@
 ;;; thingatpt-utils-core.el --- th-at-point edit functions -*- lexical-binding: t; -*- 
 
-;; Version: 0.1
-
 ;; Copyright (C) 2010-2016 Andreas Röhler, unless
 ;; indicated otherwise
 
@@ -255,7 +253,6 @@
 
 ;;; Code:
 
-(require 'beg-end)
 (require 'ar-subr)
 (require 'hideshow)
 (defconst Emacs-Werkstatt-version "1.5")
@@ -1094,7 +1091,7 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
      (lambda ()
        (when (char-equal (char-after) ?\")
          (forward-char 1))
-       (let ((end (ar-char-delimiters-end ?\")))
+       (let ((end (ar-char-delimiters-end ?\" t)))
          (cons (1- end) end))))
 
 (put 'doublequoted 'forward-op-at
@@ -1625,18 +1622,75 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
 ;; String
 (put 'string 'beginning-op-at
      (lambda ()
-       (let ((erg (ar-in-string-p)))
-         (when erg
-           (goto-char (or (car-safe erg) erg)))
-	 (when (and (looking-at "\"\"\"\\|'''\\|\"\\|'")
-		    (not (ar-escaped)))
+       (save-restriction
+	 (widen)
+	 (if ar-use-parse-partial-sexp
+	     (let* ((pps (parse-partial-sexp (point-min) (point)))
+		    (pos8 (nth 8 pps)))
+	       (when (nth 3 pps)
+		 (goto-char pos8)))
+	   (when
+	       (re-search-backward "\\([^\\\\]\\)\\(\"\\)" nil 'move 1)
+	     (goto-char (match-beginning 2))))
+	 (when (looking-at "\"+")
 	   (list (match-beginning 0) (match-end 0))))))
 
 (put 'string 'end-op-at
      (lambda ()
-       (when (looking-at "\"\"\"\\|'''\\|\"\\|'")
-         (goto-char (match-end 0))
-         (end-of-form-base (buffer-substring-no-properties (match-beginning 0) (match-end 0)) (buffer-substring-no-properties (match-beginning 0) (match-end 0)) nil 'move 1 nil t))))
+       (forward-sexp)
+       (cons (1- (point)) (point))))
+
+;; (put 'string 'beginning-op-at
+;;      (lambda ()
+;;        (let ((erg (ar-in-string-p)))
+;;          (when erg
+;;            (goto-char (or (car-safe erg) erg)))
+;; 	 (when (and (looking-at "\"\"\"\\|'''\\|\"\\|'")
+;; 		    (not (ar-escaped)))
+;; 	   (list (match-beginning 0) (match-end 0))))))
+
+;; (put 'string 'end-op-at
+;;      (lambda ()
+;;        (when (looking-at "\"\"\"\\|'''\\|\"\\|'")
+;;          (goto-char (match-end 0))
+;;          (end-of-form-base (buffer-substring-no-properties (match-beginning 0) (match-end 0)) (buffer-substring-no-properties (match-beginning 0) (match-end 0)) nil 'move 1 nil t))))
+
+
+;; ;; Strings
+;; (put 'string 'beginning-op-at
+;;      (lambda ()
+;;        (save-restriction
+;; 	 (widen)
+;; 	 (if ar-use-parse-partial-sexp
+;; 	     (let* ((pps (parse-partial-sexp (point-min) (point)))
+;; 		    (pos8 (nth 8 pps)))
+;; 	       (when (nth 3 pps)
+;; 		 (goto-char pos8)))
+;; 	   (when
+;; 	       (re-search-backward "\\([^\\\\]\\)\\(\"\\)" nil 'move 1)
+;; 	     (goto-char (match-beginning 2))))
+;; 	 (when (looking-at "\"*")
+;; 	   (list (match-beginning 0) (match-end 0))))))
+
+;; (put 'string 'end-op-at
+;;      (lambda ()
+;;        (save-restriction
+;; 	 (widen)
+;; 	 (forward-char 1)
+;; 	 (if ar-use-parse-partial-sexp
+;; 	     (let* ((orig (point))
+;; 		    (pps (parse-partial-sexp (point-min) (point)))
+;; 		    (char (char-to-string (nth 3 pps)))
+;; 		    (done t))
+;; 	       (progn
+;; 		 (while (and (not (eobp)) (prog1 done (forward-char 1))
+;; 			     (setq done (skip-chars-forward (concat "^" char)))
+
+;; 			     (nth 5 (parse-partial-sexp orig (point)))))
+;; 		 (when (and (< orig (point))(looking-at char))
+;; 		   (list (match-beginning 0) (match-end 0)))))
+;; 	   (when (re-search-forward "[^\\\\]\"" nil 'move 1)
+;; 	     (list (match-beginning 0) (match-end 0)))))))
 
 ;; Abbrev
 (put 'abbrev 'beginning-op-at
@@ -2433,15 +2487,10 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
 
 (put 'sentence 'forward-op-at
      (lambda ()
-       (when (looking-at ar-sentence-end-chars)
-	 (forward-char 1))
-       (skip-chars-forward " \t\r\n\f")
-       (let ((orig (point))
-	     (limit (save-excursion (forward-paragraph)(point))))
-	 (while (and (not (eobp))
-		     (re-search-forward (concat ar-sentence-end-chars " *$\\|[.!?] *[^a-z]") limit t 1)
-		     (nth 8 (syntax-ppss))))
-	 (skip-chars-backward "^a-z")
+       (unless (eobp) (forward-char 1))
+       (let ((orig (point)))
+	 (re-search-forward ar-sentence-end-op-re nil t 1)
+	 (skip-chars-backward "(A-Z")
 	 (skip-chars-backward " \t\r\n\f")
 	 (when (< orig (point)) (point)))))
 
@@ -2457,42 +2506,6 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
 (put 'sexp 'end-op-at
      (lambda ()
        (forward-sexp)(point)))
-
-;; ;; Strings
-;; (put 'string 'beginning-op-at
-;;      (lambda ()
-;;        (save-restriction
-;; 	 (widen)
-;; 	 (if ar-use-parse-partial-sexp
-;; 	     (let* ((pps (parse-partial-sexp (point-min) (point)))
-;; 		    (pos8 (nth 8 pps)))
-;; 	       (when (nth 3 pps)
-;; 		 (goto-char pos8)))
-;; 	   (when
-;; 	       (re-search-backward "\\([^\\\\]\\)\\(\"\\)" nil 'move 1)
-;; 	     (goto-char (match-beginning 2))))
-;; 	 (when (looking-at "\"*")
-;; 	   (list (match-beginning 0) (match-end 0))))))
-
-;; (put 'string 'end-op-at
-;;      (lambda ()
-;;        (save-restriction
-;; 	 (widen)
-;; 	 (forward-char 1)
-;; 	 (if ar-use-parse-partial-sexp
-;; 	     (let* ((orig (point))
-;; 		    (pps (parse-partial-sexp (point-min) (point)))
-;; 		    (char (char-to-string (nth 3 pps)))
-;; 		    (done t))
-;; 	       (progn
-;; 		 (while (and (not (eobp)) (prog1 done (forward-char 1))
-;; 			     (setq done (skip-chars-forward (concat "^" char)))
-
-;; 			     (nth 5 (parse-partial-sexp orig (point)))))
-;; 		 (when (and (< orig (point))(looking-at char))
-;; 		   (list (match-beginning 0) (match-end 0)))))
-;; 	   (when (re-search-forward "[^\\\\]\"" nil 'move 1)
-;; 	     (list (match-beginning 0) (match-end 0)))))))
 
 ;; Sh-struct
 (put 'sh-struct 'beginning-op-at
@@ -11318,7 +11331,6 @@ it defaults to `<', otherwise it defaults to `string<'."
 	
 	map))
 
-;;;###autoload 
 (define-derived-mode werkstatt emacs-lisp-mode "Werk"
   ;; (kill-all-local-variables)
   ;; (setq major-mode 'ar-werkstatt
