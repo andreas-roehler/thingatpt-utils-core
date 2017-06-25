@@ -1,6 +1,6 @@
 ;;; thingatpt-utils-core.el --- th-at-point edit functions -*- lexical-binding: t; -*- 
 
-;; Copyright (C) 2010-2016 Andreas Röhler, unless
+;; Copyright (C) 2010-2017 Andreas Röhler, unless
 ;; indicated otherwise
 
 ;; Author: Andreas Röhler <andreas.roehler@easy-emacs.de>, unless
@@ -858,7 +858,7 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
 	    (< 0 (abs (skip-chars-backward "[:xdigit:]")))
 	    (point))))))
 
-;; Delimited forms start
+;; Paired delimited forms start
 
 ;; Braced
 (put 'braced 'beginning-op-at
@@ -987,9 +987,9 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
 	     (point))))
 
 
-;; Delimited forms end
+;; Paired delimited forms end
 
-;; ar-unpaired-delimited-raw start
+;; ar-atpt-python-quoted-raw start
 
 ;; Backslashed
 (put 'backslashed 'beginning-op-at
@@ -1060,6 +1060,29 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
      (lambda ()
        (ar-char-delimiters-beginning ?:)))
 
+;; Crossed
+(put 'crossed 'beginning-op-at
+     (lambda ()
+       (let ((beg (ar-char-delimiters-beginning ?+)))
+	 (cons beg (1+ beg))))) 
+
+(put 'crossed 'end-op-at
+     (lambda ()
+       (when (char-equal (char-after) ?+)
+         (forward-char 1))
+       (let ((end (ar-char-delimiters-end ?+ t)))
+         (cons (1- end) end))))
+
+(put 'crossed 'forward-op-at
+     (lambda ()
+       (when (char-equal (char-after) ?+)
+         (forward-char 1))
+       (ar-char-delimiters-end ?+ t)))
+
+(put 'crossed 'backward-op-at
+     (lambda ()
+       (ar-char-delimiters-beginning ?+)))
+
 ;; Dollared
 (put 'dollared 'beginning-op-at
      (lambda ()
@@ -1128,6 +1151,29 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
 (put 'equalized 'backward-op-at
      (lambda ()
        (ar-char-delimiters-beginning ?=)))
+
+;; Hashed
+(put 'hashed 'beginning-op-at
+     (lambda ()
+       (let ((beg (ar-char-delimiters-beginning ?#)))
+	 (cons beg (1+ beg))))) 
+
+(put 'hashed 'end-op-at
+     (lambda ()
+       (when (char-equal (char-after) ?#)
+         (forward-char 1))
+       (let ((end (ar-char-delimiters-end ?# t)))
+         (cons (1- end) end))))
+
+(put 'hashed 'forward-op-at
+     (lambda ()
+       (when (char-equal (char-after) ?#)
+         (forward-char 1))
+       (ar-char-delimiters-end ?# t)))
+
+(put 'hashed 'backward-op-at
+     (lambda ()
+       (ar-char-delimiters-beginning ?#)))
 
 ;; Hyphened
 (put 'hyphened 'beginning-op-at
@@ -1221,285 +1267,28 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
      (lambda ()
        (ar-char-delimiters-beginning ?*)))
 
-;; Underscored
-(put 'underscored 'beginning-op-at
+;; Tilded
+(put 'tilded 'beginning-op-at
      (lambda ()
-       (let ((beg (ar-char-delimiters-beginning ?_)))
+       (let ((beg (ar-char-delimiters-beginning ?~)))
 	 (cons beg (1+ beg))))) 
 
-(put 'underscored 'end-op-at
+(put 'tilded 'end-op-at
      (lambda ()
-       (when (char-equal (char-after) ?_)
+       (when (char-equal (char-after) ?~)
          (forward-char 1))
-       (let ((end (ar-char-delimiters-end ?_ t)))
+       (let ((end (ar-char-delimiters-end ?~ t)))
          (cons (1- end) end))))
 
-(put 'underscored 'forward-op-at
+(put 'tilded 'forward-op-at
      (lambda ()
-       (when (char-equal (char-after) ?_)
+       (when (char-equal (char-after) ?~)
          (forward-char 1))
-       (ar-char-delimiters-end ?_ t)))
+       (ar-char-delimiters-end ?~ t)))
 
-(put 'underscored 'backward-op-at
+(put 'tilded 'backward-op-at
      (lambda ()
-       (ar-char-delimiters-beginning ?_)))
-
-;; Whitespaced
-(put 'whitespaced 'beginning-op-at
-     (lambda ()
-       (let ((beg (ar-char-delimiters-beginning ? )))
-	 (cons beg (1+ beg))))) 
-
-(put 'whitespaced 'end-op-at
-     (lambda ()
-       (when (char-equal (char-after) ? )
-         (forward-char 1))
-       (let ((end (ar-char-delimiters-end ?  t)))
-         (cons (1- end) end))))
-
-(put 'whitespaced 'forward-op-at
-     (lambda ()
-       (when (char-equal (char-after) ? )
-         (forward-char 1))
-       (ar-char-delimiters-end ?  t)))
-
-(put 'whitespaced 'backward-op-at
-     (lambda ()
-       (ar-char-delimiters-beginning ? )))
-
-;; ar-unpaired-delimited-raw start
-
-;; ar-atpt-python-quoted-raw start
-
-;; Backslashed
-(put 'backslashed 'beginning-op-at
-     (lambda ()
-       (let ((beg (ar-char-delimiters-beginning ?\\)))
-	 (cons beg (1+ beg))))) 
-
-(put 'backslashed 'end-op-at
-     (lambda ()
-       (when (char-equal (char-after) ?\\)
-         (forward-char 1))
-       (let ((end (ar-char-delimiters-end ?\\ t)))
-         (cons (1- end) end))))
-
-(put 'backslashed 'forward-op-at
-     (lambda ()
-       (when (char-equal (char-after) ?\\)
-         (forward-char 1))
-       (ar-char-delimiters-end ?\\ t)))
-
-(put 'backslashed 'backward-op-at
-     (lambda ()
-       (ar-char-delimiters-beginning ?\\)))
-
-;; Backticked
-(put 'backticked 'beginning-op-at
-     (lambda ()
-       (let ((beg (ar-char-delimiters-beginning ?`)))
-	 (cons beg (1+ beg))))) 
-
-(put 'backticked 'end-op-at
-     (lambda ()
-       (when (char-equal (char-after) ?`)
-         (forward-char 1))
-       (let ((end (ar-char-delimiters-end ?` t)))
-         (cons (1- end) end))))
-
-(put 'backticked 'forward-op-at
-     (lambda ()
-       (when (char-equal (char-after) ?`)
-         (forward-char 1))
-       (ar-char-delimiters-end ?` t)))
-
-(put 'backticked 'backward-op-at
-     (lambda ()
-       (ar-char-delimiters-beginning ?`)))
-
-;; Coloned
-(put 'coloned 'beginning-op-at
-     (lambda ()
-       (let ((beg (ar-char-delimiters-beginning ?:)))
-	 (cons beg (1+ beg))))) 
-
-(put 'coloned 'end-op-at
-     (lambda ()
-       (when (char-equal (char-after) ?:)
-         (forward-char 1))
-       (let ((end (ar-char-delimiters-end ?: t)))
-         (cons (1- end) end))))
-
-(put 'coloned 'forward-op-at
-     (lambda ()
-       (when (char-equal (char-after) ?:)
-         (forward-char 1))
-       (ar-char-delimiters-end ?: t)))
-
-(put 'coloned 'backward-op-at
-     (lambda ()
-       (ar-char-delimiters-beginning ?:)))
-
-;; Dollared
-(put 'dollared 'beginning-op-at
-     (lambda ()
-       (let ((beg (ar-char-delimiters-beginning ?$)))
-	 (cons beg (1+ beg))))) 
-
-(put 'dollared 'end-op-at
-     (lambda ()
-       (when (char-equal (char-after) ?$)
-         (forward-char 1))
-       (let ((end (ar-char-delimiters-end ?$ t)))
-         (cons (1- end) end))))
-
-(put 'dollared 'forward-op-at
-     (lambda ()
-       (when (char-equal (char-after) ?$)
-         (forward-char 1))
-       (ar-char-delimiters-end ?$ t)))
-
-(put 'dollared 'backward-op-at
-     (lambda ()
-       (ar-char-delimiters-beginning ?$)))
-
-;; Doublequoted
-(put 'doublequoted 'beginning-op-at
-     (lambda ()
-       (let ((beg (ar-char-delimiters-beginning ?\")))
-	 (cons beg (1+ beg))))) 
-
-(put 'doublequoted 'end-op-at
-     (lambda ()
-       (when (char-equal (char-after) ?\")
-         (forward-char 1))
-       (let ((end (ar-char-delimiters-end ?\" t)))
-         (cons (1- end) end))))
-
-(put 'doublequoted 'forward-op-at
-     (lambda ()
-       (when (char-equal (char-after) ?\")
-         (forward-char 1))
-       (ar-char-delimiters-end ?\" t)))
-
-(put 'doublequoted 'backward-op-at
-     (lambda ()
-       (ar-char-delimiters-beginning ?\")))
-
-;; Equalized
-(put 'equalized 'beginning-op-at
-     (lambda ()
-       (let ((beg (ar-char-delimiters-beginning ?=)))
-	 (cons beg (1+ beg))))) 
-
-(put 'equalized 'end-op-at
-     (lambda ()
-       (when (char-equal (char-after) ?=)
-         (forward-char 1))
-       (let ((end (ar-char-delimiters-end ?= t)))
-         (cons (1- end) end))))
-
-(put 'equalized 'forward-op-at
-     (lambda ()
-       (when (char-equal (char-after) ?=)
-         (forward-char 1))
-       (ar-char-delimiters-end ?= t)))
-
-(put 'equalized 'backward-op-at
-     (lambda ()
-       (ar-char-delimiters-beginning ?=)))
-
-;; Hyphened
-(put 'hyphened 'beginning-op-at
-     (lambda ()
-       (let ((beg (ar-char-delimiters-beginning ?-)))
-	 (cons beg (1+ beg))))) 
-
-(put 'hyphened 'end-op-at
-     (lambda ()
-       (when (char-equal (char-after) ?-)
-         (forward-char 1))
-       (let ((end (ar-char-delimiters-end ?- t)))
-         (cons (1- end) end))))
-
-(put 'hyphened 'forward-op-at
-     (lambda ()
-       (when (char-equal (char-after) ?-)
-         (forward-char 1))
-       (ar-char-delimiters-end ?- t)))
-
-(put 'hyphened 'backward-op-at
-     (lambda ()
-       (ar-char-delimiters-beginning ?-)))
-
-;; Singlequoted
-(put 'singlequoted 'beginning-op-at
-     (lambda ()
-       (let ((beg (ar-char-delimiters-beginning ?')))
-	 (cons beg (1+ beg))))) 
-
-(put 'singlequoted 'end-op-at
-     (lambda ()
-       (when (char-equal (char-after) ?')
-         (forward-char 1))
-       (let ((end (ar-char-delimiters-end ?' t)))
-         (cons (1- end) end))))
-
-(put 'singlequoted 'forward-op-at
-     (lambda ()
-       (when (char-equal (char-after) ?')
-         (forward-char 1))
-       (ar-char-delimiters-end ?' t)))
-
-(put 'singlequoted 'backward-op-at
-     (lambda ()
-       (ar-char-delimiters-beginning ?')))
-
-;; Slashed
-(put 'slashed 'beginning-op-at
-     (lambda ()
-       (let ((beg (ar-char-delimiters-beginning ?/)))
-	 (cons beg (1+ beg))))) 
-
-(put 'slashed 'end-op-at
-     (lambda ()
-       (when (char-equal (char-after) ?/)
-         (forward-char 1))
-       (let ((end (ar-char-delimiters-end ?/ t)))
-         (cons (1- end) end))))
-
-(put 'slashed 'forward-op-at
-     (lambda ()
-       (when (char-equal (char-after) ?/)
-         (forward-char 1))
-       (ar-char-delimiters-end ?/ t)))
-
-(put 'slashed 'backward-op-at
-     (lambda ()
-       (ar-char-delimiters-beginning ?/)))
-
-;; Stared
-(put 'stared 'beginning-op-at
-     (lambda ()
-       (let ((beg (ar-char-delimiters-beginning ?*)))
-	 (cons beg (1+ beg))))) 
-
-(put 'stared 'end-op-at
-     (lambda ()
-       (when (char-equal (char-after) ?*)
-         (forward-char 1))
-       (let ((end (ar-char-delimiters-end ?* t)))
-         (cons (1- end) end))))
-
-(put 'stared 'forward-op-at
-     (lambda ()
-       (when (char-equal (char-after) ?*)
-         (forward-char 1))
-       (ar-char-delimiters-end ?* t)))
-
-(put 'stared 'backward-op-at
-     (lambda ()
-       (ar-char-delimiters-beginning ?*)))
+       (ar-char-delimiters-beginning ?~)))
 
 ;; Underscored
 (put 'underscored 'beginning-op-at
@@ -1548,6 +1337,8 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
        (ar-char-delimiters-beginning ? )))
 
 ;; ar-atpt-python-quoted-raw start
+
+;; Unpaired delimited forms end
 
 
 ;; Expression
@@ -1634,8 +1425,8 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
 	   (when
 	       (re-search-backward "\\([^\\\\]\\)\\(\"\\)" nil 'move 1)
 	     (goto-char (match-beginning 2))))
-	 (when (looking-at "\"+")
-	   (list (match-beginning 0) (match-end 0))))))
+	 (when (or (eq 15 (car (syntax-after (point))))(eq 7 (car (syntax-after (point)))))
+	   (list (point) (save-excursion (skip-chars-forward (char-to-string (char-after)))(point)))))))
 
 (put 'string 'end-op-at
      (lambda ()
@@ -2013,12 +1804,12 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
   :type 'string
   :group 'werkstatt)
 
-(defcustom th-beg-delimiter "{>\[(/"
+(defcustom th-beg-delimiter "{>\[(/$="
   "Specify the delimiter char."
   :type 'string
   :group 'werkstatt)
 
-(defcustom th-end-delimiter "]}<)/"
+(defcustom th-end-delimiter "]}<)/$="
   "Specify the delimiter char."
   :type 'string
   :group 'werkstatt)
@@ -3136,18 +2927,17 @@ If boundaries of thing are know, use `ar-th-trim-base' directly. "
 Inspired by stuff like `paredit-splice-sexp-killing-backward'; however, instead of working `-backward' or `-forward' deletes expression at point.
 
 "
-  (let ((outer (ar-th-bounds thing))
-        inner)
-    (when (eq (point) (car outer))(forward-char 1))
+  (let* ((outer (ar-th-bounds thing))
+	 (outer-start (caar outer))
+	 (outer-end (cadr (cadr outer)))
+	 inner-start inner-end)
+    (when (eq (point) outer-start)(forward-char 1))
     (skip-syntax-forward "^(")
-    (setq inner (point))
-    (goto-char (cdr outer))
-    (if (< 0 (skip-syntax-backward "^)"))
-        (progn
-          (delete-region (point) (cdr outer)))
-      (delete-char -1)
-      (goto-char inner)
-      (delete-region (car outer) (point)))))
+    (setq inner-start (point))
+    (forward-sexp)
+    (delete-region (point) outer-end)
+    (backward-sexp)
+    (delete-region (point) outer-start)))
 
 ;;;###autoload
 (defun ar-th-comment (thing &optional arg iact)
@@ -11344,272 +11134,192 @@ it defaults to `<', otherwise it defaults to `string<'."
   ;; (easy-menu-add ar-werkstatt-menu)
   )
 
+(defun ar-th-delimit--intern (thing string1 string2 arg iact)
+  (let* ((bounds (ar-th-bounds thing))
+         (beg (or (ignore-errors (caar bounds))(car-safe bounds)))
+	 (end (or (ignore-errors (cdr (cadr bounds)))(ignore-errors (cadr (cadr bounds)))(cdr-safe bounds))))
+    (ar-th-delim thing arg string1 string2 iact beg end)))
+
 
 ;; ar-python-triplequote-raw start
 
-;;;###autoload 
+;;;###autoload
 (defun ar-th-triplequote (thing &optional arg iact)
   " "
-  (let* ((bounds (ar-th-bounds thing))
-         (beg (or (ignore-errors (caar bounds))(car-safe bounds)))
-	 (end (or (ignore-errors (cdr (cadr bounds)))(ignore-errors (cadr (cadr bounds)))(cdr-safe bounds))))
-    (ar-th-delim thing arg "\"\"\"\\\\\\\\\|\'\'\'" "\"\"\"\\\\\\\\\|\'\'\'" iact beg end)))
+  (ar-th-delimit--intern thing "\"\"\"\\\\\\\\\|\'\'\'" "\"\"\"\\\\\\\\\|\'\'\'" arg iact))
 
-;;;###autoload 
+;;;###autoload
 (defun ar-th-triplequote-dq (thing &optional arg iact)
   " "
-  (let* ((bounds (ar-th-bounds thing))
-         (beg (or (ignore-errors (caar bounds))(car-safe bounds)))
-	 (end (or (ignore-errors (cdr (cadr bounds)))(ignore-errors (cadr (cadr bounds)))(cdr-safe bounds))))
-    (ar-th-delim thing arg "\"\"\"" "\"\"\"" iact beg end)))
+  (ar-th-delimit--intern thing "\"\"\"" "\"\"\"" arg iact))
 
-;;;###autoload 
+;;;###autoload
 (defun ar-th-triplequote-sq (thing &optional arg iact)
   " "
-  (let* ((bounds (ar-th-bounds thing))
-         (beg (or (ignore-errors (caar bounds))(car-safe bounds)))
-	 (end (or (ignore-errors (cdr (cadr bounds)))(ignore-errors (cadr (cadr bounds)))(cdr-safe bounds))))
-    (ar-th-delim thing arg "'''" "'''" iact beg end)))
+  (ar-th-delimit--intern thing "'''" "'''" arg iact))
 
 ;; ar-insert-delimit-unpaired start
 
-;;;###autoload 
+;;;###autoload
 (defun ar-th-backslash (thing &optional arg iact)
   " "
-  (let* ((bounds (ar-th-bounds thing))
-         (beg (or (ignore-errors (caar bounds))(car-safe bounds)))
-	 (end (or (ignore-errors (cdr (cadr bounds)))(ignore-errors (cadr (cadr bounds)))(cdr-safe bounds))))
-    (ar-th-delim thing arg "\\" "\\" iact beg end)))
+  (ar-th-delimit--intern thing "\\" "\\" arg iact))
 
-;;;###autoload 
+;;;###autoload
 (defun ar-th-backtick (thing &optional arg iact)
   " "
-  (let* ((bounds (ar-th-bounds thing))
-         (beg (or (ignore-errors (caar bounds))(car-safe bounds)))
-	 (end (or (ignore-errors (cdr (cadr bounds)))(ignore-errors (cadr (cadr bounds)))(cdr-safe bounds))))
-    (ar-th-delim thing arg "`" "`" iact beg end)))
+  (ar-th-delimit--intern thing "`" "`" arg iact))
 
-;;;###autoload 
+;;;###autoload
 (defun ar-th-colon (thing &optional arg iact)
   " "
-  (let* ((bounds (ar-th-bounds thing))
-         (beg (or (ignore-errors (caar bounds))(car-safe bounds)))
-	 (end (or (ignore-errors (cdr (cadr bounds)))(ignore-errors (cadr (cadr bounds)))(cdr-safe bounds))))
-    (ar-th-delim thing arg ":" ":" iact beg end)))
+  (ar-th-delimit--intern thing ":" ":" arg iact))
 
-;;;###autoload 
+;;;###autoload
+(defun ar-th-cross (thing &optional arg iact)
+  " "
+  (ar-th-delimit--intern thing "+" "+" arg iact))
+
+;;;###autoload
 (defun ar-th-dollar (thing &optional arg iact)
   " "
-  (let* ((bounds (ar-th-bounds thing))
-         (beg (or (ignore-errors (caar bounds))(car-safe bounds)))
-	 (end (or (ignore-errors (cdr (cadr bounds)))(ignore-errors (cadr (cadr bounds)))(cdr-safe bounds))))
-    (ar-th-delim thing arg "$" "$" iact beg end)))
+  (ar-th-delimit--intern thing "$" "$" arg iact))
 
-;;;###autoload 
+;;;###autoload
 (defun ar-th-doublequote (thing &optional arg iact)
   " "
-  (let* ((bounds (ar-th-bounds thing))
-         (beg (or (ignore-errors (caar bounds))(car-safe bounds)))
-	 (end (or (ignore-errors (cdr (cadr bounds)))(ignore-errors (cadr (cadr bounds)))(cdr-safe bounds))))
-    (ar-th-delim thing arg "\"" "\"" iact beg end)))
+  (ar-th-delimit--intern thing "\"" "\"" arg iact))
 
-;;;###autoload 
+;;;###autoload
 (defun ar-th-equalize (thing &optional arg iact)
   " "
-  (let* ((bounds (ar-th-bounds thing))
-         (beg (or (ignore-errors (caar bounds))(car-safe bounds)))
-	 (end (or (ignore-errors (cdr (cadr bounds)))(ignore-errors (cadr (cadr bounds)))(cdr-safe bounds))))
-    (ar-th-delim thing arg "=" "=" iact beg end)))
+  (ar-th-delimit--intern thing "=" "=" arg iact))
 
-;;;###autoload 
+;;;###autoload
 (defun ar-th-escape (thing &optional arg iact)
   " "
-  (let* ((bounds (ar-th-bounds thing))
-         (beg (or (ignore-errors (caar bounds))(car-safe bounds)))
-	 (end (or (ignore-errors (cdr (cadr bounds)))(ignore-errors (cadr (cadr bounds)))(cdr-safe bounds))))
-    (ar-th-delim thing arg "\\" "\\" iact beg end)))
+  (ar-th-delimit--intern thing "\\" "\\" arg iact))
 
-;;;###autoload 
+;;;###autoload
+(defun ar-th-hash (thing &optional arg iact)
+  " "
+  (ar-th-delimit--intern thing "#" "#" arg iact))
+
+;;;###autoload
 (defun ar-th-hyphen (thing &optional arg iact)
   " "
-  (let* ((bounds (ar-th-bounds thing))
-         (beg (or (ignore-errors (caar bounds))(car-safe bounds)))
-	 (end (or (ignore-errors (cdr (cadr bounds)))(ignore-errors (cadr (cadr bounds)))(cdr-safe bounds))))
-    (ar-th-delim thing arg "-" "-" iact beg end)))
+  (ar-th-delimit--intern thing "-" "-" arg iact))
 
-;;;###autoload 
+;;;###autoload
 (defun ar-th-singlequote (thing &optional arg iact)
   " "
-  (let* ((bounds (ar-th-bounds thing))
-         (beg (or (ignore-errors (caar bounds))(car-safe bounds)))
-	 (end (or (ignore-errors (cdr (cadr bounds)))(ignore-errors (cadr (cadr bounds)))(cdr-safe bounds))))
-    (ar-th-delim thing arg "'" "'" iact beg end)))
+  (ar-th-delimit--intern thing "'" "'" arg iact))
 
-;;;###autoload 
+;;;###autoload
 (defun ar-th-slash (thing &optional arg iact)
   " "
-  (let* ((bounds (ar-th-bounds thing))
-         (beg (or (ignore-errors (caar bounds))(car-safe bounds)))
-	 (end (or (ignore-errors (cdr (cadr bounds)))(ignore-errors (cadr (cadr bounds)))(cdr-safe bounds))))
-    (ar-th-delim thing arg "/" "/" iact beg end)))
+  (ar-th-delimit--intern thing "/" "/" arg iact))
 
-;;;###autoload 
+;;;###autoload
 (defun ar-th-star (thing &optional arg iact)
   " "
-  (let* ((bounds (ar-th-bounds thing))
-         (beg (or (ignore-errors (caar bounds))(car-safe bounds)))
-	 (end (or (ignore-errors (cdr (cadr bounds)))(ignore-errors (cadr (cadr bounds)))(cdr-safe bounds))))
-    (ar-th-delim thing arg "*" "*" iact beg end)))
+  (ar-th-delimit--intern thing "*" "*" arg iact))
 
-;;;###autoload 
-(defun ar-th-backtick (thing &optional arg iact)
+;;;###autoload
+(defun ar-th-tild (thing &optional arg iact)
   " "
-  (let* ((bounds (ar-th-bounds thing))
-         (beg (or (ignore-errors (caar bounds))(car-safe bounds)))
-	 (end (or (ignore-errors (cdr (cadr bounds)))(ignore-errors (cadr (cadr bounds)))(cdr-safe bounds))))
-    (ar-th-delim thing arg "`" "`" iact beg end)))
+  (ar-th-delimit--intern thing "~" "~" arg iact))
 
-;;;###autoload 
+;;;###autoload
 (defun ar-th-underscore (thing &optional arg iact)
   " "
-  (let* ((bounds (ar-th-bounds thing))
-         (beg (or (ignore-errors (caar bounds))(car-safe bounds)))
-	 (end (or (ignore-errors (cdr (cadr bounds)))(ignore-errors (cadr (cadr bounds)))(cdr-safe bounds))))
-    (ar-th-delim thing arg "_" "_" iact beg end)))
+  (ar-th-delimit--intern thing "_" "_" arg iact))
 
-;;;###autoload 
+;;;###autoload
 (defun ar-th-whitespace (thing &optional arg iact)
   " "
-  (let* ((bounds (ar-th-bounds thing))
-         (beg (or (ignore-errors (caar bounds))(car-safe bounds)))
-	 (end (or (ignore-errors (cdr (cadr bounds)))(ignore-errors (cadr (cadr bounds)))(cdr-safe bounds))))
-    (ar-th-delim thing arg " " " " iact beg end)))
+  (ar-th-delimit--intern thing " " " " arg iact))
 ;; ar-insert-delimit-unpaired end
 
 ;; ar-insert-delimit-forms start
 
-;;;###autoload 
+;;;###autoload
 (defun ar-th-brace (thing &optional arg iact)
   " "
-  (let* ((bounds (ar-th-bounds thing))
-         (beg (or (ignore-errors (caar bounds))(car-safe bounds)))
-	 (end (or (ignore-errors (cdr (cadr bounds)))(ignore-errors (cadr (cadr bounds)))(cdr-safe bounds))))
-    (ar-th-delim thing arg "{" "}" iact beg end)))
+  (ar-th-delimit--intern thing "{" "}" arg iact))
 
-;;;###autoload 
+;;;###autoload
 (defun ar-th-bracket (thing &optional arg iact)
   " "
-  (let* ((bounds (ar-th-bounds thing))
-         (beg (or (ignore-errors (caar bounds))(car-safe bounds)))
-	 (end (or (ignore-errors (cdr (cadr bounds)))(ignore-errors (cadr (cadr bounds)))(cdr-safe bounds))))
-    (ar-th-delim thing arg "[" "]" iact beg end)))
+  (ar-th-delimit--intern thing "[" "]" arg iact))
 
-;;;###autoload 
+;;;###autoload
 (defun ar-th-lesser-angle (thing &optional arg iact)
   " "
-  (let* ((bounds (ar-th-bounds thing))
-         (beg (or (ignore-errors (caar bounds))(car-safe bounds)))
-	 (end (or (ignore-errors (cdr (cadr bounds)))(ignore-errors (cadr (cadr bounds)))(cdr-safe bounds))))
-    (ar-th-delim thing arg "<" ">" iact beg end)))
+  (ar-th-delimit--intern thing "<" ">" arg iact))
 
-;;;###autoload 
+;;;###autoload
 (defun ar-th-greater-angle (thing &optional arg iact)
   " "
-  (let* ((bounds (ar-th-bounds thing))
-         (beg (or (ignore-errors (caar bounds))(car-safe bounds)))
-	 (end (or (ignore-errors (cdr (cadr bounds)))(ignore-errors (cadr (cadr bounds)))(cdr-safe bounds))))
-    (ar-th-delim thing arg ">" "<" iact beg end)))
+  (ar-th-delimit--intern thing ">" "<" arg iact))
 
-;;;###autoload 
+;;;###autoload
 (defun ar-th-left-right-singlequote (thing &optional arg iact)
   " "
-  (let* ((bounds (ar-th-bounds thing))
-         (beg (or (ignore-errors (caar bounds))(car-safe bounds)))
-	 (end (or (ignore-errors (cdr (cadr bounds)))(ignore-errors (cadr (cadr bounds)))(cdr-safe bounds))))
-    (ar-th-delim thing arg "‘" "’" iact beg end)))
+  (ar-th-delimit--intern thing "‘" "’" arg iact))
 
-;;;###autoload 
+;;;###autoload
 (defun ar-th-parentize (thing &optional arg iact)
   " "
-  (let* ((bounds (ar-th-bounds thing))
-         (beg (or (ignore-errors (caar bounds))(car-safe bounds)))
-	 (end (or (ignore-errors (cdr (cadr bounds)))(ignore-errors (cadr (cadr bounds)))(cdr-safe bounds))))
-    (ar-th-delim thing arg "(" ")" iact beg end)))
+  (ar-th-delimit--intern thing "(" ")" arg iact))
 ;; ar-insert-delimit-forms end
 
 ;; ar-atpt-data-forms-aktiv start
 
-;;;###autoload 
+;;;###autoload
 (defun ar-th-begin-end-quote (thing &optional arg iact)
   " "
-  (let* ((bounds (ar-th-bounds thing))
-         (beg (or (ignore-errors (caar bounds))(car-safe bounds)))
-	 (end (or (ignore-errors (cdr (cadr bounds)))(ignore-errors (cadr (cadr bounds)))(cdr-safe bounds))))
-    (ar-th-delim thing arg "\\begin{quote}" "\\end{quote}" iact beg end)))
+  (ar-th-delimit--intern thing "\\begin{quote}" "\\end{quote}" arg iact))
 
-;;;###autoload 
+;;;###autoload
 (defun ar-th-blok (thing &optional arg iact)
   " "
-  (let* ((bounds (ar-th-bounds thing))
-         (beg (or (ignore-errors (caar bounds))(car-safe bounds)))
-	 (end (or (ignore-errors (cdr (cadr bounds)))(ignore-errors (cadr (cadr bounds)))(cdr-safe bounds))))
-    (ar-th-delim thing arg "{% " " %}" iact beg end)))
+  (ar-th-delimit--intern thing "{% " " %}" arg iact))
 
-;;;###autoload 
+;;;###autoload
 (defun ar-th-double-backslash (thing &optional arg iact)
   " "
-  (let* ((bounds (ar-th-bounds thing))
-         (beg (or (ignore-errors (caar bounds))(car-safe bounds)))
-	 (end (or (ignore-errors (cdr (cadr bounds)))(ignore-errors (cadr (cadr bounds)))(cdr-safe bounds))))
-    (ar-th-delim thing arg "\\\\" "\\\\" iact beg end)))
+  (ar-th-delimit--intern thing "\\\\" "\\\\" arg iact))
 
-;;;###autoload 
+;;;###autoload
 (defun ar-th-doubleslash (thing &optional arg iact)
   " "
-  (let* ((bounds (ar-th-bounds thing))
-         (beg (or (ignore-errors (caar bounds))(car-safe bounds)))
-	 (end (or (ignore-errors (cdr (cadr bounds)))(ignore-errors (cadr (cadr bounds)))(cdr-safe bounds))))
-    (ar-th-delim thing arg "//" "//" iact beg end)))
+  (ar-th-delimit--intern thing "//" "//" arg iact))
 
-;;;###autoload 
+;;;###autoload
 (defun ar-th-double-backslash-paren (thing &optional arg iact)
   " "
-  (let* ((bounds (ar-th-bounds thing))
-         (beg (or (ignore-errors (caar bounds))(car-safe bounds)))
-	 (end (or (ignore-errors (cdr (cadr bounds)))(ignore-errors (cadr (cadr bounds)))(cdr-safe bounds))))
-    (ar-th-delim thing arg "\\\\(" "\\\\)" iact beg end)))
+  (ar-th-delimit--intern thing "\\\\(" "\\\\)" arg iact))
 
-;;;###autoload 
+;;;###autoload
 (defun ar-th-tabledata (thing &optional arg iact)
   " "
-  (let* ((bounds (ar-th-bounds thing))
-         (beg (or (ignore-errors (caar bounds))(car-safe bounds)))
-	 (end (or (ignore-errors (cdr (cadr bounds)))(ignore-errors (cadr (cadr bounds)))(cdr-safe bounds))))
-    (ar-th-delim thing arg "<td[^>]*>" "</td>" iact beg end)))
+  (ar-th-delimit--intern thing "<td[^>]*>" "</td>" arg iact))
 
-;;;###autoload 
+;;;###autoload
 (defun ar-th-slash-paren (thing &optional arg iact)
   " "
-  (let* ((bounds (ar-th-bounds thing))
-         (beg (or (ignore-errors (caar bounds))(car-safe bounds)))
-	 (end (or (ignore-errors (cdr (cadr bounds)))(ignore-errors (cadr (cadr bounds)))(cdr-safe bounds))))
-    (ar-th-delim thing arg "\\(" "\\)" iact beg end)))
+  (ar-th-delimit--intern thing "\\(" "\\)" arg iact))
 
-;;;###autoload 
+;;;###autoload
 (defun ar-th-xsl-stylesheet (thing &optional arg iact)
   " "
-  (let* ((bounds (ar-th-bounds thing))
-         (beg (or (ignore-errors (caar bounds))(car-safe bounds)))
-	 (end (or (ignore-errors (cdr (cadr bounds)))(ignore-errors (cadr (cadr bounds)))(cdr-safe bounds))))
-    (ar-th-delim thing arg "<xsl:stylesheet[^<]+>.*$" "</xsl:stylesheet>" iact beg end)))
+  (ar-th-delimit--intern thing "<xsl:stylesheet[^<]+>.*$" "</xsl:stylesheet>" arg iact))
 
-;;;###autoload 
+;;;###autoload
 (defun ar-th-xsl-template (thing &optional arg iact)
   " "
-  (let* ((bounds (ar-th-bounds thing))
-         (beg (or (ignore-errors (caar bounds))(car-safe bounds)))
-	 (end (or (ignore-errors (cdr (cadr bounds)))(ignore-errors (cadr (cadr bounds)))(cdr-safe bounds))))
-    (ar-th-delim thing arg "<xsl:template[^<]+>.*$" "</xsl:template>" iact beg end)))
+  (ar-th-delimit--intern thing "<xsl:template[^<]+>.*$" "</xsl:template>" arg iact))
 ;; ar-atpt-data-forms-aktiv end
 
 
@@ -11623,7 +11333,6 @@ it defaults to `<', otherwise it defaults to `string<'."
     (goto-char beg)
     (insert startstring)
     (goto-char (1+ end))))
-          
 
 
 ;; ar-insert-thingatpt-syntax-funktionen start
@@ -11757,18 +11466,41 @@ it defaults to `<', otherwise it defaults to `string<'."
       (message (concat "Can't see " from)))))
 ;; Listen start
 
+(setq ar-atpt-unary-operations-raw (list 'commatize 'quote))
+
+(setq ar-atpt-unpaired-delimited-zahlenformed-list
+      (list
+       '(backslashed 92)
+       '(backticked 96)
+       '(coloned 58)
+       '(crossed 43)
+       '(dollared 36)
+       '(doublequoted 34)
+       '(equalized 61)
+       '(hashed 35)
+       '(hyphened 45)
+       '(singlequoted 39)
+       '(slashed 47)
+       '(stared 42)
+       '(tilded 126)
+       '(underscored 95)
+       '(whitespaced 32)))
+
 (setq ar-atpt-unpaired-delimited-extended-list
       (list
        '(backslashed "\\")
        '(backticked "`")
        '(coloned ":")
+       '(crossed "+")
        '(dollared "$")
        '(doublequoted "\"")
        '(equalized "=")
+       '(hashed "#")
        '(hyphened "-")
        '(singlequoted "'")
        '(slashed "/")
        '(stared "*")
+       '(tilded "~")
        '(underscored "_")
        '(whitespaced " ")))
 
@@ -11814,9 +11546,9 @@ it defaults to `<', otherwise it defaults to `string<'."
 
 (setq ar-atpt-delimited-list (list 'braced 'bracketed 'lesser-angled 'greater-angled 'left-right-singlequoted 'parentized))
 
-(setq ar-atpt-delimlist-unpaired (list 'backslash 'backtick 'colon 'dollar 'doublequote 'equalize 'escape 'hyphen 'singlequote 'slash 'star 'backtick 'underscore 'whitespace))
+(setq ar-atpt-delimlist-unpaired (list 'backslash 'backtick 'colon 'cross 'dollar 'doublequote 'equalize 'escape 'hash 'hyphen 'singlequote 'slash 'star 'tild 'underscore 'whitespace))
 
-(setq ar-atpt-unpaired-delimited-list (list 'backslashed 'backticked 'coloned 'dollared 'doublequoted 'equalized 'hyphened 'singlequoted 'slashed 'stared 'underscored 'whitespaced))
+(setq ar-atpt-unpaired-delimited-list (list 'backslashed 'backticked 'coloned 'crossed 'dollared 'doublequoted 'equalized 'hashed 'hyphened 'singlequoted 'slashed 'stared 'tilded 'underscored 'whitespaced))
 
 (setq ar-atpt-classes (list 'alnum 'alpha 'ascii 'blank 'cntrl 'digit 'graph 'lower 'nonascii 'print 'punct 'space 'upper 'xdigit))
 
@@ -11827,8 +11559,6 @@ it defaults to `<', otherwise it defaults to `string<'."
 (setq ar-atpt-major-forms-restricted-list (list 'buffer 'page 'paragraph 'region))
 
 (setq ar-atpt-counts-list (list 'angled-no-nest 'greater-angled-nested 'lesser-angled-nested 'csv 'line 'paragraph 'region 'sentence 'string 'buffer))
-
-(setq ar-atpt-unary-operations-raw (list 'commatize 'quote))
 
 
 
