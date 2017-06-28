@@ -202,6 +202,7 @@ If IN-STRING is non-nil, forms inside string match.
 	      (setq nesting erg))
 	  (setq nesting erg))))
     (when (and beg-pos-delimiter end-pos-delimiter)
+      (goto-char beg-pos-delimiter)
       (list beg-pos-delimiter end-pos-delimiter))))
 
 (defun end-of-form-base-intern (nesting begstr endstr permit-comment permit-string &optional condition regexp)
