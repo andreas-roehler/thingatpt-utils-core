@@ -143,6 +143,15 @@ Returns position reached if point was moved. "
      (when (forward-line -1)
        (ar-empty-line-p)))))
 
+(defun ar-previous-line-or-comment-empty-BOB-p ()
+  (save-excursion
+    (beginning-of-line)
+    (or
+     (bobp)
+     (when (forward-line -1)
+       (or (ar-in-comment-p)
+	   (ar-empty-line-p))))))
+
 (defun guess-what--after-typedef-maybe (regexp)
   (save-excursion
     (beginning-of-line)
@@ -188,7 +197,8 @@ Travel empty lines "
   (let* ((pps (parse-partial-sexp (or start (point-min)) (point)))
 	 (erg (and (nth 4 pps) (nth 8 pps))))
     (unless erg
-      (and (eq (car (syntax-after (point))) 11)
+      (when (or  (eq (car (syntax-after (point))) 11)
+		 (ignore-errors  (looking-at comment-start)))
 	   (setq erg (point))))
     erg))
 
