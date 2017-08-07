@@ -65,7 +65,6 @@
 ;; ar-THING-escape-atpt
 ;; ar-THING-doublequote-atpt
 ;; ar-THING-doublebackslashparen-atpt
-;; ar-THING-slashparen-atpt
 ;; ar-THING-dollar-atpt
 ;; ar-THING-equalize-atpt
 ;; ar-THING-greaterangle-atpt
@@ -93,7 +92,7 @@
 
 ;; To see what's implemented, consult contents of
 ;; variables at the end of this file as
-;; `ar-atpt-delimlist', `ar-atpt-delimited-list', etc.
+;; `ar-atpt-delimlist', `ar-paired-delimited-passiv', etc.
 
 ;; Call one of the test-functions `C-u ar-th-delimtest'
 ;; with come chars in scratch-buffer
@@ -1060,29 +1059,6 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
      (lambda ()
        (ar-char-delimiters-beginning ?:)))
 
-;; Crossed
-(put 'crossed 'beginning-op-at
-     (lambda ()
-       (let ((beg (ar-char-delimiters-beginning ?+)))
-            (cons beg (1+ beg))))) 
-
-(put 'crossed 'end-op-at
-     (lambda ()
-       (when (char-equal (char-after) ?+)
-         (forward-char 1))
-       (let ((end (ar-char-delimiters-end ?+ t)))
-         (cons (1- end) end))))
-
-(put 'crossed 'forward-op-at
-     (lambda ()
-       (when (char-equal (char-after) ?+)
-         (forward-char 1))
-       (ar-char-delimiters-end ?+ t)))
-
-(put 'crossed 'backward-op-at
-     (lambda ()
-       (ar-char-delimiters-beginning ?+)))
-
 ;; Dollared
 (put 'dollared 'beginning-op-at
      (lambda ()
@@ -1151,29 +1127,6 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
 (put 'equalized 'backward-op-at
      (lambda ()
        (ar-char-delimiters-beginning ?=)))
-
-;; Hashed
-(put 'hashed 'beginning-op-at
-     (lambda ()
-       (let ((beg (ar-char-delimiters-beginning ?#)))
-            (cons beg (1+ beg))))) 
-
-(put 'hashed 'end-op-at
-     (lambda ()
-       (when (char-equal (char-after) ?#)
-         (forward-char 1))
-       (let ((end (ar-char-delimiters-end ?# t)))
-         (cons (1- end) end))))
-
-(put 'hashed 'forward-op-at
-     (lambda ()
-       (when (char-equal (char-after) ?#)
-         (forward-char 1))
-       (ar-char-delimiters-end ?# t)))
-
-(put 'hashed 'backward-op-at
-     (lambda ()
-       (ar-char-delimiters-beginning ?#)))
 
 ;; Hyphened
 (put 'hyphened 'beginning-op-at
@@ -1266,29 +1219,6 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
 (put 'stared 'backward-op-at
      (lambda ()
        (ar-char-delimiters-beginning ?*)))
-
-;; Tilded
-(put 'tilded 'beginning-op-at
-     (lambda ()
-       (let ((beg (ar-char-delimiters-beginning ?~)))
-            (cons beg (1+ beg))))) 
-
-(put 'tilded 'end-op-at
-     (lambda ()
-       (when (char-equal (char-after) ?~)
-         (forward-char 1))
-       (let ((end (ar-char-delimiters-end ?~ t)))
-         (cons (1- end) end))))
-
-(put 'tilded 'forward-op-at
-     (lambda ()
-       (when (char-equal (char-after) ?~)
-         (forward-char 1))
-       (ar-char-delimiters-end ?~ t)))
-
-(put 'tilded 'backward-op-at
-     (lambda ()
-       (ar-char-delimiters-beginning ?~)))
 
 ;; Underscored
 (put 'underscored 'beginning-op-at
@@ -1677,13 +1607,14 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
                 (beginning-of-form-base "{" "}" nil 'move nil nil t))
                ((looking-at ")")
                 (beginning-of-form-base "(" ")" nil 'move nil nil t))
-               ((looking-at (concat "[" begdel "]"))
-                (ar-set-delimiter-zeichen)
-                (when (nth 8 pps)
-		  (goto-char pos)))
-               ((nth 8 pps)
-                (goto-char (nth 8 pps))
-                (ar-set-delimiter-zeichen))
+               ((looking-at (concat "[" begdel "][ \t \n]"))
+		(progn
+		  (ar-set-delimiter-zeichen)
+		  (when (eq (char-after) ar-delimiter-zeichen-atpt)
+		       (forward-char -1)) 
+		  (skip-chars-backward (concat "^" (char-to-string ar-delimiter-zeichen-atpt))))
+		(when (eq (char-before) ar-delimiter-zeichen-atpt)
+		  (forward-char -1)))
                ((nth 1 pps)
 		;; brace etc. not covered by (nth 1 pps)
 		(skip-chars-backward (concat "^" begdel))
@@ -1691,15 +1622,18 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
 		  (forward-char -1)))
                (t (while (and (not (bobp))(re-search-backward (concat "[" begdel "]") nil 'move 1)(looking-at "\""))
                     (re-search-backward (concat "[" begdel "]") nil 'move 1))
-                  (if (looking-at (concat "[" begdel "]"))
-                      (ar-set-delimiter-zeichen)
+                  (if (looking-at (concat "[" begdel "][ \t \n]"))
+		      (progn
+			(ar-set-delimiter-zeichen)
+			(skip-chars-backward ar-delimiter-zeichen-atpt)) 
                     (setq ar-delimiter-zeichen-atpt nil))))
 	 (when (looking-at (concat "[" begdel "]"))
 	   (cons (match-beginning 0) (match-end 0))))))
 
 (put 'delimited 'end-op-at
      (lambda ()
-       (let ((enddel (concat th-end-delimiter ar-delimiters-atpt)))
+       (let ((orig (point))
+	     (enddel (concat th-end-delimiter ar-delimiters-atpt)))
          (cond ((eq 4 (car (syntax-after (point))))
 		;; (looking-at "\\[")
                 (forward-list 1))
@@ -1714,8 +1648,20 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
                 (forward-list 1)
                 ;; forward-list doesn't set match-data
                 (looking-back ")"))
+	       ((eq (char-after) ar-delimiter-zeichen-atpt)
+		(forward-char 1)
+		(skip-chars-forward (concat "^" (char-to-string ar-delimiter-zeichen-atpt))))
+	       ((looking-at (concat "[" ar-delimiters-atpt "]"))
+		(ar-set-delimiter-zeichen)
+		(forward-char 1)
+		(if
+		    (eq 92 ar-delimiter-zeichen-atpt)
+		    (search-forward (prin1-to-string 92))
+		  (while (and (search-forward (char-to-string ar-delimiter-zeichen-atpt))
+			      (ar-escaped)))))
                (t (forward-char 1)
                   (search-forward (char-to-string ar-delimiter-zeichen-atpt) nil nil 1)))
+	 (setq ar-delimiter-zeichen-atpt nil)
          (if (eq 5 (car (syntax-after (1- (point)))))
 	     (cons (1- (point)) (point))
 	   (when (looking-back (concat "[" enddel "]"))
@@ -2571,6 +2517,20 @@ it would doublequote a word at point "
         (end-of-form-base "\\\\(" "\\\\)" nil (quote move) 1 nil nil (quote ar-escaped)))))
 
 
+;; Slashedparen
+(put 'slashedparen 'beginning-op-at
+     (lambda ()
+       (if (ignore-errors (looking-at "////////("))
+           (list (match-beginning 0) (match-end 0))
+         (beginning-of-form-base "////////(" "////////)" nil (quote move) 1 nil nil (quote ar-escaped)))))
+
+(put 'slashedparen 'end-op-at
+     (lambda ()
+       (when (ignore-errors (looking-at "////////("))
+        (goto-char (match-end 0)) 
+        (end-of-form-base "////////(" "////////)" nil (quote move) 1 nil nil (quote ar-escaped)))))
+
+
 ;; Xslstylesheetp
 (put 'xslstylesheetp 'beginning-op-at
      (lambda ()
@@ -3422,8 +3382,8 @@ it defaults to `<', otherwise it defaults to `string<'."
 	 (arg (if arg (prefix-numeric-value arg) 1))
 	 (suffix
 	  (when (or (member kind ar-atpt-delimlist)
-		    ;; (loop for e in ar-atpt-delimlist-unpaired if (member kind e) return e))
-		    (member kind ar-atpt-delimlist-unpaired))
+		    ;; (loop for e in ar-unpaired-delimlist-aktiv if (member kind e) return e))
+		    (member kind ar-unpaired-delimlist-aktiv))
 	    (if (string-match "e$" expr)
 		"d" "ed")))
 	 erg)
@@ -11068,6 +11028,7 @@ it defaults to `<', otherwise it defaults to `string<'."
   (use-local-map ar-werkstatt-mode-map)
   (and ar-werkstatt-hs-minor-mode-p
        (add-hook 'ar-werkstatt-mode-hook 'hs-minor-mode)))
+
 (defun ar-th-delimit--intern (thing string1 string2 &optional arg iact)
   (let* ((bounds (ar-th-bounds thing))
          (beg (or (ignore-errors (caar bounds))(car-safe bounds)))
@@ -11094,7 +11055,7 @@ it defaults to `<', otherwise it defaults to `string<'."
 
 ;; ar-triplequote-raw end
 
-;; ar-insert-delimit-unpaired start
+;; ar-insert-delimit-forms-intern ar-unpaired-delimlist-aktiv-raw: start
 
 ;;;###autoload
 (defun ar-th-backslash (thing &optional arg iact)
@@ -11180,9 +11141,9 @@ it defaults to `<', otherwise it defaults to `string<'."
 (defun ar-th-doubleslash (thing &optional arg iact)
   " "
   (ar-th-delimit--intern thing "//" "//" arg iact))
-;; ar-insert-delimit-unpaired end
+;; ar-insert-delimit-forms-intern ar-unpaired-delimlist-aktiv-raw: end
 
-;; ar-insert-delimit-forms start
+;; ar-insert-delimit-forms ar-paired-delim-aktiv-raw: start
 
 ;;;###autoload
 (defun ar-th-brace (thing &optional arg iact)
@@ -11218,7 +11179,7 @@ it defaults to `<', otherwise it defaults to `string<'."
 (defun ar-th-parentize (thing &optional arg iact)
   " "
   (ar-th-delimit--intern thing "(" ")" arg iact))
-;; ar-insert-delimit-forms end
+;; ar-insert-delimit-forms ar-paired-delim-aktiv-raw: end
 
 ;; ar-atpt-data-forms-aktiv start
 
@@ -11251,6 +11212,11 @@ it defaults to `<', otherwise it defaults to `string<'."
 (defun ar-th-backslashparen (thing &optional arg iact)
   " "
   (ar-th-delimit--intern thing "\\(" "\\)" arg iact))
+
+;;;###autoload
+(defun ar-th-slashparen (thing &optional arg iact)
+  " "
+  (ar-th-delimit--intern thing "////(" "////)" arg iact))
 ;; ar-atpt-data-forms-aktiv end
 
 
@@ -11328,7 +11294,7 @@ it defaults to `<', otherwise it defaults to `string<'."
       (message (format "%s" stax)))
     stax))
 
-(defvar ar-paired-delimited-raw
+(defvar ar-paired-delimited-passiv-raw
       (list
        '(braced "{" "}")
        '(bracketed "[" "]")
@@ -11355,7 +11321,7 @@ it defaults to `<', otherwise it defaults to `string<'."
 (defun ar--transform-delimited-new-delimiter (to)
   "Return the new delimiter - either paired or unpaired. "
   (let ((erg))
-    (dolist (ele ar-paired-delimited-raw)
+    (dolist (ele ar-paired-delimited-passiv-raw)
       (when (member to ele)
 	(setq erg (cdr ele))
 	(message "%s" (car erg))))
@@ -11378,7 +11344,7 @@ it defaults to `<', otherwise it defaults to `string<'."
 
 ;; (ar--transform-delimited-new-delimiter t)
 
-;; ar-paired-delimited-raw
+;; ar-paired-delimited-passiv-raw
 ;; ar-unpaired-delimited-raw
 (defun ar--transform-delimited-intern (from to)
   "Expects string. "
@@ -11397,101 +11363,6 @@ it defaults to `<', otherwise it defaults to `string<'."
 	  ;; (insert "]")
 	  (insert (ar--transform-return-closing-delimiter-according-to-type new-delimiter)))
       (message (concat "ar--transform-delimited-intern: can't see " from)))))
-;; Listen start
-
-(setq ar-atpt-unary-operations-raw (list 'commatize 'quote ))
-
-(setq ar-atpt-unpaired-delimited-zahlenformed-list
-(list
-'(backslashed 92)
-'(backticked 96)
-'(coloned 58)
-'(crossed 43)
-'(dollared 36)
-'(doublequoted 34)
-'(equalized 61)
-'(hashed 35)
-'(hyphened 45)
-'(singlequoted 39)
-'(slashed 47)
-'(stared 42)
-'(tilded 126)
-'(underscored 95)
-'(whitespaced 32)
-))
-
-(setq ar-atpt-unpaired-delimited-extended-list
-(list
-'(backslashed "\\")
-'(backticked "`")
-'(coloned ":")
-'(crossed "+")
-'(dollared "$")
-'(doublequoted "\"")
-'(equalized "=")
-'(hashed "#")
-'(hyphened "-")
-'(singlequoted "'")
-'(slashed "/")
-'(stared "*")
-'(tilded "~")
-'(underscored "_")
-'(whitespaced " ")
-))
-
-(setq ar-atpt-data-forms-aktiv
-(list
-'beginendquote
-'blok
-'doublebackslash
-'doublebackslashparen
-'doubleslash
-'backslashparen
-))
-
-(setq ar-atpt-data-forms-passiv
-(list
-'beginendquoted
-'blok
-'doublebackslashed
-'doubleslashed
-'doublebackslashedparen
-'tabledatap
-'backslashedparen
-'xslstylesheetp
-))
-
-(setq ar-atpt-python-list (list 'py-block 'py-block-or-clause 'py-class 'py-clause 'py-def-or-class 'py-def 'py-expression 'py-partial-expression 'py-statement 'py-string ))
-
-(setq ar-atpt-python-quoted (list 'triplequoted 'triplequoteddq 'triplequotedsq ))
-
-(setq ar-triplequote (list 'triplequote 'triplequotedq 'triplequotesq ))
-
-(setq ar-atpt-expression-list (list 'block 'block-or-clause 'class 'clause 'def-or-class 'def 'expression 'partial-expression 'statement 'string ))
-
-(setq ar-atpt-expression-quoted (list 'triplequoted 'triplequoteddq 'triplequotedsq ))
-
-(setq ar-expression-triplequote (list 'triplequote 'triplequotedq 'triplequotesq ))
-
-(setq ar-atpt-markup-list (list 'beginendquote 'blok 'doublebackslashed 'doublebackslashedparen 'doubleslashed 'doubleslashedparen 'markup 'mldata 'mlattribut 'mltag 'slashedparen 'tabledata 'xslstylesheet 'xsltemplate ))
-
-(setq ar-atpt-delimlist (list 'brace 'bracket 'lesserangle 'greaterangle 'leftrightsinglequote 'leftrightsinglequote 'parentize ))
-
-(setq ar-atpt-delimited-list (list 'braced 'bracketed 'lesserangled 'greaterangled 'leftrightsinglequoted 'parentized ))
-
-(setq ar-atpt-delimlist-unpaired (list 'backslash 'backtick 'colon 'cross 'dollar 'doublequote 'equalize 'escape 'hash 'hyphen 'singlequote 'slash 'star 'tild 'underscore 'whitespace 'doubleslash ))
-
-(setq ar-atpt-unpaired-delimited-list (list 'backslashed 'backticked 'coloned 'crossed 'dollared 'doublequoted 'equalized 'hashed 'hyphened 'singlequoted 'slashed 'stared 'tilded 'underscored 'whitespaced ))
-
-(setq ar-atpt-classes (list 'alnum 'alpha 'ascii 'blank 'cntrl 'digit 'graph 'lower 'nonascii 'print 'punct 'space 'upper 'xdigit ))
-
-(setq ar-atpt-region-only (list 'region ))
-
-(setq ar-atpt-rest-list (list 'greateranglednested 'lesseranglednested 'buffer 'comment 'csv 'date 'delimited 'email 'filename 'filenamenondirectory 'float 'function 'ip 'isbn 'line 'list 'name 'number 'page 'paragraph 'phone 'region 'sentence 'sexp 'string 'shstruct 'symbol 'url 'word 'wordalphaonly ))
-
-(setq ar-atpt-major-forms-restricted-list (list 'buffer 'page 'paragraph 'region ))
-
-(setq ar-atpt-counts-list (list 'anglednonest 'greateranglednested 'lesseranglednested 'csv 'line 'paragraph 'region 'sentence 'string 'buffer ))
 
 
 

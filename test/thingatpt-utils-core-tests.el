@@ -24,25 +24,24 @@
 
 ;; tests are expected to run from directory test
 
-
 (ert-deftest ar-ert-raise-numbers-1 ()
   (ar-test-with-elisp-buffer
       "#x75"
-    (forward-char -1) 
+    (forward-char -1)
     ;; (should (eq 118 (1+ (car (read-from-string (number-at-point))))
     (should (eq 118 (1+ (number-at-point))))))
 
 (ert-deftest ar-ert-raise-numbers-2 ()
   (ar-test-with-elisp-buffer
       "#o165"
-    (forward-char -1) 
+    (forward-char -1)
     ;; (should (eq 118 (1+ (car (read-from-string (number-at-point))))
     (should (eq 118 (1+ (number-at-point))))))
 
 (ert-deftest ar-ert-raise-numbers-3 ()
   (ar-test-with-elisp-buffer
       "117"
-    (forward-char -1) 
+    (forward-char -1)
     ;; (should (eq 118 (1+ (car (read-from-string (number-at-point))))
     (should (eq 118 (1+ (number-at-point))))))
 
@@ -62,6 +61,21 @@
     (should (eq 8 (car erg)))
     (should (eq 9 (cdr erg))))))
 
+(ert-deftest ar-ert-forward-defun-test ()
+  (ar-test-with-elisp-buffer-point-min
+      "(defun foo ()
+  \"This docstring contains a line starting with \\\"(\\\"
+(asdf)\")"
+  (ar-forward-defun)
+  (should (eq (char-before) ?\)))))
+
+(ert-deftest ar-ert-docstring-starting-with-paren-indent-test ()
+  (ar-test-with-elisp-buffer
+      "(defun foo ()
+  \"This docstring contains a line starting with \\\"(\\\"
+\(asdf)\")"
+  (beginning-of-line) 
+  (should (eq 4  (ar-compute-indentation)))))
 
 (provide 'ar-core-tests-1)
 ;;; ar-core-tests-1.el ends here
