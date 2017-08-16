@@ -92,7 +92,7 @@
 
 ;; To see what's implemented, consult contents of
 ;; variables at the end of this file as
-;; `ar-atpt-delimlist', `ar-paired-delimited-passiv', etc.
+;; `ar-paired-delimit-aktiv', `ar-paired-delimited-passiv', etc.
 
 ;; Call one of the test-functions `C-u ar-th-delimtest'
 ;; with come chars in scratch-buffer
@@ -3354,7 +3354,7 @@ it defaults to `<', otherwise it defaults to `string<'."
   (let* ((expr (format "%s" kind))
 	 (arg (if arg (prefix-numeric-value arg) 1))
 	 (suffix
-	  (when (or (member kind ar-atpt-delimlist)
+	  (when (or (member kind ar-paired-delimit-aktiv)
 		    ;; (loop for e in ar-unpaired-delimlist-aktiv if (member kind e) return e))
 		    (member kind ar-unpaired-delimlist-aktiv))
 	    (if (string-match "e$" expr)

@@ -74,8 +74,8 @@
       "(defun foo ()
   \"This docstring contains a line starting with \\\"(\\\"
 \(asdf)\")"
-  (beginning-of-line) 
-  (should (eq 4  (ar-compute-indentation)))))
+    (ar-beginning-of-defun)
+  (should (bobp))))
 
 (provide 'ar-core-tests-1)
 ;;; ar-core-tests-1.el ends here
