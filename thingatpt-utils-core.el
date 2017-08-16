@@ -1688,12 +1688,12 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
 :type 'string
 :group 'werkstatt)
 
-(defcustom th-beg-delimiter "{>\[(/$="
+(defcustom th-beg-delimiter "{<\[(/$="
 "Specify the delimiter char."
 :type 'string
 :group 'werkstatt)
 
-(defcustom th-end-delimiter "]}<)/$="
+(defcustom th-end-delimiter "]}>)/$="
 "Specify the delimiter char."
 :type 'string
 :group 'werkstatt)
@@ -1720,7 +1720,7 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
       :type 'string
       :group 'werkstatt)
 
-  (defcustom thingatpt-file-name-chars "~//[:alnum:]_.$?={}#%,-"
+  (defcustom thingatpt-file-name-chars "~//[:alnum:]_.$?={}#%,:-"
     "Characters forseen in filenames. "
     :type 'string
     :group 'werkstatt))
@@ -2703,7 +2703,6 @@ Returns two lists composed of positions of delimiters "
         (message "   %s " (format "%s" length)))
       length)))
 
-;;;###autoload
 (defun ar-th-ratio-base (cla elt &optional beg end ratio iact)
   (let ((beg
          (cond (beg beg)
@@ -2719,7 +2718,6 @@ Returns two lists composed of positions of delimiters "
                 (condition-case nil (copy-marker (funcall (intern-soft (concat "ar-" (format "%s" elt) "-end-position-atpt")))) (error nil))))))
     (ar-th-ratio elt cla beg end ratio iact)))
 
-;;;###autoload
 (defun ar-th-ratio (thing cla &optional beg end ratio iact)
   (save-excursion
     (ignore-errors
@@ -2775,7 +2773,6 @@ If boundaries of thing are know, use `ar-th-trim-base' directly. "
          (end (or (ignore-errors (cadr (cadr bounds)))(ignore-errors (cdr (cadr bounds)))(ignore-errors (cdr bounds)))))
     (ar-th-trim-base beg end left right)))
 
-;;;###autoload
 (defun ar-th-trim-base (beg end left right)
   "Trim buffer-substring resp. to args starting-point, end-point, left-trim, right-trim. "
   (cond ((and left right)
@@ -2827,7 +2824,6 @@ Inspired by stuff like `paredit-splice-sexp-killing-backward'; however, instead 
     (backward-sexp)
     (delete-region (point) outer-start)))
 
-;;;###autoload
 (defun ar-th-comment (thing &optional arg iact)
   "Comment or uncomment THING "
   (condition-case nil
@@ -2958,7 +2954,6 @@ With optional arg IACT, the resulting list is sent to the message-buffer too. "
 	(kill-region beg end))
     (error nil)))
 
-;;;###autoload
 (defun ar-th-kill-backward (thing &optional arg iact)
   " "
    (ar-th-backward thing arg iact)
@@ -2969,7 +2964,6 @@ With optional arg IACT, the resulting list is sent to the message-buffer too. "
       (kill-region beg end))
     (error nil)))
 
-;;;###autoload
 (defun ar-th-delete (thing &optional arg iact)
   " "
   (condition-case nil
@@ -2979,7 +2973,6 @@ With optional arg IACT, the resulting list is sent to the message-buffer too. "
 	(delete-region beg end))
     (error nil)))
 
-;;;###autoload
 (defun ar-th-delete-in-region (thing beg end &optional iact)
   "Delete THING in region. Delete line, if empty afterwards. "
   (condition-case nil
@@ -2993,7 +2986,6 @@ With optional arg IACT, the resulting list is sent to the message-buffer too. "
 	      (when (and (empty-line-p) (not (eobp)))
 		(delete-region (line-beginning-position) (1+ (line-end-position))))))))))
 
-;;;###autoload
 (defun ar-th-commatize (thing &optional arg iact)
   " "
   (condition-case nil
@@ -3004,7 +2996,6 @@ With optional arg IACT, the resulting list is sent to the message-buffer too. "
         (insert ","))
     (error nil)))
 
-;;;###autoload
 (defun ar-th-quote (thing &optional arg iact)
   " "
   (condition-case nil
@@ -3015,21 +3006,18 @@ With optional arg IACT, the resulting list is sent to the message-buffer too. "
         (insert "'"))
     (error nil)))
 
-;;;###autoload
 (defun ar-th-interactive-backward-form (ap ep)
   (goto-char ep)
   (push-mark ap)
   (exchange-point-and-mark)
   (kill-new (buffer-substring-no-properties ap ep)))
 
-;;;###autoload
 (defun ar-th-set-bounds (thing)
   "Sets values of `bounds', `ap' and `ep' -- beg- and endpoint. "
   (setq bounds (ar-th-bounds thing))
   (setq ap (caar bounds))
-  (setq ep (cadr (cadr bounds))))
+  (setq ep (or (ignore-errors (cdr (cadr bounds)))(cadr (cadr bounds)))))
 
-;;;###autoload
 (defun ar-th-backward-fallback (arg thing)
   (let (bounds ap ep last)
     (while
@@ -3042,7 +3030,6 @@ With optional arg IACT, the resulting list is sent to the message-buffer too. "
 	(goto-char ap))
       (point))))
 
-;;;###autoload
 (defun ar-th-forward-fallback (arg after thing)
   (let (bounds ap ep last)
     (while (< 0 arg)
@@ -3053,7 +3040,6 @@ With optional arg IACT, the resulting list is sent to the message-buffer too. "
 	(setq last (point))))
     last))
 
-;;;###autoload
 (defun ar-th-forward-function-call (thing arg)
   (let (erg)
     (while (< 0 arg)
@@ -3061,7 +3047,6 @@ With optional arg IACT, the resulting list is sent to the message-buffer too. "
       (setq arg (1- arg)))
     erg))
 
-;;;###autoload
 (defun ar-th-backward-function-call (arg thing)
   (let (erg)
     (while
@@ -3070,7 +3055,6 @@ With optional arg IACT, the resulting list is sent to the message-buffer too. "
       (setq arg (1+ arg)))
     erg))
 
-;;;###autoload
 (defun ar-th-forward (thing &optional arg iact after)
   "Return end-position, if successful, nil otherwise.
 
@@ -3091,7 +3075,6 @@ searches backward with negative argument "
       ;; (and erg (consp erg) (setq erg (cdr erg)))
       (when (> orig erg) erg))))
 
-;;;###autoload
 (defun ar-th-un-ml (thing &optional beg end)
   (save-excursion
     (save-restriction
@@ -3116,14 +3099,12 @@ searches backward with negative argument "
           (list thisbeg thisend))))
     (widen)))
 
-;;;###autoload
 (defun ar-th-backward (thing &optional arg iact)
  "Returns beg and end of THING before point as a list. "
   (condition-case nil
       (ar-th-forward thing (- (or arg 1)) iact)
     (error nil)))
 
-;;;###autoload
 (defun ar-th-before (thing &optional arg iact)
   " "
   (let* ((arg (or arg -1))
@@ -3134,7 +3115,6 @@ searches backward with negative argument "
     (setq bounds (ar-th-backward thing (abs arg)))
     (ar-th thing arg iact)))
 
-;;;###autoload
 (defun ar-th-bounds-before (thing &optional arg iact)
   " "
   (save-excursion
@@ -3150,7 +3130,6 @@ searches backward with negative argument "
       (when iact (message "%s" bounds))
     bounds)))
 
-;;;###autoload
 (defun ar-th-before-beg-pos (thing &optional arg iact)
   " "
   (save-excursion
@@ -3164,7 +3143,6 @@ searches backward with negative argument "
            (when iact (message "%s" beg)) beg)
 )))
 
-;;;###autoload
 (defun ar-th-before-end-pos (thing &optional arg iact)
   " "
   (save-excursion
@@ -3178,7 +3156,6 @@ searches backward with negative argument "
            (when iact (message "%s" end)) end)
 )))
 
-;;;###autoload
 (defun ar-th-after (thing &optional arg iact)
   " "
   (let* ((arg (or arg 1))
@@ -3189,7 +3166,6 @@ searches backward with negative argument "
     (ar-th-forward thing arg)
     (ar-th thing arg iact)))
 
-;;;###autoload
 (defun ar-th-bounds-after (thing &optional no-delimiters iact)
   " "
   (save-excursion
@@ -3199,7 +3175,6 @@ searches backward with negative argument "
              (ar-th-bounds thing no-delimiters))))
       (when iact (message "%s" bounds)) bounds)))
 
-;;;###autoload
 (defun ar-th-after-beg-pos (thing &optional arg iact)
   " "
   (save-excursion
@@ -3213,7 +3188,6 @@ searches backward with negative argument "
                            (beg (car-safe bounds)))
            (when iact (message "%s" beg)) beg))))
 
-;;;###autoload
 (defun ar-th-after-end-pos (thing &optional arg iact)
   " "
   (save-excursion
@@ -3230,7 +3204,6 @@ searches backward with negative argument "
 
 (defvar paired-start-pos nil)
 
-;;;###autoload
 (defun ar-th-transpose (thing &optional arg iact)
   "Returns position, when called from a program
  end of transposed section. "
