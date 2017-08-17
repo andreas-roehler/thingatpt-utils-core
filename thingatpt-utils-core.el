@@ -2775,21 +2775,28 @@ If boundaries of thing are know, use `ar-th-trim-base' directly. "
 
 (defun ar-th-trim-base (beg end left right)
   "Trim buffer-substring resp. to args starting-point, end-point, left-trim, right-trim. "
-  (cond ((and left right)
-         (goto-char end)
-         (delete-char -1)
-         (goto-char beg)
-         (delete-char 1))
-        (right
-         (goto-char end)
-         (delete-char -1))
-        (left
-         (goto-char beg)
-         (delete-char 1))
-        (t (goto-char end)
-           (delete-char -1)
-           (goto-char beg)
-           (delete-char 1))))
+  (let ((beg (copy-marker beg))
+	(end (copy-marker end))
+	(old-end end))
+    (cond ((and left right)
+	   (goto-char end)
+	   (delete-char -1)
+	   (goto-char beg)
+	   (delete-char 1)
+	   (eq (marker-position end) (- old-end 2)))
+	  (right
+	   (goto-char end)
+	   (delete-char -1)
+	   (eq (marker-position end) (- old-end 1)))
+	  (left
+	   (goto-char beg)
+	   (delete-char 1)
+	   (eq (marker-position end) (- old-end 1)))
+	  (t (goto-char end)
+	     (delete-char -1)
+	     (goto-char beg)
+	     (delete-char 1)
+	     (eq (marker-position end) (- old-end 2))))))
 
 ;;;###autoload
 (defun ar-th-trim-left (thing)
@@ -3355,17 +3362,24 @@ it defaults to `<', otherwise it defaults to `string<'."
 	 (arg (if arg (prefix-numeric-value arg) 1))
 	 (suffix
 	  (when (or (member kind ar-paired-delimit-aktiv)
-		    ;; (loop for e in ar-unpaired-delimlist-aktiv if (member kind e) return e))
-		    (member kind ar-unpaired-delimlist-aktiv))
+		    ;; (loop for e in ar-unpaired-delimit-aktiv if (member kind e) return e))
+		    (member kind ar-unpaired-delimit-aktiv))
 	    (if (string-match "e$" expr)
 		"d" "ed")))
 	 erg)
-    (if (< 0 arg)
-        (if (use-region-p)
-            (setq erg (funcall (intern-soft (concat "ar-" expr "-region-atpt")) arg))
-	  (or (setq erg (funcall (intern-soft (concat "ar-" expr suffix "-atpt")) arg))
-	      (funcall (intern-soft (concat "ar-" expr "-" copy-or-alternative "-atpt")) arg)))
-      (setq erg (funcall (intern-soft (concat "ar-kill-" expr suffix "-atpt")) arg)))))
+    (cond
+     ((eq 2 arg)
+      (if (use-region-p)
+	  (setq erg (funcall (intern-soft (concat "ar-trim- " expr "-in-region-atpt"))))
+	(or (setq erg (funcall (intern-soft (concat "ar-trim-" expr suffix "-atpt"))))
+	    (funcall (intern-soft (concat "ar-" expr "-" copy-or-alternative "-atpt")) arg))))
+     ((< 0 arg)
+      (if (use-region-p)
+	  (setq erg (funcall (intern-soft (concat "ar-" expr "-region-atpt")) arg))
+	(or (setq erg (funcall (intern-soft (concat "ar-" expr suffix "-atpt")) arg))
+	    (funcall (intern-soft (concat "ar-" expr "-" copy-or-alternative "-atpt")) arg))))
+
+     (t (setq erg (funcall (intern-soft (concat "ar-kill-" expr suffix "-atpt")) arg))))))
 
 (defvar ar-werkstatt-mode-map nil
     "Keymap used in Sh-Werkstatt mode.")
