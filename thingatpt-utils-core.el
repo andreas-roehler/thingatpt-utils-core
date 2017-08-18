@@ -11042,7 +11042,7 @@ it defaults to `<', otherwise it defaults to `string<'."
 
 ;; ar-triplequote-raw end
 
-;; ar-insert-delimit-forms-intern ar-unpaired-delimlist-aktiv-raw: start
+;; ar-insert-delimit-forms-intern ar-unpaired-delimit-aktiv-raw: start
 
 ;;;###autoload
 (defun ar-th-backslash (thing &optional arg iact)
@@ -11128,7 +11128,7 @@ it defaults to `<', otherwise it defaults to `string<'."
 (defun ar-th-doubleslash (thing &optional arg iact)
   " "
   (ar-th-delimit--intern thing "//" "//" arg iact))
-;; ar-insert-delimit-forms-intern ar-unpaired-delimlist-aktiv-raw: end
+;; ar-insert-delimit-forms-intern ar-unpaired-delimit-aktiv-raw: end
 
 ;; ar-insert-delimit-forms ar-paired-delim-aktiv-raw: start
 
@@ -11350,6 +11350,387 @@ it defaults to `<', otherwise it defaults to `string<'."
 	  ;; (insert "]")
 	  (insert (ar--transform-return-closing-delimiter-according-to-type new-delimiter)))
       (message (concat "ar--transform-delimited-intern: can't see " from)))))
+(setq ar-atpt-classes
+  (list
+    'alnum
+    'alpha
+    'ascii
+    'blank
+    'cntrl
+    'digit
+    'graph
+    'lower
+    'nonascii
+    'print
+    'punct
+    'space
+    'upper
+    'xdigit
+    ))
+
+(setq ar-unpaired-delimit-aktiv-raw
+  (list
+    '(backslash "\\\\")
+    '(backtick "`")
+    '(colon ":")
+    '(cross "+")
+    '(dollar "$")
+    '(doublequote "\"")
+    '(equalize "=")
+    '(escape "\\\\")
+    '(hash "#")
+    '(hyphen "-")
+    '(singlequote "'")
+    '(slash "/")
+    '(star "*")
+    '(tild "~")
+    '(underscore "_")
+    '(whitespace " ")
+    '(doubleslash "//")
+    ))
+
+(setq ar-unpaired-delimit-aktiv
+  (list
+    'backslash
+    'backtick
+    'colon
+    'cross
+    'dollar
+    'doublequote
+    'equalize
+    'escape
+    'hash
+    'hyphen
+    'singlequote
+    'slash
+    'star
+    'tild
+    'underscore
+    'whitespace
+    'doubleslash
+    ))
+
+(setq ar-unary-operations
+  (list
+    'commatize
+    'quote
+    ))
+
+(setq ar-unpaired-delimited-passiv-zahlenform-raw
+  (list
+    '(backslashed 92)
+    '(backticked 96)
+    '(coloned 58)
+    '(crossed 43)
+    '(dollared 36)
+    '(doublequoted 34)
+    '(equalized 61)
+    '(hashed 35)
+    '(hyphened 45)
+    '(singlequoted 39)
+    '(slashed 47)
+    '(stared 42)
+    '(tilded 126)
+    '(underscored 95)
+    '(whitespaced 32)
+    ))
+
+(setq ar-unpaired-delimited-passiv-zahlenform
+  (list
+    'backslashed
+    'backticked
+    'coloned
+    'crossed
+    'dollared
+    'doublequoted
+    'equalized
+    'hashed
+    'hyphened
+    'singlequoted
+    'slashed
+    'stared
+    'tilded
+    'underscored
+    'whitespaced
+    ))
+
+(setq ar-atpt-data-forms-aktiv-raw
+  (list
+    '("beginendquote" "\\\\begin{quote}" "\\\\end{quote}" nil (quote move) 1 nil t nil)
+    '("blok" "{% " " %}" nil (quote move) "1" nil t)
+    '("doublebackslash" "\\\\\\\\" "\\\\\\\\" nil (quote move) "1" nil nil (quote ar-escaped))
+    '("doublebackslashparen" "\\\\\\\\(" "\\\\\\\\)" nil (quote move) "1" nil nil (quote ar-escaped))
+    '("doubleslash" "//" "//" nil (quote move) "1" nil t (quote ar-escaped))
+    '("backslashparen" "\\\\(" "\\\\)" nil (quote move) "1" nil nil (quote ar-escaped))
+    '("slashparen" "////(" "////)" nil (quote move) "1" nil nil (quote ar-escaped))
+    ))
+
+(setq ar-atpt-data-forms-aktiv
+  (list
+    'beginendquote
+    'blok
+    'doublebackslash
+    'doublebackslashparen
+    'doubleslash
+    'backslashparen
+    'slashparen
+    ))
+
+(setq ar-atpt-data-forms-passiv-raw
+  (list
+    '("beginendquoted" "\\\\begin{quote}" "\\\\end{quote}" nil (quote move) 1 nil nil nil)
+    '("blok" "{% " " %}" nil (quote move) "1" nil t)
+    '("doublebackslashed" "\\\\\\\\" "\\\\\\\\" nil (quote move) "1" nil nil (quote ar-escaped))
+    '("doubleslashed" "//" "//" nil (quote move) "1" nil nil (quote ar-escaped))
+    '("doublebackslashedparen" "\\\\\\\\\\\\\\\\(" "\\\\\\\\\\\\\\\\)" nil (quote move) "1" nil nil (quote ar-escaped))
+    '("tabledatap" "<td[^>]*>" "</td>" nil (quote move) "1" nil nil nil)
+    '("backslashedparen" "\\\\\\\\(" "\\\\\\\\)" nil (quote move) "1" nil nil (quote ar-escaped))
+    '("slashedparen" "////////(" "////////)" nil (quote move) "1" nil nil (quote ar-escaped))
+    '("xslstylesheetp" "<xsl:stylesheet[^<]+>.*$" "</xsl:stylesheet>" nil (quote move) "1" nil nil nil)
+    ))
+
+(setq ar-atpt-data-forms-passiv
+  (list
+    'beginendquoted
+    'blok
+    'doublebackslashed
+    'doubleslashed
+    'doublebackslashedparen
+    'tabledatap
+    'backslashedparen
+    'slashedparen
+    'xslstylesheetp
+    ))
+
+(setq ar-atpt-python-list
+  (list
+    'py-block
+    'py-block-or-clause
+    'py-class
+    'py-clause
+    'py-def-or-class
+    'py-def
+    'py-expression
+    'py-partial-expression
+    'py-statement
+    'py-string
+    ))
+
+(setq ar-atpt-python-quoted-raw
+  (list
+    '(triplequoted "\"\"\"\\\\|'''")
+    '(triplequoteddq "\"\"\"")
+    '(triplequotedsq "'''")
+    ))
+
+(setq ar-atpt-python-quoted
+  (list
+    'triplequoted
+    'triplequoteddq
+    'triplequotedsq
+    ))
+
+(setq ar-triplequote-raw
+  (list
+    '(triplequote "\"\"\"\\\\|'''")
+    '(triplequotedq "\"\"\"")
+    '(triplequotesq "'''")
+    ))
+
+(setq ar-triplequote
+  (list
+    'triplequote
+    'triplequotedq
+    'triplequotesq
+    ))
+
+(setq ar-atpt-expression-list
+  (list
+    'block
+    'block-or-clause
+    'class
+    'clause
+    'def-or-class
+    'def
+    'expression
+    'partial-expression
+    'statement
+    'string
+    ))
+
+(setq ar-expression-triplequote-raw
+  (list
+    '(triplequote "\"\"\"\\\\|'''")
+    '(triplequotedq "\"\"\"")
+    '(triplequotesq "'''")
+    ))
+
+(setq ar-expression-triplequote
+  (list
+    'triplequote
+    'triplequotedq
+    'triplequotesq
+    ))
+
+(setq ar-atpt-markup-list
+  (list
+    'beginendquote
+    'blok
+    'doublebackslashed
+    'doublebackslashedparen
+    'doubleslashed
+    'doubleslashedparen
+    'markup
+    'mldata
+    'mlattribut
+    'mltag
+    'slashedparen
+    'tabledata
+    'xslstylesheet
+    'xsltemplate
+    ))
+
+(setq ar-paired-delimit-aktiv-raw
+  (list
+    '(brace "{" "}")
+    '(bracket "[" "]")
+    '(lesserangle "<" ">")
+    '(greaterangle ">" "<")
+    '(leftrightsinglequote "‘" "’")
+    '(leftrightsinglequote "‘" "’")
+    '(parentize "(" ")")
+    ))
+
+(setq ar-paired-delimit-aktiv
+  (list
+    'brace
+    'bracket
+    'lesserangle
+    'greaterangle
+    'leftrightsinglequote
+    'leftrightsinglequote
+    'parentize
+    ))
+
+(setq ar-paired-delimited-passiv-raw
+  (list
+    '(braced "{" "}")
+    '(bracketed "[" "]")
+    '(lesserangled "<" ">")
+    '(greaterangled ">" "<")
+    '(leftrightsinglequoted "‘" "’")
+    '(parentized "(" ")")
+    ))
+
+(setq ar-paired-delimited-passiv
+  (list
+    'braced
+    'bracketed
+    'lesserangled
+    'greaterangled
+    'leftrightsinglequoted
+    'parentized
+    ))
+
+(setq ar-unpaired-delimited-passiv-raw
+  (list
+    '(backslashed "\\\\")
+    '(backticked "`")
+    '(coloned ":")
+    '(crossed "+")
+    '(dollared "$")
+    '(doublequoted "\\\"")
+    '(equalized "=")
+    '(hashed "#")
+    '(hyphened "-")
+    '(singlequoted "'")
+    '(slashed "/")
+    '(stared "*")
+    '(tilded "~")
+    '(underscored "_")
+    '(whitespaced " ")
+    ))
+
+(setq ar-unpaired-delimited-passiv
+  (list
+    'backslashed
+    'backticked
+    'coloned
+    'crossed
+    'dollared
+    'doublequoted
+    'equalized
+    'hashed
+    'hyphened
+    'singlequoted
+    'slashed
+    'stared
+    'tilded
+    'underscored
+    'whitespaced
+    ))
+
+(setq ar-atpt-region-only
+  (list
+    'region
+    ))
+
+(setq ar-atpt-rest-list
+  (list
+    'greateranglednested
+    'lesseranglednested
+    'buffer
+    'comment
+    'csv
+    'date
+    'delimited
+    'email
+    'filename
+    'filenamenondirectory
+    'float
+    'function
+    'ip
+    'isbn
+    'line
+    'list
+    'name
+    'number
+    'page
+    'paragraph
+    'phone
+    'region
+    'sentence
+    'sexp
+    'string
+    'shstruct
+    'symbol
+    'url
+    'word
+    'wordalphaonly
+    ))
+
+(setq ar-atpt-major-forms-restricted-list
+  (list
+    'buffer
+    'page
+    'paragraph
+    'region
+    ))
+
+(setq ar-atpt-counts-list
+  (list
+    'anglednonest
+    'greateranglednested
+    'lesseranglednested
+    'csv
+    'line
+    'paragraph
+    'region
+    'sentence
+    'string
+    'buffer
+    ))
+
 
 
 
