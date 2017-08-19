@@ -11130,7 +11130,7 @@ it defaults to `<', otherwise it defaults to `string<'."
   (ar-th-delimit--intern thing "//" "//" arg iact))
 ;; ar-insert-delimit-forms-intern ar-unpaired-delimit-aktiv-raw: end
 
-;; ar-insert-delimit-forms ar-paired-delim-aktiv-raw: start
+;; ar-insert-delimit-forms ar-paired-delimit-aktiv-raw: start
 
 ;;;###autoload
 (defun ar-th-brace (thing &optional arg iact)
@@ -11166,7 +11166,7 @@ it defaults to `<', otherwise it defaults to `string<'."
 (defun ar-th-parentize (thing &optional arg iact)
   " "
   (ar-th-delimit--intern thing "(" ")" arg iact))
-;; ar-insert-delimit-forms ar-paired-delim-aktiv-raw: end
+;; ar-insert-delimit-forms ar-paired-delimit-aktiv-raw: end
 
 ;; ar-atpt-data-forms-aktiv start
 
