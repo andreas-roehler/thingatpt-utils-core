@@ -504,7 +504,20 @@ See http://debbugs.gnu.org/cgi/bugreport.cgi?bug=7115"
 	  (unless (member (current-column) ilist)
 	    (cons (current-column) ilist)))))))
 
-
+(defun ar--return-complement-char-maybe (erg)
+  "For example return \"}\" for \"{\" but keep \"\\\"\". "
+  (pcase erg
+    (?< ?>)
+    (?> ?<)
+    (?‘ ?’)
+    (?` ?')
+    (?\( ?\))
+    (?\) ?\()
+    (?\] ?\[)
+    (?\[ ?\])
+    (?} ?{)
+    (?{ ?})
+    (_ erg)))
 
 (provide 'ar-subr)
 ;;; ar-subr.el ends here
