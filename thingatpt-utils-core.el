@@ -1604,13 +1604,13 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
 	       ((eq 5 (car (syntax-after (point))))
 		(forward-char 1)
 		(forward-list -1))
-               ((eq (char-after) ?])
+               ((eq (char-after) 93)
                 (beginning-of-form-base "[" "]" nil 'move nil nil t))
 	       ((eq (char-after) ?')
                 (beginning-of-form-base "[`']" "'" nil 'move nil nil t))
                ((eq (char-after) ?})
                 (beginning-of-form-base "{" "}" nil 'move nil nil t))
-               ((eq (char-after) ?))
+               ((eq (char-after) ?\))
                 (beginning-of-form-base "(" ")" nil 'move nil nil t))
                ((looking-at (concat "[" begdel "][ 	 
 ]"))
@@ -1656,7 +1656,7 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
                ((looking-at "{")
                 (goto-char (match-end 0))
                 (end-of-form-base "{" "}" nil 'move nil nil t))
-               ((eq (char-after) ?()
+               ((eq (char-after) ?\()
                 ;; (goto-char (match-end 0))
                 ;; (end-of-form-base "(" ")" nil 'move nil nil t)
                 (forward-list 1)
@@ -1690,7 +1690,10 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
 (defvar ar-delimiter-zeichen-atpt nil
   "Delimiter char found at place, search it backward then")
 (make-variable-buffer-local 'ar-delimiter-zeichen-atpt)
-(make-variable-buffer-local 'ar-delimiter-zeichen-atpt)
+
+(defvar ar-delimiter-string-atpt nil
+  "Delimiter string found at place, search it backward then")
+(make-variable-buffer-local 'ar-delimiter-string-atpt)
 
 (defcustom ar-use-parse-partial-sexp t
 "When nil, parse symbolic expressions by regexp. "
