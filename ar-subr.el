@@ -53,6 +53,12 @@
 (defvar ar-strip-chars-after  "[ \t\r\n]*\\'"
   "Regexp indicating which chars shall be stripped after STRING - which is defined by `string-chars-preserve'.")
 
+(defun ar-fix-comment-start ()
+  "Comment at point might not have a padding. "
+  (if (string-match "[ \t]$" comment-start)
+      (concat comment-start "*")
+    comment-start))
+
 (defun ar-string-strip (str &optional chars-before chars-after)
   "Return a copy of STR, CHARS removed.
 `CHARS-BEFORE' and `CHARS-AFTER' default is \"[ \t\r\n]*\",
