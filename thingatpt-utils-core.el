@@ -2478,6 +2478,20 @@ it would doublequote a word at point "
         (end-of-form-base "\\\\" "\\\\" nil (quote move) 1 nil nil (quote ar-escaped)))))
 
 
+;; Doublebackticked
+(put 'doublebackticked 'beginning-op-at
+     (lambda ()
+       (if (ignore-errors (looking-at "``"))
+           (list (match-beginning 0) (match-end 0))
+         (beginning-of-form-base "``" "``" nil (quote move) 1 nil nil (quote ar-escaped)))))
+
+(put 'doublebackticked 'end-op-at
+     (lambda ()
+       (when (ignore-errors (looking-at "``"))
+        (goto-char (match-end 0)) 
+        (end-of-form-base "``" "``" nil (quote move) 1 nil nil (quote ar-escaped)))))
+
+
 ;; Doubleslashed
 (put 'doubleslashed 'beginning-op-at
      (lambda ()
@@ -3576,6 +3590,11 @@ it defaults to `<', otherwise it defaults to `string<'."
   (ar-th-delimit--intern thing "\\\\(" "\\\\)" arg iact))
 
 ;;;###autoload
+(defun ar-th-doublebacktick (thing &optional arg iact)
+  " "
+  (ar-th-delimit--intern thing "``" "``" arg iact))
+
+;;;###autoload
 (defun ar-th-doubleslash (thing &optional arg iact)
   " "
   (ar-th-delimit--intern thing "//" "//" arg iact))
@@ -3865,6 +3884,7 @@ it defaults to `<', otherwise it defaults to `string<'."
     '("blok" "{% " " %}" nil (quote move) "1" nil t)
     '("doublebackslash" "\\\\\\\\" "\\\\\\\\" nil (quote move) "1" nil nil (quote ar-escaped))
     '("doublebackslashparen" "\\\\\\\\(" "\\\\\\\\)" nil (quote move) "1" nil nil (quote ar-escaped))
+    '("doublebacktick" "``" "``" (quote move) "1" nil t (quote ar-escaped))
     '("doubleslash" "//" "//" nil (quote move) "1" nil t (quote ar-escaped))
     '("backslashparen" "\\\\(" "\\\\)" nil (quote move) "1" nil nil (quote ar-escaped))
     '("slashparen" "////(" "////)" nil (quote move) "1" nil nil (quote ar-escaped))
@@ -3876,6 +3896,7 @@ it defaults to `<', otherwise it defaults to `string<'."
     'blok
     'doublebackslash
     'doublebackslashparen
+    'doublebacktick
     'doubleslash
     'backslashparen
     'slashparen
@@ -3886,6 +3907,7 @@ it defaults to `<', otherwise it defaults to `string<'."
     '("beginendquoted" "\\\\begin{quote}" "\\\\end{quote}" nil (quote move) 1 nil nil nil)
     '("blok" "{% " " %}" nil (quote move) "1" nil t)
     '("doublebackslashed" "\\\\\\\\" "\\\\\\\\" nil (quote move) "1" nil nil (quote ar-escaped))
+    '("doublebackticked" "``" "``" nil (quote move) "1" nil nil (quote ar-escaped))
     '("doubleslashed" "//" "//" nil (quote move) "1" nil nil (quote ar-escaped))
     '("doublebackslashedparen" "\\\\\\\\\\\\\\\\(" "\\\\\\\\\\\\\\\\)" nil (quote move) "1" nil nil (quote ar-escaped))
     '("tabledatap" "<td[^>]*>" "</td>" nil (quote move) "1" nil nil nil)
@@ -3899,6 +3921,7 @@ it defaults to `<', otherwise it defaults to `string<'."
     'beginendquoted
     'blok
     'doublebackslashed
+    'doublebackticked
     'doubleslashed
     'doublebackslashedparen
     'tabledatap
@@ -3982,6 +4005,7 @@ it defaults to `<', otherwise it defaults to `string<'."
     'beginendquote
     'blok
     'doublebackslashed
+    'doublebackticked
     'doublebackslashedparen
     'doubleslashed
     'doubleslashedparen
