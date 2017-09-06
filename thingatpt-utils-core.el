@@ -876,8 +876,7 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
 
 (put 'braced 'forward-op-at
   (lambda ()
-       (when (char-equal ?{ (char-after))
-          (forward-char 1))
+     (forward-char 1)
      (ar-char-delimiters-end ?} t)
      (when (char-equal ?} (char-before)) (forward-char -1)
 	 (point))))
@@ -897,8 +896,7 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
 
 (put 'bracketed 'forward-op-at
   (lambda ()
-       (when (char-equal ?\[ (char-after))
-          (forward-char 1))
+     (forward-char 1)
      (ar-char-delimiters-end ?\] t)
      (when (char-equal ?\] (char-before)) (forward-char -1)
 	 (point))))
@@ -918,8 +916,7 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
 
 (put 'lesserangled 'forward-op-at
   (lambda ()
-       (when (char-equal ?< (char-after))
-          (forward-char 1))
+     (forward-char 1)
      (ar-char-delimiters-end ?> t)
      (when (char-equal ?> (char-before)) (forward-char -1)
 	 (point))))
@@ -939,8 +936,7 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
 
 (put 'greaterangled 'forward-op-at
   (lambda ()
-       (when (char-equal ?> (char-after))
-          (forward-char 1))
+     (forward-char 1)
      (ar-char-delimiters-end ?< t)
      (when (char-equal ?< (char-before)) (forward-char -1)
 	 (point))))
@@ -960,8 +956,7 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
 
 (put 'leftrightsinglequoted 'forward-op-at
   (lambda ()
-       (when (char-equal ?‘ (char-after))
-          (forward-char 1))
+     (forward-char 1)
      (ar-char-delimiters-end ?’ t)
      (when (char-equal ?’ (char-before)) (forward-char -1)
 	 (point))))
@@ -981,8 +976,7 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
 
 (put 'parentized 'forward-op-at
   (lambda ()
-       (when (char-equal ?\( (char-after))
-          (forward-char 1))
+     (forward-char 1)
      (ar-char-delimiters-end ?\) t)
      (when (char-equal ?\) (char-before)) (forward-char -1)
 	 (point))))

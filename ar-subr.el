@@ -55,7 +55,7 @@
 
 (defun ar-fix-comment-start ()
   "Comment at point might not have a padding. "
-  (if (string-match "[ \t]$" comment-start)
+  (if (and comment-start (string-match "[ \t]$" comment-start))
       (concat comment-start "*")
     comment-start))
 
