@@ -124,6 +124,16 @@ Returns position reached if point was moved. "
 	 (skip-chars-forward " \t" (line-end-position))
 	 (and (< (point) orig) (point)))))
 
+(defconst ar-eq-assignment-re
+  (concat
+   "\\([^=\n \t:]+\\)\\([^=\n:]*\\)\\(=\\)\\([^:]*\\)$")
+  "Regular expression matching assigment.")
+
+(defconst ar-vertical-line-re
+  (concat
+   ".*[ \t]*[^|\n]+|\\_>")
+  "Regular expression matching a guard.")
+
 ;;; string-strip stuff ends here
 (defcustom empty-line-p-chars "^[ \t\r]*$"
   "Empty-line-p-chars."
@@ -524,6 +534,69 @@ See http://debbugs.gnu.org/cgi/bugreport.cgi?bug=7115"
     (?} ?{)
     (?{ ?})
     (_ erg)))
+
+(defun ar-align-to (col regexp)
+  (beginning-of-line)
+  (when (re-search-forward regexp nil t 1)
+    (goto-char (match-beginning 0))
+    (while (< (current-column) col)
+      (insert " "))))
+
+(defun ar-align-with-previous-line-maybe ()
+  (when (and (eq this-command self-insert-command)
+	     (eq (char-before) ?=))
+    (ar-align-with-previous-line (current-column))))
+
+(defun ar--do-align-intern (col)
+  (while (< (current-column) col)
+    (insert 32)))
+
+(defun ar--align-with-previous-line (uppercol downcol orig upperpos)
+  (if (< uppercol downcol)
+      (let ((col downcol))
+	(goto-char upperpos)
+	(ar--do-align-intern col))
+    (let ((col uppercol))
+      (goto-char orig)
+      (forward-char -1)
+      (ar--do-align-intern col))))
+
+(defun ar-align-with-previous-line (&optional regexp)
+  "Align with previous line.
+
+Defaults aligning to equal and vertical bar sign"
+  (interactive "*")
+  (save-excursion
+    (let* ((orig (copy-marker (point)))
+	   (end (line-end-position))
+	   (regexp (or regexp (concat ar-eq-assignment-re "\\|" ar-vertical-line-re)))
+	   (downcol (progn (beginning-of-line)
+			   (when (looking-at regexp)
+			     (goto-char (match-beginning 3))
+			     (current-column))))
+	   upperpos
+	   (uppercol (progn
+		       (forward-line -1)
+		       (unless (ar-empty-line-p)
+			 (beginning-of-line)
+			 (when (looking-at regexp)
+			   (save-excursion
+			     (goto-char (match-beginning 3))
+			     (setq upperpos (point))
+			     (current-column)))))))
+      (when (and downcol uppercol)
+	(ar--align-with-previous-line uppercol downcol orig upperpos)))))
+
+(defun ar-align (beg end)
+  (interactive "r*")
+  (save-excursion
+    (goto-char beg)
+    (ar-align-with-previous-line)
+    (while (not (or done (eobp)))
+      (forward-line 1)
+      (ar-align-with-previous-line)
+      (when (<= end (line-end-position))
+	(setq done t)))))
 
 (provide 'ar-subr)
 ;;; ar-subr.el ends here
