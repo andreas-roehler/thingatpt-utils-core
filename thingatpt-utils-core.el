@@ -1594,7 +1594,7 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
 		 (ignore-errors (goto-char (and (nth 3 pps) (nth 8 pps))))
 		 ;; in comment
 		 (goto-char (nth 8 pps))))
-	       ((looking-at "[`({\[]"))
+	       ((looking-at (concat "[" th-beg-delimiter "]")))
 	       ((eq 5 (car (syntax-after (point))))
 		(forward-char 1)
 		(forward-list -1))
