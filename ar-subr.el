@@ -535,13 +535,6 @@ See http://debbugs.gnu.org/cgi/bugreport.cgi?bug=7115"
     (?{ ?})
     (_ erg)))
 
-(defun ar-align-to (col regexp)
-  (beginning-of-line)
-  (when (re-search-forward regexp nil t 1)
-    (goto-char (match-beginning 0))
-    (while (< (current-column) col)
-      (insert " "))))
-
 (defun ar-align-with-previous-line-maybe ()
   (when (and (eq this-command self-insert-command)
 	     (eq (char-before) ?=))
@@ -551,7 +544,7 @@ See http://debbugs.gnu.org/cgi/bugreport.cgi?bug=7115"
   (while (< (current-column) col)
     (insert 32)))
 
-(defun ar--align-with-previous-line (uppercol downcol orig upperpos)
+ (defun ar--align-with-previous-line (uppercol downcol orig upperpos)
   (if (< uppercol downcol)
       (let ((col downcol))
 	(goto-char upperpos)
@@ -587,7 +580,7 @@ Defaults aligning to equal and vertical bar sign"
 			     (setq upperpos (point))
 			     (current-column)))))))
       (when (and downcol uppercol)
-	(ar--align-with-previous-line uppercol downcol orig upperpos regexp)))))
+	(ar--align-with-previous-line uppercol downcol orig upperpos)))))
 
 (defun ar-align (beg end)
   (interactive "r*")
