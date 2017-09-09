@@ -555,7 +555,9 @@ See http://debbugs.gnu.org/cgi/bugreport.cgi?bug=7115"
   (if (< uppercol downcol)
       (let ((col downcol))
 	(goto-char upperpos)
-	(ar--do-align-intern col))
+	(ar--do-align-intern col)
+	;; upper-line extended, maybe line above needs that too?
+	(ar-align-with-previous-line))
     (let ((col uppercol))
       (goto-char orig)
       (forward-char -1)
@@ -585,7 +587,7 @@ Defaults aligning to equal and vertical bar sign"
 			     (setq upperpos (point))
 			     (current-column)))))))
       (when (and downcol uppercol)
-	(ar--align-with-previous-line uppercol downcol orig upperpos)))))
+	(ar--align-with-previous-line uppercol downcol orig upperpos regexp)))))
 
 (defun ar-align (beg end)
   (interactive "r*")
