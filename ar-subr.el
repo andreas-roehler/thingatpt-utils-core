@@ -582,11 +582,11 @@ Defaults aligning to equal and vertical bar sign"
       (when (and downcol uppercol)
 	(ar--align-with-previous-line uppercol downcol orig upperpos)))))
 
-(defun ar-align (beg end)
+(defun ar-align (beg end &optional regexp)
   (interactive "r*")
   (save-excursion
     (goto-char beg)
-    (ar-align-with-previous-line)
+    (ar-align-with-previous-line regexp)
     (while (not (or done (eobp)))
       (forward-line 1)
       (ar-align-with-previous-line)
