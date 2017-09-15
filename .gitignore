@@ -8,3 +8,4 @@ test/interpol.rb
 run-travis-ci.sh
 test/docstring-starting-with-paren.el
 befehle.org
+alt-*
