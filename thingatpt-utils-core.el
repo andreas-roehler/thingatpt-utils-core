@@ -1635,7 +1635,7 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
 
 (put 'delimited 'end-op-at
      (lambda ()
-       (if (looking-at ar-delimiter-string-atpt)
+       (if (ignore-errors (looking-at ar-delimiter-string-atpt))
 	   (progn
 	     (goto-char (match-end 0)) 
 	     (when (search-forward ar-delimiter-string-atpt nil t 1)
@@ -1699,12 +1699,12 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
 :type 'boolean
 :group 'werkstatt)
 
-(defcustom ar-delimiters-atpt "\"'#\$/=?!:;"
+(defcustom ar-delimiters-atpt "\"'#\$/=?!:*+~§%&-_;"
 "Specify the delimiter chars. "
 :type 'string
 :group 'werkstatt)
 
-(defcustom th-beg-delimiter "‘{<[(/$="
+(defcustom th-beg-delimiter "‘{<[(/$"
 "Specify the delimiter char."
 :type 'string
 :group 'werkstatt)
