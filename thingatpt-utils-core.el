@@ -1626,7 +1626,7 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
                ((nth 1 pps)
 		;; brace etc. not covered by (nth 1 pps)
 		(skip-chars-backward (concat "^" begdel))
-		(when (looking-back (concat "[" begdel "]"))
+		(when (looking-back (concat "[" begdel "]") (line-beginning-position))
 		  (forward-char -1)))
                (t (while (and (not (bobp))(re-search-backward (concat "[" begdel "]") nil 'move 1)(looking-at "\""))
                     (re-search-backward (concat "[" begdel "]") nil 'move 1))
@@ -1668,7 +1668,7 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
 		  ;; (end-of-form-base "(" ")" nil 'move nil nil t)
 		  (forward-list 1)
 		  ;; forward-list doesn't set match-data
-		  (looking-back ")"))
+		  (looking-back ")" (line-beginning-position)))
 		 ((eq (char-after) ar-delimiter-zeichen-atpt)
 		  (forward-char 1)
 		  (skip-chars-forward (concat "^" (char-to-string ar-delimiter-zeichen-atpt))))
@@ -1685,7 +1685,7 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
 	   (setq ar-delimiter-zeichen-atpt nil)
 	   (if (eq 5 (car (syntax-after (1- (point)))))
 	       (cons (1- (point)) (point))
-	     (when (looking-back (concat "[" enddel "]"))
+	     (when (looking-back (concat "[" enddel "]") (line-beginning-position))
 	       (cons (match-beginning 0) (match-end 0))))))))
 
 (defun ar-set-delimiter-zeichen ()
@@ -1753,7 +1753,6 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
      (lambda ()
        (unless
            (member (char-before) (list 32 ?\t 10 ?\r))
-         ;; (looking-back " \t\n\r")
          (skip-chars-backward thingatpt-file-name-chars))(point)))
 
 (put 'filename 'end-op-at
@@ -2032,7 +2031,7 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
      (lambda ()
        (let ((case-fold-search t)
 	     erg)
-	 (cond ((and (looking-back "#?x?[0-9a-f]+")
+	 (cond ((and (looking-back "#?x?[0-9a-f]+" (line-beginning-position))
 		     (goto-char (match-beginning 0))
 		     (ar-number-atpt)))
 	       (t
@@ -2307,7 +2306,7 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
                 (goto-char (match-end 0))
                 (while (and (search-forward triplequoteddq nil 'move 1)
                             (ar-in-delimiter-base triplequoteddq)))
-                (when (looking-back triplequoteddq)
+                (when (looking-back triplequoteddq (line-beginning-position))
                   (list (match-beginning 0) (match-end 0))
                   )))))
 
@@ -2341,7 +2340,7 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
                 (goto-char (match-end 0))
                 (while (and (search-forward triplequotedsq nil 'move 1)
                             (ar-in-delimiter-base triplequotedsq)))
-                (when (looking-back triplequotedsq)
+                (when (looking-back triplequotedsq (line-beginning-position)) 
                   (list (match-beginning 0) (match-end 0)))))))
 
 (put 'triplequotedsq 'forward-op-at
@@ -2375,23 +2374,23 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
 ;; Word
 (put 'word 'beginning-op-at
 (lambda () (when (looking-at "\\w")
-             (unless (looking-back "\\W")
+             (unless (looking-back "\\W" (line-beginning-position))
                (forward-word -1))
              (point))))
 
 (put 'word 'end-op-at
-(lambda () (and (looking-back "\\W")(looking-at "\\w"))
+(lambda () (and (looking-back "\\W")(looking-at "\\w" (line-beginning-position)))
   (forward-word 1)(point)))
 
 ;; Word-alpha-only
 (put 'wordalphaonly 'beginning-op-at
   (lambda () (when (looking-at "[[:alpha:]]")
-             (unless (looking-back "[^[:alpha:]]")
+             (unless (looking-back "[^[:alpha:]]" (line-beginning-position))
                (skip-chars-backward "[:alpha:]")
                (point)))))
 
 (put 'wordalphaonly 'end-op-at
-  (lambda () (when (and (looking-back "[^[:alpha:]]")(looking-at "[[:alpha:]]"))
+  (lambda () (when (and (looking-back "[^[:alpha:]]" (line-beginning-position))(looking-at "[[:alpha:]]" (line-beginning-position)))
              (skip-chars-forward "[:alpha:]")
              (point))))
 
@@ -2950,7 +2949,7 @@ Inspired by stuff like `paredit-splice-sexp-killing-backward'; however, instead 
          (beg (copy-marker (caar bounds)))
          (end (copy-marker (or (ignore-errors (cadr (cadr bounds)))(ignore-errors (cdr (cadr bounds)))))))
     (goto-char beg)
-    (when (not (looking-back "^[ \t\r\f\n]+"))
+    (when (not (looking-back "^[ \t\r\f\n]+" (line-beginning-position)))
       (newline ar-newlines-separate-before))
     (indent-according-to-mode)
     (save-excursion
@@ -3133,7 +3132,7 @@ searches backward with negative argument "
              thisend)
         (forward-char 1)
         (end-of-form-base startstring endstring)
-        (when (looking-back endstring)
+        (when (looking-back endstring (line-beginning-position))
           (replace-match "")
           (setq thisend (copy-marker (point)))
           (delete-region (car begstringpos) (cadr begstringpos))
