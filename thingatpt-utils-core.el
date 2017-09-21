@@ -1338,6 +1338,14 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
      (lambda ()
        (ar-forward-statement)))
 
+(put 'statement 'backward-op-at
+     (lambda ()
+       (ar-backward-statement)))
+
+(put 'statement 'forward-op-at
+     (lambda ()
+       (ar-forward-statement)))
+
 ;; String
 (put 'string 'beginning-op-at
      (lambda ()
