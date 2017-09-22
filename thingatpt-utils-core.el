@@ -2901,8 +2901,8 @@ Inspired by stuff like `paredit-splice-sexp-killing-backward'; however, instead 
         (inhibit-read-only t) bounds)
     (unless (and beg end)
       (setq bounds (ar-th-bounds thing))
-      (setq beg (caar bounds))
-      (setq end (or (ignore-errors (cadr (cadr bounds)))(ignore-errors (cdr (cadr bounds))))))
+      (setq beg (or (ignore-errors (caar bounds))(car-safe bounds)))
+      (setq end (or (ignore-errors (cadr (cadr bounds)))(ignore-errors (cdr (cadr bounds)))(ignore-errors (cdr bounds)))))
     (if (and beg end)
         (progn
           (hs-make-overlay beg end 'code)
@@ -2916,8 +2916,8 @@ Inspired by stuff like `paredit-splice-sexp-killing-backward'; however, instead 
         (inhibit-read-only t) bounds)
     (unless (and beg end)
       (setq bounds (ar-th-bounds thing))
-      (setq beg (caar bounds))
-      (setq end (or (ignore-errors (cadr (cadr bounds)))(ignore-errors (cdr (cadr bounds))))))
+      (setq beg (or (ignore-errors (caar bounds))(point-min)))
+      (setq end (or (ignore-errors (cadr (cadr bounds)))(ignore-errors (cdr (cadr bounds)))(ignore-errors (cdr end))(point-max))))
     (if (and beg end)
         (progn
           (hs-discard-overlays beg end)
