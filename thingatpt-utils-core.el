@@ -961,6 +961,26 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
      (when (char-equal ?’ (char-before)) (forward-char -1)
 	 (point))))
 
+;; Leftrightdoublequoted
+(put 'leftrightdoublequoted 'beginning-op-at
+     (lambda ()
+       (if (char-equal ?“ (char-after))
+          (list (point) (1+ (point)))
+       (beginning-of-form-base "“" "”" nil 'move 1 nil nil 'ar-syntax t))))
+
+(put 'leftrightdoublequoted 'end-op-at
+     (lambda ()
+       (when (char-equal ?“ (char-after))
+          (forward-char 1) )
+       (end-of-form-base "“" "”" nil 'move 1 nil nil 'ar-syntax t)))
+
+(put 'leftrightdoublequoted 'forward-op-at
+  (lambda ()
+     (forward-char 1)
+     (ar-char-delimiters-end ?” t)
+     (when (char-equal ?” (char-before)) (forward-char -1)
+	 (point))))
+
 ;; Parentized
 (put 'parentized 'beginning-op-at
      (lambda ()
@@ -3460,6 +3480,11 @@ it defaults to `<', otherwise it defaults to `string<'."
   (ar-th-delimit--intern thing "‘" "’" arg iact))
 
 ;;;###autoload
+(defun ar-th-leftrightdoublequote (thing &optional arg iact)
+  " "
+  (ar-th-delimit--intern thing "“" "”" arg iact))
+
+;;;###autoload
 (defun ar-th-parentize (thing &optional arg iact)
   " "
   (ar-th-delimit--intern thing "(" ")" arg iact))
@@ -3767,6 +3792,7 @@ it defaults to `<', otherwise it defaults to `string<'."
     '(lesserangle 60 62)
     '(greaterangle 62 60)
     '(leftrightsinglequote 8216 8217)
+    '(leftrightdoublequote 8220 8221)
     '(parentize 40 41)
     ))
 
@@ -3777,6 +3803,7 @@ it defaults to `<', otherwise it defaults to `string<'."
     'lesserangle
     'greaterangle
     'leftrightsinglequote
+    'leftrightdoublequote
     'parentize
     ))
 
@@ -4032,6 +4059,7 @@ it defaults to `<', otherwise it defaults to `string<'."
     '(lesserangled "<" ">")
     '(greaterangled ">" "<")
     '(leftrightsinglequoted "‘" "’")
+    '(leftrightdoublequoted "“" "”")
     '(parentized "(" ")")
     ))
 
@@ -4042,6 +4070,7 @@ it defaults to `<', otherwise it defaults to `string<'."
     'lesserangled
     'greaterangled
     'leftrightsinglequoted
+    'leftrightdoublequoted
     'parentized
     ))
 
