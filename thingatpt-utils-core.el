@@ -1669,6 +1669,7 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
 	     (when (search-forward ar-delimiter-string-atpt nil t 1)
 	       (cons (match-beginning 0) (match-end 0))))
 	 (let ((orig (point))
+	       (begdel (concat th-beg-delimiter ar-delimiters-atpt))
 	       (enddel (or (and ar-delimiter-zeichen-atpt (setq ar-delimiter-zeichen-atpt (ar--return-complement-char-maybe ar-delimiter-zeichen-atpt))) ar-delimiter-string-atpt (concat th-end-delimiter ar-delimiters-atpt))))
 	   (cond ((and enddel (characterp enddel) (setq enddel (char-to-string enddel)))
 		  (while (and
@@ -1683,7 +1684,7 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
 		 ((looking-at "{")
 		  (goto-char (match-end 0))
 		  (end-of-form-base "{" "}" nil 'move nil nil t))
-		 ((eq (char-after) ?\()
+		 ((eq (char-after) 40)
 		  ;; (goto-char (match-end 0))
 		  ;; (end-of-form-base "(" ")" nil 'move nil nil t)
 		  (forward-list 1)
@@ -1692,6 +1693,9 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
 		 ((eq (char-after) ar-delimiter-zeichen-atpt)
 		  (forward-char 1)
 		  (skip-chars-forward (concat "^" (char-to-string ar-delimiter-zeichen-atpt))))
+		 ((looking-at (concat "[" begdel "]"))
+		  (goto-char (match-end 0)) 
+		  (re-search-forward (concat "[" enddel "]") nil t 1)) 
 		 ((looking-at (concat "[" ar-delimiters-atpt "]"))
 		  (ar-set-delimiter-zeichen)
 		  (forward-char 1)
@@ -1732,12 +1736,12 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
 :type 'string
 :group 'werkstatt)
 
-(defcustom th-beg-delimiter "‘{<[(/$"
+(defcustom th-beg-delimiter "‘“{<[(/$"
 "Specify the delimiter char."
 :type 'string
 :group 'werkstatt)
 
-(defcustom th-end-delimiter "]}>)/$’="
+(defcustom th-end-delimiter "]}>”)/$’="
 "Specify the delimiter char."
 :type 'string
 :group 'werkstatt)
