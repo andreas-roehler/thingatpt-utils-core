@@ -544,7 +544,7 @@ See http://debbugs.gnu.org/cgi/bugreport.cgi?bug=7115"
   (while (< (current-column) col)
     (insert 32)))
 
- (defun ar--align-with-previous-line (uppercol downcol orig upperpos)
+(defun ar--align-with-previous-line (uppercol downcol orig upperpos)
   (if (< uppercol downcol)
       (let ((col downcol))
 	(goto-char upperpos)
@@ -571,27 +571,30 @@ Defaults aligning to equal and vertical bar sign"
 			     (current-column))))
 	   upperpos
 	   (uppercol (progn
-		       (forward-line -1)
-		       (unless (ar-empty-line-p)
-			 (beginning-of-line)
-			 (when (looking-at regexp)
-			   (save-excursion
-			     (goto-char (match-beginning 3))
-			     (setq upperpos (point))
-			     (current-column)))))))
+		       (beginning-of-line)
+		       (unless (bobp)
+			 (forward-line -1)
+			 (unless (ar-empty-line-p)
+			   (beginning-of-line)
+			   (when (looking-at regexp)
+			     (save-excursion
+			       (goto-char (match-beginning 3))
+			       (setq upperpos (point))
+			       (current-column))))))))
       (when (and downcol uppercol)
 	(ar--align-with-previous-line uppercol downcol orig upperpos)))))
 
 (defun ar-align (beg end &optional regexp)
   (interactive "r*")
-  (save-excursion
-    (goto-char beg)
-    (ar-align-with-previous-line regexp)
-    (while (not (or done (eobp)))
-      (forward-line 1)
-      (ar-align-with-previous-line)
-      (when (<= end (line-end-position))
-	(setq done t)))))
+  (let (done)
+    (save-excursion
+      (goto-char beg)
+      (ar-align-with-previous-line regexp)
+      (while (not (or done (eobp)))
+	(forward-line 1)
+	(ar-align-with-previous-line)
+	(when (<= end (line-end-position))
+	  (setq done t))))))
 
 (provide 'ar-subr)
 ;;; ar-subr.el ends here
