@@ -1576,26 +1576,26 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
 ;; Author: Francis J. Wright <F.J.Wright at qmul.ac.uk>
 ;; URL: http://centaur.maths.qmul.ac.uk/Emacs/
 (defcustom ar-csv-separator-atpt ";"
-"Char to distinguish datasets in a `comma`-separated row"
-:type 'string
-:group 'werkstatt)
+  "Char to distinguish datasets in a `comma`-separated row"
+  :type 'string
+  :group 'werkstatt)
 ;; (when (boundp 'csv-separators)
 ;; (setq ar-separator-atpt csv-separators))
 
 (put 'csv 'beginning-op-at
-(lambda ()
-  (skip-chars-backward (concat "^" ar-csv-separator-atpt))(point)))
+  (lambda ()
+    (skip-chars-backward (concat "^" ar-csv-separator-atpt))(point)))
 
 (put 'csv 'end-op-at
-(lambda ()
-  (skip-chars-forward (concat "^" ar-csv-separator-atpt))(point)))
+  (lambda ()
+    (skip-chars-forward (concat "^" ar-csv-separator-atpt))(point)))
 
 ;; DATE
 (put 'date 'beginning-op-at
- (lambda ()
-  ;; provide for the case, we are over a
-  ;; string-delimiter as `"'
-  (when
+   (lambda ()
+    ;; provide for the case, we are over a
+    ;; string-delimiter as `"'
+    (when
       (and (not (eq 32 (if (featurep 'xemacs)
                            (encode-char (char-after) 'ucs)
                          (char-after))))
@@ -1611,9 +1611,9 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
   (skip-chars-forward " ")(point)))
 
 (put 'date 'end-op-at
-  (lambda ()
-    (skip-chars-forward "0-9 .-")
-    (skip-chars-backward " ")(point)))
+   (lambda ()
+     (skip-chars-forward "0-9 .-")
+     (skip-chars-backward " ")(point)))
 
 ;; Defun
 (put 'defun 'beginning-op-at (lambda (&optional arg) (beginning-of-defun (or arg 1))(point)))
@@ -1737,9 +1737,22 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
 (make-variable-buffer-local 'ar-delimiter-string-atpt)
 
 (defcustom ar-use-parse-partial-sexp t
-"When nil, parse symbolic expressions by regexp. "
-:type 'boolean
-:group 'werkstatt)
+  "When nil, parse symbolic expressions by regexp. "
+  :type 'boolean
+  :group 'werkstatt)
+
+(defcustom ar-scan-whole-buffer-p nil
+  "When non-nil, scan delimiters from point-min.
+
+Otherwise assume being behind an opening delimiter or at a closing "
+  :type 'boolean
+  :group 'werkstatt)
+
+(defcustom ar-widen-p nil
+  "When non-nil, run widen beforen scanning delimiters. "
+  :type 'boolean
+  :group 'werkstatt)
+
 
 (defcustom ar-delimiters-atpt "\"'#\$/=?!:*+~§%&-_;"
 "Specify the delimiter chars. "
@@ -2621,7 +2634,7 @@ it would doublequote a word at point "
 ;; ar-insert-thingatpt-th-funktionen start
 
 ;;;###autoload
-(defun ar-th (thing &optional arg no-delimiters iact check)
+(defun ar-th (thing &optional no-delimiters iact check)
   "Returns a buffer substring according to THING.
   THING may be a well known form as `symbol',
   `list', `sexp', `defun' or a newly defined THING.
@@ -2634,13 +2647,10 @@ it would doublequote a word at point "
   with universal-argument for example, THING returned is
   stripped by delimiters resp. markup
 
-
   Optional CHECK will count for nesting, otherwise being behind an opening or at a closing delimiter is assumed
 
  "
-  (let ((no-delimiters (or no-delimiters (eq 4 (prefix-numeric-value arg))))
-        (arg (or arg (setq arg 1))))
-    (when (symbolp arg) (setq arg '-1))
+  (let ((no-delimiters (or no-delimiters (eq 4 (prefix-numeric-value no-delimiters)))))
     (condition-case nil
 	(let* ((bounds (ar-th-bounds thing no-delimiters iact check))
 	       (beg (if no-delimiters
