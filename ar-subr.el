@@ -1,7 +1,5 @@
 ;;; ar-subr.el --- A reliable beginning-of-defun and other helper functions  -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2015  Andreas Röhler
-
 ;; Author: Andreas Röhler <andreas.roehler@online.de>
 ;; Keywords: languages
 
@@ -20,6 +18,8 @@
 
 ;;; Commentary:
 
+;; Provide a reliable jump to start and end of a defun - and some more
+;; subroutines.
 ;;
 
 ;;; Code:
@@ -131,7 +131,7 @@ Returns position reached if point was moved. "
 
 (defconst ar-vertical-line-re
   (concat
-   ".*[ \t]*[^|\n]+|\\_>")
+   ".*|")
   "Regular expression matching a guard.")
 
 ;;; string-strip stuff ends here
@@ -198,7 +198,7 @@ Travel empty lines "
 	(forward-line 1)
 	(end-of-line)
 	;; (setq orig (point))
-	))
+))
     (and (eq orig (point)) (prog1 (forward-line 1) (back-to-indentation))
 	 (while (member (char-after) (list char 10))(forward-line 1)(back-to-indentation)))
     ;; go
@@ -212,11 +212,11 @@ Travel empty lines "
   (interactive)
   (let* ((pps (parse-partial-sexp (or start (point-min)) (point)))
 	 (erg (and (nth 4 pps) (nth 8 pps))))
-    (unless erg
-      (when (or  (eq (car (syntax-after (point))) 11)
-		 (ignore-errors  (looking-at comment-start)))
-	   (setq erg (point))))
-    erg))
+    (unless (or erg (nth 3 pps))
+      (when (or (eq (car (syntax-after (point))) 11)
+		(ignore-errors (looking-at comment-start)))
+	(setq erg (point))))
+  erg))
 
 (defun ar-backward-comment (&optional pos)
   "Got to beginning of a commented section. "
@@ -567,7 +567,7 @@ Defaults aligning to equal and vertical bar sign"
 	   (regexp (or regexp (concat ar-eq-assignment-re "\\|" ar-vertical-line-re)))
 	   (downcol (progn (beginning-of-line)
 			   (when (looking-at regexp)
-			     (goto-char (match-beginning 3))
+			     (ignore-errors (goto-char (match-beginning 3)))
 			     (current-column))))
 	   upperpos
 	   (uppercol (progn
