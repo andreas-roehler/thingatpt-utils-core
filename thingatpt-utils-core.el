@@ -1748,12 +1748,6 @@ Otherwise assume being behind an opening delimiter or at a closing "
   :type 'boolean
   :group 'werkstatt)
 
-(defcustom ar-widen-p nil
-  "When non-nil, run widen beforen scanning delimiters. "
-  :type 'boolean
-  :group 'werkstatt)
-
-
 (defcustom ar-delimiters-atpt "\"'#\$/=?!:*+~§%&-_;"
 "Specify the delimiter chars. "
 :type 'string
@@ -2641,38 +2635,36 @@ it would doublequote a word at point "
   When mark-thingatpt is `t' - the default - a found THING
   is set as current region, enabling further action on them
 
-  If ARG is greater 1, the arg-th thing forward is return, with
-  negative value before
-  If NO-DELIMITERS, set by user functions
-  with universal-argument for example, THING returned is
+  If NO-DELIMITERS set by user functions, THING returned is
   stripped by delimiters resp. markup
 
   Optional CHECK will count for nesting, otherwise being behind an opening or at a closing delimiter is assumed
 
  "
-  (let ((no-delimiters (or no-delimiters (eq 4 (prefix-numeric-value no-delimiters)))))
-    (condition-case nil
-	(let* ((bounds (ar-th-bounds thing no-delimiters iact check))
-	       (beg (if no-delimiters
-			(cond ((ignore-errors (numberp (car-safe bounds)))
-			       (car-safe bounds))
-			      ((ignore-errors (caar bounds))
-			       (caar bounds))
-			      (t (car-safe bounds)))
-		      (cond ((ignore-errors (caar bounds))
+  (condition-case nil
+      (let* ((no-delimiters (or no-delimiters (eq 4 (prefix-numeric-value no-delimiters))))
+	     (check (or check ar-scan-whole-buffer-p))
+	     (bounds (ar-th-bounds thing no-delimiters iact check))
+	     (beg (if no-delimiters
+		      (cond ((ignore-errors (numberp (car-safe bounds)))
+			     (car-safe bounds))
+			    ((ignore-errors (caar bounds))
 			     (caar bounds))
-			    (t (car-safe bounds)))))
-	       (end (if no-delimiters (car-safe (cdr-safe bounds)) (or (ignore-errors (cadr (cadr bounds)))(ignore-errors (cdr (cadr bounds)))(cdr bounds))))
-	       erg)
-	  (when (and beg end)
-	    (setq erg
-		  (buffer-substring-no-properties beg end))
-	    (when (or thing-copy-region iact)
-	      (ar-th-mark thing nil beg end))
-	    (when (or thing-copy-region iact) (kill-new erg))
-	    (when iact (message "%s" erg))
-	    erg))
-      (error nil))))
+			    (t (car-safe bounds)))
+		    (cond ((ignore-errors (caar bounds))
+			   (caar bounds))
+			  (t (car-safe bounds)))))
+	     (end (if no-delimiters (car-safe (cdr-safe bounds)) (or (ignore-errors (cadr (cadr bounds)))(ignore-errors (cdr (cadr bounds)))(cdr bounds))))
+	     erg)
+	(when (and beg end)
+	  (setq erg
+		(buffer-substring-no-properties beg end))
+	  (when (or thing-copy-region iact)
+	    (ar-th-mark thing nil beg end no-delimiters iact check))
+	  (when (or thing-copy-region iact) (kill-new erg))
+	  (when iact (message "%s" erg))
+	  erg))
+    (error nil)))
 
 (defun ar--th-bounds-char-return (beg end &optional iact check orig no-delimiters)
   (when (and beg end
@@ -3332,7 +3324,7 @@ it defaults to `<', otherwise it defaults to `string<'."
 	(narrow-to-region beg end)
 	(ar-th-delim-intern thing beg end beg-char end-char)))))
 
-(defun ar-th-base-copy-or (kind arg &optional iact)
+(defun ar-th-base-copy-or (kind arg &optional iact check)
   " "
   (let* ((expr (format "%s" kind))
 	 (arg (if arg (prefix-numeric-value arg) 1))
@@ -3348,11 +3340,11 @@ it defaults to `<', otherwise it defaults to `string<'."
       (if (use-region-p)
 	  (setq erg (funcall (intern-soft (concat "ar-trim- " expr "-in-region-atpt"))))
 	(or (setq erg (funcall (intern-soft (concat "ar-trim-" expr suffix "-atpt"))))
-	    (funcall (intern-soft (concat "ar-" expr "-" copy-or-alternative "-atpt")) arg))))
+	    (funcall (intern-soft (concat "ar-" expr "-" copy-or-alternative "-atpt")) (eq 4  (prefix-numeric-value arg))))))
      ((< 0 arg)
       (if (use-region-p)
-	  (setq erg (funcall (intern-soft (concat "ar-" expr "-region-atpt")) arg))
-	(or (setq erg (funcall (intern-soft (concat "ar-" expr suffix "-atpt")) arg))
+	  (setq erg (funcall (intern-soft (concat "ar-" expr "-region-atpt")) (eq 4  (prefix-numeric-value arg))))
+	(or (setq erg (funcall (intern-soft (concat "ar-" expr suffix "-atpt")) (eq 4  (prefix-numeric-value arg))))
 	    (funcall (intern-soft (concat "ar-" expr "-" copy-or-alternative "-atpt")) arg))))
 
      (t (setq erg (funcall (intern-soft (concat "ar-kill-" expr suffix "-atpt")) arg))))))
