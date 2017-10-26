@@ -1004,285 +1004,295 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
 
 ;; Paired delimited forms end
 
-;; ar-atpt-python-quoted-raw start
+;; Unpaired delimited forms start
 
 ;; Backslashed
 (put 'backslashed 'beginning-op-at
      (lambda ()
-       (let ((beg (ar-char-delimiters-beginning ?\\)))
-            (cons beg (1+ beg))))) 
+       (let ((beg (ar-char-delimiters-beginning ?\\ ar-thing-escaped ar-thing-inside-comments ar-thing-no-nest)))
+            (cons beg (1+ beg)))))
 
 (put 'backslashed 'end-op-at
      (lambda ()
        (when (char-equal (char-after) ?\\)
          (forward-char 1))
-       (let ((end (ar-char-delimiters-end ?\\ t)))
+       (let ((end (ar-char-delimiters-end ?\\ t ar-thing-escaped)))
          (cons (1- end) end))))
 
 (put 'backslashed 'forward-op-at
      (lambda ()
        (when (char-equal (char-after) ?\\)
          (forward-char 1))
-       (ar-char-delimiters-end ?\\ t)))
+       (ar-char-delimiters-end ?\\ t ar-thing-escaped)))
 
 (put 'backslashed 'backward-op-at
      (lambda ()
-       (ar-char-delimiters-beginning ?\\)))
+       (ar-char-delimiters-beginning ?\\ ar-thing-escaped ar-thing-inside-comments ar-thing-no-nest)))
+
 
 ;; Backticked
 (put 'backticked 'beginning-op-at
      (lambda ()
-       (let ((beg (ar-char-delimiters-beginning ?`)))
-            (cons beg (1+ beg))))) 
+       (let ((beg (ar-char-delimiters-beginning ?` ar-thing-escaped ar-thing-inside-comments ar-thing-no-nest)))
+            (cons beg (1+ beg)))))
 
 (put 'backticked 'end-op-at
      (lambda ()
        (when (char-equal (char-after) ?`)
          (forward-char 1))
-       (let ((end (ar-char-delimiters-end ?` t)))
+       (let ((end (ar-char-delimiters-end ?` t ar-thing-escaped)))
          (cons (1- end) end))))
 
 (put 'backticked 'forward-op-at
      (lambda ()
        (when (char-equal (char-after) ?`)
          (forward-char 1))
-       (ar-char-delimiters-end ?` t)))
+       (ar-char-delimiters-end ?` t ar-thing-escaped)))
 
 (put 'backticked 'backward-op-at
      (lambda ()
-       (ar-char-delimiters-beginning ?`)))
+       (ar-char-delimiters-beginning ?` ar-thing-escaped ar-thing-inside-comments ar-thing-no-nest)))
+
 
 ;; Coloned
 (put 'coloned 'beginning-op-at
      (lambda ()
-       (let ((beg (ar-char-delimiters-beginning ?:)))
-            (cons beg (1+ beg))))) 
+       (let ((beg (ar-char-delimiters-beginning ?: ar-thing-escaped ar-thing-inside-comments ar-thing-no-nest)))
+            (cons beg (1+ beg)))))
 
 (put 'coloned 'end-op-at
      (lambda ()
        (when (char-equal (char-after) ?:)
          (forward-char 1))
-       (let ((end (ar-char-delimiters-end ?: t)))
+       (let ((end (ar-char-delimiters-end ?: t ar-thing-escaped)))
          (cons (1- end) end))))
 
 (put 'coloned 'forward-op-at
      (lambda ()
        (when (char-equal (char-after) ?:)
          (forward-char 1))
-       (ar-char-delimiters-end ?: t)))
+       (ar-char-delimiters-end ?: t ar-thing-escaped)))
 
 (put 'coloned 'backward-op-at
      (lambda ()
-       (ar-char-delimiters-beginning ?:)))
+       (ar-char-delimiters-beginning ?: ar-thing-escaped ar-thing-inside-comments ar-thing-no-nest)))
+
 
 ;; Dollared
 (put 'dollared 'beginning-op-at
      (lambda ()
-       (let ((beg (ar-char-delimiters-beginning ?$)))
-            (cons beg (1+ beg))))) 
+       (let ((beg (ar-char-delimiters-beginning ?$ ar-thing-escaped ar-thing-inside-comments ar-thing-no-nest)))
+            (cons beg (1+ beg)))))
 
 (put 'dollared 'end-op-at
      (lambda ()
        (when (char-equal (char-after) ?$)
          (forward-char 1))
-       (let ((end (ar-char-delimiters-end ?$ t)))
+       (let ((end (ar-char-delimiters-end ?$ t ar-thing-escaped)))
          (cons (1- end) end))))
 
 (put 'dollared 'forward-op-at
      (lambda ()
        (when (char-equal (char-after) ?$)
          (forward-char 1))
-       (ar-char-delimiters-end ?$ t)))
+       (ar-char-delimiters-end ?$ t ar-thing-escaped)))
 
 (put 'dollared 'backward-op-at
      (lambda ()
-       (ar-char-delimiters-beginning ?$)))
+       (ar-char-delimiters-beginning ?$ ar-thing-escaped ar-thing-inside-comments ar-thing-no-nest)))
+
 
 ;; Doublequoted
 (put 'doublequoted 'beginning-op-at
      (lambda ()
-       (let ((beg (ar-char-delimiters-beginning ?\")))
-            (cons beg (1+ beg))))) 
+       (let ((beg (ar-char-delimiters-beginning ?\" ar-thing-escaped ar-thing-inside-comments ar-thing-no-nest)))
+            (cons beg (1+ beg)))))
 
 (put 'doublequoted 'end-op-at
      (lambda ()
        (when (char-equal (char-after) ?\")
          (forward-char 1))
-       (let ((end (ar-char-delimiters-end ?\" t)))
+       (let ((end (ar-char-delimiters-end ?\" t ar-thing-escaped)))
          (cons (1- end) end))))
 
 (put 'doublequoted 'forward-op-at
      (lambda ()
        (when (char-equal (char-after) ?\")
          (forward-char 1))
-       (ar-char-delimiters-end ?\" t)))
+       (ar-char-delimiters-end ?\" t ar-thing-escaped)))
 
 (put 'doublequoted 'backward-op-at
      (lambda ()
-       (ar-char-delimiters-beginning ?\")))
+       (ar-char-delimiters-beginning ?\" ar-thing-escaped ar-thing-inside-comments ar-thing-no-nest)))
+
 
 ;; Equalized
 (put 'equalized 'beginning-op-at
      (lambda ()
-       (let ((beg (ar-char-delimiters-beginning ?=)))
-            (cons beg (1+ beg))))) 
+       (let ((beg (ar-char-delimiters-beginning ?= ar-thing-escaped ar-thing-inside-comments ar-thing-no-nest)))
+            (cons beg (1+ beg)))))
 
 (put 'equalized 'end-op-at
      (lambda ()
        (when (char-equal (char-after) ?=)
          (forward-char 1))
-       (let ((end (ar-char-delimiters-end ?= t)))
+       (let ((end (ar-char-delimiters-end ?= t ar-thing-escaped)))
          (cons (1- end) end))))
 
 (put 'equalized 'forward-op-at
      (lambda ()
        (when (char-equal (char-after) ?=)
          (forward-char 1))
-       (ar-char-delimiters-end ?= t)))
+       (ar-char-delimiters-end ?= t ar-thing-escaped)))
 
 (put 'equalized 'backward-op-at
      (lambda ()
-       (ar-char-delimiters-beginning ?=)))
+       (ar-char-delimiters-beginning ?= ar-thing-escaped ar-thing-inside-comments ar-thing-no-nest)))
+
 
 ;; Hyphened
 (put 'hyphened 'beginning-op-at
      (lambda ()
-       (let ((beg (ar-char-delimiters-beginning ?-)))
-            (cons beg (1+ beg))))) 
+       (let ((beg (ar-char-delimiters-beginning ?- ar-thing-escaped ar-thing-inside-comments ar-thing-no-nest)))
+            (cons beg (1+ beg)))))
 
 (put 'hyphened 'end-op-at
      (lambda ()
        (when (char-equal (char-after) ?-)
          (forward-char 1))
-       (let ((end (ar-char-delimiters-end ?- t)))
+       (let ((end (ar-char-delimiters-end ?- t ar-thing-escaped)))
          (cons (1- end) end))))
 
 (put 'hyphened 'forward-op-at
      (lambda ()
        (when (char-equal (char-after) ?-)
          (forward-char 1))
-       (ar-char-delimiters-end ?- t)))
+       (ar-char-delimiters-end ?- t ar-thing-escaped)))
 
 (put 'hyphened 'backward-op-at
      (lambda ()
-       (ar-char-delimiters-beginning ?-)))
+       (ar-char-delimiters-beginning ?- ar-thing-escaped ar-thing-inside-comments ar-thing-no-nest)))
+
 
 ;; Singlequoted
 (put 'singlequoted 'beginning-op-at
      (lambda ()
-       (let ((beg (ar-char-delimiters-beginning ?')))
-            (cons beg (1+ beg))))) 
+       (let ((beg (ar-char-delimiters-beginning ?' ar-thing-escaped ar-thing-inside-comments ar-thing-no-nest)))
+            (cons beg (1+ beg)))))
 
 (put 'singlequoted 'end-op-at
      (lambda ()
        (when (char-equal (char-after) ?')
          (forward-char 1))
-       (let ((end (ar-char-delimiters-end ?' t)))
+       (let ((end (ar-char-delimiters-end ?' t ar-thing-escaped)))
          (cons (1- end) end))))
 
 (put 'singlequoted 'forward-op-at
      (lambda ()
        (when (char-equal (char-after) ?')
          (forward-char 1))
-       (ar-char-delimiters-end ?' t)))
+       (ar-char-delimiters-end ?' t ar-thing-escaped)))
 
 (put 'singlequoted 'backward-op-at
      (lambda ()
-       (ar-char-delimiters-beginning ?')))
+       (ar-char-delimiters-beginning ?' ar-thing-escaped ar-thing-inside-comments ar-thing-no-nest)))
+
 
 ;; Slashed
 (put 'slashed 'beginning-op-at
      (lambda ()
-       (let ((beg (ar-char-delimiters-beginning ?/)))
-            (cons beg (1+ beg))))) 
+       (let ((beg (ar-char-delimiters-beginning ?/ ar-thing-escaped ar-thing-inside-comments ar-thing-no-nest)))
+            (cons beg (1+ beg)))))
 
 (put 'slashed 'end-op-at
      (lambda ()
        (when (char-equal (char-after) ?/)
          (forward-char 1))
-       (let ((end (ar-char-delimiters-end ?/ t)))
+       (let ((end (ar-char-delimiters-end ?/ t ar-thing-escaped)))
          (cons (1- end) end))))
 
 (put 'slashed 'forward-op-at
      (lambda ()
        (when (char-equal (char-after) ?/)
          (forward-char 1))
-       (ar-char-delimiters-end ?/ t)))
+       (ar-char-delimiters-end ?/ t ar-thing-escaped)))
 
 (put 'slashed 'backward-op-at
      (lambda ()
-       (ar-char-delimiters-beginning ?/)))
+       (ar-char-delimiters-beginning ?/ ar-thing-escaped ar-thing-inside-comments ar-thing-no-nest)))
+
 
 ;; Stared
 (put 'stared 'beginning-op-at
      (lambda ()
-       (let ((beg (ar-char-delimiters-beginning ?*)))
-            (cons beg (1+ beg))))) 
+       (let ((beg (ar-char-delimiters-beginning ?* ar-thing-escaped ar-thing-inside-comments ar-thing-no-nest)))
+            (cons beg (1+ beg)))))
 
 (put 'stared 'end-op-at
      (lambda ()
        (when (char-equal (char-after) ?*)
          (forward-char 1))
-       (let ((end (ar-char-delimiters-end ?* t)))
+       (let ((end (ar-char-delimiters-end ?* t ar-thing-escaped)))
          (cons (1- end) end))))
 
 (put 'stared 'forward-op-at
      (lambda ()
        (when (char-equal (char-after) ?*)
          (forward-char 1))
-       (ar-char-delimiters-end ?* t)))
+       (ar-char-delimiters-end ?* t ar-thing-escaped)))
 
 (put 'stared 'backward-op-at
      (lambda ()
-       (ar-char-delimiters-beginning ?*)))
+       (ar-char-delimiters-beginning ?* ar-thing-escaped ar-thing-inside-comments ar-thing-no-nest)))
+
 
 ;; Underscored
 (put 'underscored 'beginning-op-at
      (lambda ()
-       (let ((beg (ar-char-delimiters-beginning ?_)))
-            (cons beg (1+ beg))))) 
+       (let ((beg (ar-char-delimiters-beginning ?_ ar-thing-escaped ar-thing-inside-comments ar-thing-no-nest)))
+            (cons beg (1+ beg)))))
 
 (put 'underscored 'end-op-at
      (lambda ()
        (when (char-equal (char-after) ?_)
          (forward-char 1))
-       (let ((end (ar-char-delimiters-end ?_ t)))
+       (let ((end (ar-char-delimiters-end ?_ t ar-thing-escaped)))
          (cons (1- end) end))))
 
 (put 'underscored 'forward-op-at
      (lambda ()
        (when (char-equal (char-after) ?_)
          (forward-char 1))
-       (ar-char-delimiters-end ?_ t)))
+       (ar-char-delimiters-end ?_ t ar-thing-escaped)))
 
 (put 'underscored 'backward-op-at
      (lambda ()
-       (ar-char-delimiters-beginning ?_)))
+       (ar-char-delimiters-beginning ?_ ar-thing-escaped ar-thing-inside-comments ar-thing-no-nest)))
+
 
 ;; Whitespaced
 (put 'whitespaced 'beginning-op-at
      (lambda ()
-       (let ((beg (ar-char-delimiters-beginning ? )))
-            (cons beg (1+ beg))))) 
+       (let ((beg (ar-char-delimiters-beginning ?  ar-thing-escaped ar-thing-inside-comments ar-thing-no-nest)))
+            (cons beg (1+ beg)))))
 
 (put 'whitespaced 'end-op-at
      (lambda ()
        (when (char-equal (char-after) ? )
          (forward-char 1))
-       (let ((end (ar-char-delimiters-end ?  t)))
+       (let ((end (ar-char-delimiters-end ?  t ar-thing-escaped)))
          (cons (1- end) end))))
 
 (put 'whitespaced 'forward-op-at
      (lambda ()
        (when (char-equal (char-after) ? )
          (forward-char 1))
-       (ar-char-delimiters-end ?  t)))
+       (ar-char-delimiters-end ?  t ar-thing-escaped)))
 
 (put 'whitespaced 'backward-op-at
      (lambda ()
-       (ar-char-delimiters-beginning ? )))
+       (ar-char-delimiters-beginning ?  ar-thing-escaped ar-thing-inside-comments ar-thing-no-nest)))
 
-;; ar-atpt-python-quoted-raw start
 
 ;; Unpaired delimited forms end
 
@@ -2611,7 +2621,7 @@ it would doublequote a word at point "
 ;; ar-insert-thingatpt-th-funktionen start
 
 ;;;###autoload
-(defun ar-th (thing &optional arg no-delimiters iact)
+(defun ar-th (thing &optional arg no-delimiters iact check)
   "Returns a buffer substring according to THING.
   THING may be a well known form as `symbol',
   `list', `sexp', `defun' or a newly defined THING.
@@ -2622,57 +2632,57 @@ it would doublequote a word at point "
   negative value before
   If NO-DELIMITERS, set by user functions
   with universal-argument for example, THING returned is
-  stripped by delimiters resp. markup "
+  stripped by delimiters resp. markup
+
+
+  Optional CHECK will count for nesting, otherwise being behind an opening or at a closing delimiter is assumed
+
+ "
   (let ((no-delimiters (or no-delimiters (eq 4 (prefix-numeric-value arg))))
         (arg (or arg (setq arg 1))))
     (when (symbolp arg) (setq arg '-1))
-    (if (and (not (eq 1 arg))(not (eq 4 (prefix-numeric-value arg))))
-        (when (or (< 1 arg) (> 1 arg))
-          (ar-th-forward thing arg (called-interactively-p 'any)))
-      (condition-case nil
-          (let* ((bounds (ar-th-bounds thing no-delimiters))
-		 (beg (if no-delimiters
-			  (cond ((ignore-errors (numberp (car-safe bounds)))
-				 (car-safe bounds))
-				((ignore-errors (caar bounds))
-				 (caar bounds))
-				(t (car-safe bounds)))
-			(cond ((ignore-errors (caar bounds))
+    (condition-case nil
+	(let* ((bounds (ar-th-bounds thing no-delimiters iact check))
+	       (beg (if no-delimiters
+			(cond ((ignore-errors (numberp (car-safe bounds)))
+			       (car-safe bounds))
+			      ((ignore-errors (caar bounds))
 			       (caar bounds))
 			      (t (car-safe bounds)))
+		      (cond ((ignore-errors (caar bounds))
+			     (caar bounds))
+			    (t (car-safe bounds)))))
+	       (end (if no-delimiters (car-safe (cdr-safe bounds)) (or (ignore-errors (cadr (cadr bounds)))(ignore-errors (cdr (cadr bounds)))(cdr bounds))))
+	       erg)
+	  (when (and beg end)
+	    (setq erg
+		  (buffer-substring-no-properties beg end))
+	    (when (or thing-copy-region iact)
+	      (ar-th-mark thing nil beg end))
+	    (when (or thing-copy-region iact) (kill-new erg))
+	    (when iact (message "%s" erg))
+	    erg))
+      (error nil))))
 
-			))
-		 (end (if no-delimiters (car-safe (cdr-safe bounds)) (or (ignore-errors (cadr (cadr bounds)))(ignore-errors (cdr (cadr bounds)))(cdr bounds))))
-		 erg)
-	    (when (and beg end)
-	      (setq erg
-                    (buffer-substring-no-properties beg end))
-	      (when (or thing-copy-region iact)
-		(ar-th-mark thing nil beg end))
-	      (when (or thing-copy-region iact) (kill-new erg))
-	      (when iact (message "%s" erg))
-	      erg))
-	(error nil)))))
-
-(defun ar--th-bounds-char-return (beg end &optional iact no-check orig no-delimiters)
+(defun ar--th-bounds-char-return (beg end &optional iact check orig no-delimiters)
   (when (and beg end
 	     (not (eq beg end))
 	     (or (eobp)
-		 (or no-check
+		 (or check
 		     (<= orig end))))
     (when iact (message "%s %s"  beg end))
     (if no-delimiters
 	(cons (1+ beg) (1- beg))
       (cons beg end))))
 
-(defun ar--th-bounds-list-return (beg end &optional iact no-check orig no-delimiters)
+(defun ar--th-bounds-list-return (beg end &optional iact check orig no-delimiters)
   (message "%s" no-delimiters)
   (let (erg)
     (when
 	(and beg end
 	     (not (eq beg end))
 	     (or (eobp)
-		 (or no-check
+		 (or check
 		     (<= orig (or
 			       (ignore-errors (cadr end))
 			       (ignore-errors (cdr end)))))))
@@ -2686,32 +2696,37 @@ it would doublequote a word at point "
       erg)))
 
 ;;;###autoload
-(defun ar-th-bounds (thing &optional no-delimiters iact no-check)
+(defun ar-th-bounds (thing &optional no-delimiters iact check)
   "Determine the start and end buffer locations for the THING at point.
   THING is a symbol which specifies the kind entity you want.
 
   A boolean value NO-DELIMITERS says if THING boundaries should extend to markups, delimiters or not.
   Call THING by his name, i.e. ar-word-atpt etc. IACT is t, if function has been called interactively
 
-With NO-CHECK, sanity-check `<= orig end' is suppressed - used by backward moves
+With CHECK count nesting
 
 With NO-DELIMITERS
-Returns two lists composed of positions of delimiters "
+Returns two lists composed of positions of delimiters 
+
+NO-CHECK assumes being at or behind a closing delimiter, doesn't check for nesting.
+
+"
   (ignore-errors
     (if (eq thing 'region)
 	(ignore-errors (cons (region-beginning) (region-end)))
       (save-excursion
 	(let* ((orig (point))
+               ;; (ar-thing-no-nest check)
 	       (beg (funcall (get thing 'beginning-op-at)))
 	       (end (and beg (funcall (get thing 'end-op-at)))))
 	  (if (numberp beg)
-	      (ar--th-bounds-char-return beg end iact no-check orig no-delimiters)
-	    (ar--th-bounds-list-return beg end iact no-check orig no-delimiters)))))))
+	      (ar--th-bounds-char-return beg end iact check orig no-delimiters)
+	    (ar--th-bounds-list-return beg end iact check orig no-delimiters)))))))
 
-(defun ar-th-beg (thing &optional arg iact)
+(defun ar-th-beg (thing &optional arg iact check)
   "Return beginning position of THING. "
   (condition-case nil
-      (let* ((bounds (ar-th-bounds thing arg))
+      (let* ((bounds (ar-th-bounds thing arg iact check))
 	     (beg (or (ignore-errors (caar bounds)) (car-safe bounds))))
 	(when iact
 	  (message "   %s " beg)
@@ -2720,9 +2735,9 @@ Returns two lists composed of positions of delimiters "
     (error nil)))
 
 ;;;###autoload
-(defun ar-th-end (thing &optional arg iact)
+(defun ar-th-end (thing &optional arg iact check)
   (condition-case nil
-      (let* ((bounds (ar-th-bounds thing arg))
+      (let* ((bounds (ar-th-bounds thing arg check))
 	     (end (or (ignore-errors (cdr (cadr bounds)))(ignore-errors (cadr bounds)))))
 	(when iact
 	  (message "   %s "  end))
@@ -2730,10 +2745,10 @@ Returns two lists composed of positions of delimiters "
     (error nil)))
 
 ;;;###autoload
-(defun ar-th-gotobeg (thing &optional arg iact)
+(defun ar-th-gotobeg (thing &optional arg iact check)
   "Goto char beginning, core function "
   (condition-case nil
-      (let* ((bounds (ar-th-bounds thing arg iact t))
+      (let* ((bounds (ar-th-bounds thing arg iact check))
 	     (beg (caar bounds)))
 	(when iact
 	  (message "   %s " beg))
@@ -2741,10 +2756,10 @@ Returns two lists composed of positions of delimiters "
     (error nil)))
 
 ;;;###autoload
-(defun ar-th-gotoend (thing &optional arg iact)
+(defun ar-th-gotoend (thing &optional arg iact check)
   "Goto char end, core function "
   (condition-case nil
-      (let* ((bounds (ar-th-bounds thing arg t))
+      (let* ((bounds (ar-th-bounds thing arg check))
 	     (end (car (cadr bounds))))
 	(when iact
 	  (message "   %s " end))
@@ -2754,9 +2769,9 @@ Returns two lists composed of positions of delimiters "
     (error nil)))
 
 ;;;###autoload
-(defun ar-th-length (thing &optional arg iact)
+(defun ar-th-length (thing &optional arg iact check)
   (ignore-errors
-    (let* ((bounds (ar-th-bounds thing arg))
+    (let* ((bounds (ar-th-bounds thing arg check))
 	   (beg (caar bounds))
 	   (end (or (ignore-errors (cadr (cadr bounds)))(ignore-errors (cdr (cadr bounds)))))
 	   (length (- end beg)))
@@ -2779,11 +2794,11 @@ Returns two lists composed of positions of delimiters "
                 (condition-case nil (copy-marker (funcall (intern-soft (concat "ar-" (format "%s" elt) "-end-position-atpt")))) (error nil))))))
     (ar-th-ratio elt cla beg end ratio iact)))
 
-(defun ar-th-ratio (thing cla &optional beg end ratio iact)
+(defun ar-th-ratio (thing cla &optional beg end ratio iact no-delimiters check)
   (save-excursion
     (ignore-errors
       (let* (bounds
-             (beg (or beg (and (setq bounds (ar-th-bounds thing)) (caar bounds))))
+             (beg (or beg (and (setq bounds (ar-th-bounds thing no-delimiters iact check)) (caar bounds))))
              (end (or end (cadr (cadr bounds))))
              (matchcount 0)
              (erg 0)
@@ -2826,10 +2841,10 @@ Returns two lists composed of positions of delimiters "
     (error nil)))
 
 ;;;###autoload
-(defun ar-th-trim (thing &optional left right)
+(defun ar-th-trim (thing &optional no-delimiters iact check left right)
   "Trims given THING at point.
 If boundaries of thing are know, use `ar-th-trim-base' directly. "
-  (let* ((bounds (ar-th-bounds thing))
+  (let* ((bounds (ar-th-bounds thing no-delimiters iact check))
          (beg (or (ignore-errors (caar bounds)) (car-safe bounds)))
          (end (or (ignore-errors (cadr (cadr bounds)))(ignore-errors (cdr (cadr bounds)))(ignore-errors (cdr bounds)))))
     (ar-th-trim-base beg end left right)))
@@ -2860,15 +2875,15 @@ If boundaries of thing are know, use `ar-th-trim-base' directly. "
 	     (eq (marker-position end) (- old-end 2))))))
 
 ;;;###autoload
-(defun ar-th-trim-left (thing)
-  (ar-th-trim thing t))
+(defun ar-th-trim-left (thing &optional no-delimiters iact check)
+  (ar-th-trim thing no-delimiters iact check t))
 
 ;;;###autoload
-(defun ar-th-trim-right (thing)
-  (ar-th-trim thing nil t))
+(defun ar-th-trim-right (thing &optional no-delimiters iact check)
+  (ar-th-trim thing no-delimiters iact check nil t))
 
 ;;;###autoload
-(defun ar-th-peel (thing &optional arg iact)
+(defun ar-th-peel (thing &optional no-delimiters iact check)
   "Remove the outer element of an hierarchical form.
 
 \(foo (bar baz)) --> (bar baz)
@@ -2880,7 +2895,7 @@ If boundaries of thing are know, use `ar-th-trim-base' directly. "
 Inspired by stuff like `paredit-splice-sexp-killing-backward'; however, instead of working `-backward' or `-forward' deletes expression at point.
 
 "
-  (let* ((outer (ar-th-bounds thing))
+  (let* ((outer (ar-th-bounds thing no-delimiters iact check))
 	 (outer-start (caar outer))
 	 (outer-end (or (ignore-errors (cadr (cadr outer)))(car (cadr outer))))
 	 inner-start inner-end)
@@ -2892,10 +2907,10 @@ Inspired by stuff like `paredit-splice-sexp-killing-backward'; however, instead 
     (backward-sexp)
     (delete-region (point) outer-start)))
 
-(defun ar-th-comment (thing &optional arg iact)
+(defun ar-th-comment (thing &optional no-delimiters iact check)
   "Comment or uncomment THING "
   (condition-case nil
-      (let* ((bounds (ar-th-bounds thing))
+      (let* ((bounds (ar-th-bounds thing no-delimiters iact check))
 	     (beg (caar bounds))
 	     (end (or (ignore-errors (cadr (cadr bounds)))(ignore-errors (cdr (cadr bounds))))))
 	(when (and beg end)
@@ -2904,10 +2919,10 @@ Inspired by stuff like `paredit-splice-sexp-killing-backward'; however, instead 
     (error nil)))
 
 ;;;###autoload
-(defun ar-th-mark (thing &optional bounds beg end)
+(defun ar-th-mark (thing &optional bounds beg end no-delimiters iact check)
   " "
   (condition-case nil
-      (let* ((bounds (unless (and beg end) (or bounds (ar-th-bounds thing))))
+      (let* ((bounds (unless (and beg end) (or bounds (ar-th-bounds thing no-delimiters iact check))))
 	     (beg (or beg (ignore-errors (caar bounds))))
 	     (end (or end (or (ignore-errors (cadr (cadr bounds))) (ignore-errors (cdr (cadr bounds)))))))
 	(when (and beg end)
@@ -2919,12 +2934,12 @@ Inspired by stuff like `paredit-splice-sexp-killing-backward'; however, instead 
 
 ;; uses sgml-tag from sgml-mode.el
 ;;;###autoload
-(defun ar-th-hide (thing &optional beg end)
+(defun ar-th-hide (thing &optional beg end no-delimiters iact check)
   "Hide visibility of existing things at point. "
   (let ((modified (buffer-modified-p))
         (inhibit-read-only t) bounds)
     (unless (and beg end)
-      (setq bounds (ar-th-bounds thing))
+      (setq bounds (ar-th-bounds thing no-delimiters iact check))
       (setq beg (or (ignore-errors (caar bounds))(car-safe bounds)))
       (setq end (or (ignore-errors (cadr (cadr bounds)))(ignore-errors (cdr (cadr bounds)))(ignore-errors (cdr bounds)))))
     (if (and beg end)
@@ -2934,12 +2949,12 @@ Inspired by stuff like `paredit-splice-sexp-killing-backward'; however, instead 
       (error (concat "No " (format "%s" thing) " at point!")))))
 
 ;;;###autoload
-(defun ar-th-show (thing &optional beg end)
+(defun ar-th-show (thing &optional beg end no-delimiters iact check)
   "Remove invisibility of existing things at point. "
   (let ((modified (buffer-modified-p))
         (inhibit-read-only t) bounds)
     (unless (and beg end)
-      (setq bounds (ar-th-bounds thing))
+      (setq bounds (ar-th-bounds thing no-delimiters iact check))
       (setq beg (or (ignore-errors (caar bounds))(point-min)))
       (setq end (or (ignore-errors (cadr (cadr bounds)))(ignore-errors (cdr (cadr bounds)))(ignore-errors (cdr end))(point-max))))
     (if (and beg end)
@@ -2949,7 +2964,7 @@ Inspired by stuff like `paredit-splice-sexp-killing-backward'; however, instead 
       (error (concat "No " (format "%s" thing) " at point!")))))
 
 ;;;###autoload
-(defun ar-th-hide-show (&optional thing beg end)
+(defun ar-th-hide-show (&optional thing beg end no-delimiters iact check)
   "Toggle visibility of existing things at point. "
   (interactive)
   (let ((modified (buffer-modified-p))
@@ -2958,7 +2973,7 @@ Inspired by stuff like `paredit-splice-sexp-killing-backward'; however, instead 
     (setq beg (or beg (and (use-region-p) (region-beginning))))
     (setq end (or end (and (use-region-p) (region-end))))
     (unless (and beg end)
-      (setq bounds (ar-th-bounds thing))
+      (setq bounds (ar-th-bounds thing no-delimiters iact check))
       (setq beg (caar bounds))
       (setq end (cadr (cadr bounds))))
     (if (overlays-in beg end)
@@ -2967,9 +2982,9 @@ Inspired by stuff like `paredit-splice-sexp-killing-backward'; however, instead 
     (set-buffer-modified-p modified)))
 
 ;;;###autoload
-(defun ar-th-separate (thing &optional arg iact)
-  " "
-  (let* ((bounds (ar-th-bounds thing))
+(defun ar-th-separate (thing &optional arg iact check)
+  "Optional CHECK is ignored "
+  (let* ((bounds (ar-th-bounds thing arg iact check))
          (beg (copy-marker (caar bounds)))
          (end (copy-marker (or (ignore-errors (cadr (cadr bounds)))(ignore-errors (cdr (cadr bounds)))))))
     (goto-char beg)
@@ -2993,7 +3008,8 @@ If optional positions BEG-2TH END-2TH are given, works on them instead. "
   (let* ((bounds (ar-th-bounds thing-2th))
 	 (beg (or (ignore-errors (caar bounds))(car-safe bounds)))
 	 (end (or (ignore-errors (cadr (cadr bounds)))(ignore-errors (cdr (cadr bounds)))(cdr-safe bounds)))
-	 (orig beg))
+	 (orig beg)
+          ar-thing-no-nest)
     (save-excursion
       (save-restriction
         (narrow-to-region beg end)
@@ -3005,65 +3021,55 @@ If optional positions BEG-2TH END-2TH are given, works on them instead. "
 		      (<= orig (point)))
 	    (setq orig (point))
 	    (forward-char -1)
-	    (funcall th-function thing-1th)
+	    (funcall th-function thing-1th nil iact t)
 	    (when (< (point) orig)(goto-char orig))))))))
 
 ;;;###autoload
-(defun ar-th-kill (thing &optional arg iact)
+(defun ar-th-kill (thing &optional no-delimiters iact check)
   " "
   (condition-case nil
-      (let* ((bounds (ar-th-bounds thing))
+      (let* ((bounds (ar-th-bounds thing no-delimiters iact check))
 	     (beg (caar bounds))
 	     (end (or (ignore-errors (cadr (cadr bounds)))(ignore-errors (cdr (cadr bounds))))))
 	(kill-region beg end))
     (error nil)))
 
-(defun ar-th-kill-backward (thing &optional arg iact)
-  " "
-   (ar-th-backward thing arg iact)
-   (condition-case nil
-    (let* ((bounds (ar-th-bounds thing))
-           (beg (caar bounds))
-           (end (or (ignore-errors (cadr (cadr bounds)))(ignore-errors (cdr (cadr bounds))))))
-      (kill-region beg end))
-    (error nil)))
-
-(defun ar-th-delete (thing &optional arg iact)
+(defun ar-th-delete (thing &optional no-delimiters iact check)
   " "
   (condition-case nil
-      (let* ((bounds (ar-th-bounds thing))
+      (let* ((bounds (ar-th-bounds thing no-delimiters iact check))
 	     (beg (caar bounds))
 	     (end (or (ignore-errors (cadr (cadr bounds)))(ignore-errors (cdr (cadr bounds))))))
 	(delete-region beg end))
     (error nil)))
 
-(defun ar-th-delete-in-region (thing beg end &optional iact)
+(defun ar-th-delete-in-region (thing beg end &optional iact check no-delimiters)
   "Delete THING in region. Delete line, if empty afterwards. "
   (condition-case nil
       (save-excursion
         (goto-char beg)
 	(let ((orig (point)))
 	  (while (progn (ar-th-forward thing) (< orig (point)))
-	    (let ((bounds (ar-th-bounds thing)))
+	    (let ((bounds (ar-th-bounds thing no-delimiters iact check)))
 	      (delete-region (caar bounds) (cadr (cadr bounds)))
 	      (when iact (message "%s at pos %d %d %s " thing (caar bounds) (cadr (cadr bounds)) "deleted"))
 	      (when (and (empty-line-p) (not (eobp)))
 		(delete-region (line-beginning-position) (1+ (line-end-position))))))))))
 
-(defun ar-th-commatize (thing &optional arg iact)
+(defun ar-th-commatize (thing &optional no-delimiters iact check)
   " "
   (condition-case nil
-      (let* ((bounds (ar-th-bounds thing))
+      (let* ((bounds (ar-th-bounds thing no-delimiters iact check))
 	     (beg (caar bounds))
 	     (end (or (ignore-errors (cadr (cadr bounds)))(ignore-errors (cdr (cadr bounds))))))
 	(goto-char end)
         (insert ","))
     (error nil)))
 
-(defun ar-th-quote (thing &optional arg iact)
+(defun ar-th-quote (thing &optional no-delimiters iact check)
   " "
   (condition-case nil
-      (let* ((bounds (ar-th-bounds thing))
+      (let* ((bounds (ar-th-bounds thing no-delimiters iact check))
 	     (beg (caar bounds))
 	     (end (or (ignore-errors (cadr (cadr bounds)))(ignore-errors (cdr (cadr bounds))))))
         	(goto-char beg)
@@ -3076,9 +3082,9 @@ If optional positions BEG-2TH END-2TH are given, works on them instead. "
   (exchange-point-and-mark)
   (kill-new (buffer-substring-no-properties ap ep)))
 
-(defun ar-th-set-bounds (thing)
+(defun ar-th-set-bounds (thing &optional no-delimiters iact check)
   "Sets values of `bounds', `ap' and `ep' -- beg- and endpoint. "
-  (setq bounds (ar-th-bounds thing))
+  (setq bounds (ar-th-bounds thing no-delimiters iact check))
   (setq ap (caar bounds))
   (setq ep (or (ignore-errors (cdr (cadr bounds)))(cadr (cadr bounds)))))
 
@@ -3163,123 +3169,26 @@ searches backward with negative argument "
           (list thisbeg thisend))))
     (widen)))
 
-(defun ar-th-backward (thing &optional arg iact)
+(defun ar-th-backward (thing &optional arg iact check)
  "Returns beg and end of THING before point as a list. "
   (condition-case nil
-      (ar-th-forward thing (- (or arg 1)) iact)
+      (ar-th-forward thing (- (or arg 1)) iact check)
     (error nil)))
-
-(defun ar-th-before (thing &optional arg iact)
-  " "
-  (let* ((arg (or arg -1))
-         (bounds-point-at (ar-th-bounds thing))
-         (beg (car-safe bounds-point-at))
-         bounds)
-    (when beg (goto-char beg))
-    (setq bounds (ar-th-backward thing (abs arg)))
-    (ar-th thing arg iact)))
-
-(defun ar-th-bounds-before (thing &optional arg iact)
-  " "
-  (save-excursion
-    (let* ((arg (or arg -1))
-	   (bounds-point-at (ar-th-bounds thing))
-	   (beg (car-safe bounds-point-at))
-	   (bounds
-            (if beg (progn
-                      (goto-char beg)
-                      (ar-th-bounds thing))
-              (ar-th-backward thing (abs arg))
-              (ar-th-bounds thing))))
-      (when iact (message "%s" bounds))
-    bounds)))
-
-(defun ar-th-before-beg-pos (thing &optional arg iact)
-  " "
-  (save-excursion
-    (let* ((arg (or arg -1))
-            (bounds-point-at (ar-th-bounds thing))
-            (beg (car-safe bounds-point-at))
-            bounds)
-           (when beg (goto-char beg))
-           (ar-th-backward thing (abs arg))
-           (let ((beg (car (ar-th-bounds thing))))
-           (when iact (message "%s" beg)) beg)
-)))
-
-(defun ar-th-before-end-pos (thing &optional arg iact)
-  " "
-  (save-excursion
-    (let* ((arg (or arg -1))
-            (bounds-point-at (ar-th-bounds thing))
-            (beg (car-safe bounds-point-at))
-            bounds)
-           (when beg (goto-char beg))
-           (ar-th-backward thing (abs arg))
-           (let ((end (cdr-safe (ar-th-bounds thing))))
-           (when iact (message "%s" end)) end)
-)))
-
-(defun ar-th-after (thing &optional arg iact)
-  " "
-  (let* ((arg (or arg 1))
-         (bounds-point-at (ar-th-bounds thing))
-         (end (cdr-safe bounds-point-at))
-         bounds)
-    (when end (goto-char end))
-    (ar-th-forward thing arg)
-    (ar-th thing arg iact)))
-
-(defun ar-th-bounds-after (thing &optional no-delimiters iact)
-  " "
-  (save-excursion
-    (let ((bounds
-           (progn
-             (ar-th-forward thing no-delimiters)
-             (ar-th-bounds thing no-delimiters))))
-      (when iact (message "%s" bounds)) bounds)))
-
-(defun ar-th-after-beg-pos (thing &optional arg iact)
-  " "
-  (save-excursion
-    (let* ((arg (or arg 1))
-            (bounds-point-at (ar-th-bounds thing))
-            (end (cdr-safe bounds-point-at))
-            bounds)
-           (when end (goto-char end))
-           (let*  ((bounds (progn (ar-th-forward thing arg)
-                                    (ar-th-bounds thing)))
-                           (beg (car-safe bounds)))
-           (when iact (message "%s" beg)) beg))))
-
-(defun ar-th-after-end-pos (thing &optional arg iact)
-  " "
-  (save-excursion
-    (let* ((arg (or arg 1))
-            (bounds-point-at (ar-th-bounds thing))
-            (end (cdr-safe bounds-point-at))
-            bounds)
-           (when end (goto-char end))
-           (let*  ((bounds (progn
-                                     (ar-th-forward thing arg)
-                                     (ar-th-bounds thing)))
-                           (end (cdr-safe bounds)))
-           (when iact (message "%s" end)) end))))
 
 (defvar paired-start-pos nil)
 
-(defun ar-th-transpose (thing &optional arg iact)
+(defun ar-th-transpose (thing &optional no-delimiters iact check)
   "Returns position, when called from a program
  end of transposed section. "
   (let* ((pos (copy-marker (point)))
-         (first (ar-th-bounds thing))
+         (first (ar-th-bounds thing no-delimiters iact check))
          (pos1 (if (ignore-errors (<= (car first) pos))
                    first
-                 (ar-th-bounds-before thing)))
+                 (ar-th-bounds thing no-delimiters iact check)))
          (pos2 (progn
                  (when (ignore-errors (< 1 arg))
-                   (ar-th-forward thing arg))
-                 (ar-th-bounds-after thing)))
+                   (ar-th-forward thing no-delimiters iact check))
+                 (ar-th-bounds thing no-delimiters iact check)))
          (a (car pos1))
          (b (copy-marker (cdr pos1)))
          (c (car pos2))
@@ -3450,8 +3359,8 @@ it defaults to `<', otherwise it defaults to `string<'."
   (and ar-werkstatt-hs-minor-mode-p
        (add-hook 'ar-werkstatt-mode-hook 'hs-minor-mode)))
 
-(defun ar-th-delimit--intern (thing string1 string2 &optional arg iact)
-  (let* ((bounds (ar-th-bounds thing))
+(defun ar-th-delimit--intern (thing string1 string2 &optional arg iact check)
+  (let* ((bounds (ar-th-bounds thing (eq 4 (prefix-numeric-value arg)) iact check))
          (beg (or (ignore-errors (caar bounds))(car-safe bounds)))
 	 (end (or (ignore-errors (cdr (cadr bounds)))(ignore-errors (cadr (cadr bounds)))(cdr-safe bounds))))
     (ar-th-delim thing arg string1 string2 iact beg end)))
@@ -3459,190 +3368,190 @@ it defaults to `<', otherwise it defaults to `string<'."
 ;; ar-insert-delimit-forms-intern ar-paired-delimit-aktiv-raw: start
 
 ;;;###autoload
-(defun ar-th-brace (thing &optional arg iact)
+(defun ar-th-brace (thing &optional arg iact check)
   " "
-  (ar-th-delimit--intern thing "{" "}" arg iact))
+  (ar-th-delimit--intern thing "{" "}" arg iact check))
 
 ;;;###autoload
-(defun ar-th-bracket (thing &optional arg iact)
+(defun ar-th-bracket (thing &optional arg iact check)
   " "
-  (ar-th-delimit--intern thing "[" "]" arg iact))
+  (ar-th-delimit--intern thing "[" "]" arg iact check))
 
 ;;;###autoload
-(defun ar-th-lesserangle (thing &optional arg iact)
+(defun ar-th-lesserangle (thing &optional arg iact check)
   " "
-  (ar-th-delimit--intern thing "<" ">" arg iact))
+  (ar-th-delimit--intern thing "<" ">" arg iact check))
 
 ;;;###autoload
-(defun ar-th-greaterangle (thing &optional arg iact)
+(defun ar-th-greaterangle (thing &optional arg iact check)
   " "
-  (ar-th-delimit--intern thing ">" "<" arg iact))
+  (ar-th-delimit--intern thing ">" "<" arg iact check))
 
 ;;;###autoload
-(defun ar-th-leftrightsinglequote (thing &optional arg iact)
+(defun ar-th-leftrightsinglequote (thing &optional arg iact check)
   " "
-  (ar-th-delimit--intern thing "‘" "’" arg iact))
+  (ar-th-delimit--intern thing "‘" "’" arg iact check))
 
 ;;;###autoload
-(defun ar-th-leftrightdoublequote (thing &optional arg iact)
+(defun ar-th-leftrightdoublequote (thing &optional arg iact check)
   " "
-  (ar-th-delimit--intern thing "“" "”" arg iact))
+  (ar-th-delimit--intern thing "“" "”" arg iact check))
 
 ;;;###autoload
-(defun ar-th-parentize (thing &optional arg iact)
+(defun ar-th-parentize (thing &optional arg iact check)
   " "
-  (ar-th-delimit--intern thing "(" ")" arg iact))
+  (ar-th-delimit--intern thing "(" ")" arg iact check))
 ;; ar-insert-delimit-forms-intern ar-paired-delimit-aktiv-raw: end
 
 
 ;; ar-triplequote-raw start
 
 ;;;###autoload
-(defun ar-th-triplequote (thing &optional arg iact)
+(defun ar-th-triplequote (thing &optional arg iact check)
   " "
-  (ar-th-delimit--intern thing "\"\"\"\\\\\\\\\|\'\'\'" "\"\"\"\\\\\\\\\|\'\'\'" arg iact))
+  (ar-th-delimit--intern thing "\"\"\"\\\\\\\\\|\'\'\'" "\"\"\"\\\\\\\\\|\'\'\'" arg iact check))
 
 ;;;###autoload
-(defun ar-th-triplequotedq (thing &optional arg iact)
+(defun ar-th-triplequotedq (thing &optional arg iact check)
   " "
-  (ar-th-delimit--intern thing "\"\"\"" "\"\"\"" arg iact))
+  (ar-th-delimit--intern thing "\"\"\"" "\"\"\"" arg iact check))
 
 ;;;###autoload
-(defun ar-th-triplequotesq (thing &optional arg iact)
+(defun ar-th-triplequotesq (thing &optional arg iact check)
   " "
-  (ar-th-delimit--intern thing "'''" "'''" arg iact))
+  (ar-th-delimit--intern thing "'''" "'''" arg iact check))
 
 ;; ar-triplequote-raw end
 
 ;; ar-insert-delimit-forms-intern ar-unpaired-delimit-aktiv-raw: start
 
 ;;;###autoload
-(defun ar-th-backslash (thing &optional arg iact)
+(defun ar-th-backslash (thing &optional arg iact check)
   " "
-  (ar-th-delimit--intern thing "\\" "\\" arg iact))
+  (ar-th-delimit--intern thing "\\" "\\" arg iact check))
 
 ;;;###autoload
-(defun ar-th-backtick (thing &optional arg iact)
+(defun ar-th-backtick (thing &optional arg iact check)
   " "
-  (ar-th-delimit--intern thing "`" "`" arg iact))
+  (ar-th-delimit--intern thing "`" "`" arg iact check))
 
 ;;;###autoload
-(defun ar-th-colon (thing &optional arg iact)
+(defun ar-th-colon (thing &optional arg iact check)
   " "
-  (ar-th-delimit--intern thing ":" ":" arg iact))
+  (ar-th-delimit--intern thing ":" ":" arg iact check))
 
 ;;;###autoload
-(defun ar-th-cross (thing &optional arg iact)
+(defun ar-th-cross (thing &optional arg iact check)
   " "
-  (ar-th-delimit--intern thing "+" "+" arg iact))
+  (ar-th-delimit--intern thing "+" "+" arg iact check))
 
 ;;;###autoload
-(defun ar-th-dollar (thing &optional arg iact)
+(defun ar-th-dollar (thing &optional arg iact check)
   " "
-  (ar-th-delimit--intern thing "$" "$" arg iact))
+  (ar-th-delimit--intern thing "$" "$" arg iact check))
 
 ;;;###autoload
-(defun ar-th-doublequote (thing &optional arg iact)
+(defun ar-th-doublequote (thing &optional arg iact check)
   " "
-  (ar-th-delimit--intern thing "\"" "\"" arg iact))
+  (ar-th-delimit--intern thing "\"" "\"" arg iact check))
 
 ;;;###autoload
-(defun ar-th-equalize (thing &optional arg iact)
+(defun ar-th-equalize (thing &optional arg iact check)
   " "
-  (ar-th-delimit--intern thing "=" "=" arg iact))
+  (ar-th-delimit--intern thing "=" "=" arg iact check))
 
 ;;;###autoload
-(defun ar-th-escape (thing &optional arg iact)
+(defun ar-th-escape (thing &optional arg iact check)
   " "
-  (ar-th-delimit--intern thing "\\" "\\" arg iact))
+  (ar-th-delimit--intern thing "\\" "\\" arg iact check))
 
 ;;;###autoload
-(defun ar-th-hash (thing &optional arg iact)
+(defun ar-th-hash (thing &optional arg iact check)
   " "
-  (ar-th-delimit--intern thing "#" "#" arg iact))
+  (ar-th-delimit--intern thing "#" "#" arg iact check))
 
 ;;;###autoload
-(defun ar-th-hyphen (thing &optional arg iact)
+(defun ar-th-hyphen (thing &optional arg iact check)
   " "
-  (ar-th-delimit--intern thing "-" "-" arg iact))
+  (ar-th-delimit--intern thing "-" "-" arg iact check))
 
 ;;;###autoload
-(defun ar-th-singlequote (thing &optional arg iact)
+(defun ar-th-singlequote (thing &optional arg iact check)
   " "
-  (ar-th-delimit--intern thing "'" "'" arg iact))
+  (ar-th-delimit--intern thing "'" "'" arg iact check))
 
 ;;;###autoload
-(defun ar-th-slash (thing &optional arg iact)
+(defun ar-th-slash (thing &optional arg iact check)
   " "
-  (ar-th-delimit--intern thing "/" "/" arg iact))
+  (ar-th-delimit--intern thing "/" "/" arg iact check))
 
 ;;;###autoload
-(defun ar-th-star (thing &optional arg iact)
+(defun ar-th-star (thing &optional arg iact check)
   " "
-  (ar-th-delimit--intern thing "*" "*" arg iact))
+  (ar-th-delimit--intern thing "*" "*" arg iact check))
 
 ;;;###autoload
-(defun ar-th-tild (thing &optional arg iact)
+(defun ar-th-tild (thing &optional arg iact check)
   " "
-  (ar-th-delimit--intern thing "~" "~" arg iact))
+  (ar-th-delimit--intern thing "~" "~" arg iact check))
 
 ;;;###autoload
-(defun ar-th-underscore (thing &optional arg iact)
+(defun ar-th-underscore (thing &optional arg iact check)
   " "
-  (ar-th-delimit--intern thing "_" "_" arg iact))
+  (ar-th-delimit--intern thing "_" "_" arg iact check))
 
 ;;;###autoload
-(defun ar-th-whitespace (thing &optional arg iact)
+(defun ar-th-whitespace (thing &optional arg iact check)
   " "
-  (ar-th-delimit--intern thing " " " " arg iact))
+  (ar-th-delimit--intern thing " " " " arg iact check))
 
 ;;;###autoload
-(defun ar-th-doubleslash (thing &optional arg iact)
+(defun ar-th-doubleslash (thing &optional arg iact check)
   " "
-  (ar-th-delimit--intern thing "//" "//" arg iact))
+  (ar-th-delimit--intern thing "//" "//" arg iact check))
 ;; ar-insert-delimit-forms-intern ar-unpaired-delimit-aktiv-raw: end
 
 ;; ar-atpt-data-forms-aktiv start
 
 ;;;###autoload
-(defun ar-th-beginendquote (thing &optional arg iact)
+(defun ar-th-beginendquote (thing &optional arg iact check)
   " "
-  (ar-th-delimit--intern thing "\\begin{quote}" "\\end{quote}" arg iact))
+  (ar-th-delimit--intern thing "\\begin{quote}" "\\end{quote}" arg iact check))
 
 ;;;###autoload
-(defun ar-th-blok (thing &optional arg iact)
+(defun ar-th-blok (thing &optional arg iact check)
   " "
-  (ar-th-delimit--intern thing "{% " " %}" arg iact))
+  (ar-th-delimit--intern thing "{% " " %}" arg iact check))
 
 ;;;###autoload
-(defun ar-th-doublebackslash (thing &optional arg iact)
+(defun ar-th-doublebackslash (thing &optional arg iact check)
   " "
-  (ar-th-delimit--intern thing "\\\\" "\\\\" arg iact))
+  (ar-th-delimit--intern thing "\\\\" "\\\\" arg iact check))
 
 ;;;###autoload
-(defun ar-th-doublebackslashparen (thing &optional arg iact)
+(defun ar-th-doublebackslashparen (thing &optional arg iact check)
   " "
-  (ar-th-delimit--intern thing "\\\\(" "\\\\)" arg iact))
+  (ar-th-delimit--intern thing "\\\\(" "\\\\)" arg iact check))
 
 ;;;###autoload
-(defun ar-th-doublebacktick (thing &optional arg iact)
+(defun ar-th-doublebacktick (thing &optional arg iact check)
   " "
-  (ar-th-delimit--intern thing "``" "``" arg iact))
+  (ar-th-delimit--intern thing "``" "``" arg iact check))
 
 ;;;###autoload
-(defun ar-th-doubleslash (thing &optional arg iact)
+(defun ar-th-doubleslash (thing &optional arg iact check)
   " "
-  (ar-th-delimit--intern thing "//" "//" arg iact))
+  (ar-th-delimit--intern thing "//" "//" arg iact check))
 
 ;;;###autoload
-(defun ar-th-backslashparen (thing &optional arg iact)
+(defun ar-th-backslashparen (thing &optional arg iact check)
   " "
-  (ar-th-delimit--intern thing "\\(" "\\)" arg iact))
+  (ar-th-delimit--intern thing "\\(" "\\)" arg iact check))
 
 ;;;###autoload
-(defun ar-th-slashparen (thing &optional arg iact)
+(defun ar-th-slashparen (thing &optional arg iact check)
   " "
-  (ar-th-delimit--intern thing "////(" "////)" arg iact))
+  (ar-th-delimit--intern thing "////(" "////)" arg iact check))
 ;; ar-atpt-data-forms-aktiv end
 
 
