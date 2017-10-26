@@ -34,17 +34,35 @@
 
 ;; (require 'ar-subr)
 
-(defcustom thing-inside-comments nil
-  "If text inside comments matches determining the border of a THING. "
+(defgroup werkstatt nil
+  "Return, mover over or manipulate a given THING."
+  :prefix "ar-"
+  )
+
+(defcustom ar-thing-inside-comments nil
+  "If text inside comments matches when determining the border of a THING. "
   :type 'boolean
-  :group 'convenience)
+  :group 'werkstatt)
+
+(defcustom ar-thing-escaped nil
+  "If a backslashed character matches when determining the border of a THING. "
+  :type 'boolean
+  :group 'werkstatt)
+
+(defcustom ar-thing-no-nest t
+  "Assume being at or behind an opening delimter.
+
+Don't check for nested.
+Otherwise delimiters must be searched from BOB . "
+  :type 'boolean
+  :group 'werkstatt)
 
 (defun ar-toggle-thing-inside-comments ()
   "If thing-at-point forms should match inside comments.
 
-Toggles value of `thing-inside-comments'. Default is nil "
+Toggles value of `ar-thing-inside-comments'. Default is nil "
   (interactive)
-  (setq thing-inside-comments (not thing-inside-comments)))
+  (setq ar-thing-inside-comments (not ar-thing-inside-comments)))
 
 (defun mark-form (begstr endstr &optional bound noerror count permit-comment)
   (beginning-of-form-base begstr endstr bound noerror count permit-comment)
@@ -158,7 +176,6 @@ Set comment to `t' if forms inside comments should match - also for processing c
 		  (setq nesting (1+ nesting))))))))))
   nesting)
 
-
 ;; should `parse-sexp-ignore-comments' be usedq?
 (defun beginning-of-form-base (begstr &optional endstr bound noerror nesting permit-comment regexp condition permit-string)
   "Assume being inside ary delimiters, go to start.
@@ -182,7 +199,7 @@ If IN-STRING is non-nil, forms inside string match.
 		       begstr))
          (nesting (or nesting 0))
          (orig (point))
-         (permit-comment (or permit-comment thing-inside-comments))
+         (permit-comment (or permit-comment ar-thing-inside-comments))
          beg-pos-delimiter end-pos-delimiter)
     (while
         (and
@@ -247,7 +264,7 @@ If IN-STRING is non-nil, forms inside string match.
                            (t endstr)))
          (nesting (or nesting 1))
          (orig (point))
-         (permit-comment (or permit-comment thing-inside-comments))
+         (permit-comment (or permit-comment ar-thing-inside-comments))
          beg-pos-delimiter end-pos-delimiter erg)
     (while
         (and
@@ -351,7 +368,7 @@ Optional second arg --a number, nil or `t'-- if interactively called. "
 			t)
 		    t)
 		  (setq first (point))
-		  (not thing-inside-comments)
+		  (not ar-thing-inside-comments)
 		  (save-match-data
 		    ;; (ar-in-comment-p-atpt)
 		    (or (progn (setq pps (syntax-ppss)) (nth 4 pps)) (nth 7 pps)))))
@@ -364,7 +381,7 @@ Optional second arg --a number, nil or `t'-- if interactively called. "
               (setq delimiter (concat "\\([^\\]\\)" (match-string-no-properties 0) "\\|\\(\\\\\\\\\\)" (match-string-no-properties 0)))
               (setq old delimiter)
               (while (and (setq this (re-search-forward delimiter orig t 1))
-                          (not thing-inside-comments)
+                          (not ar-thing-inside-comments)
                           (save-match-data
                             ;; (ar-in-comment-p-atpt)
                             (or (progn (setq pps (syntax-ppss)) (nth 4 pps)) (nth 7 pps)))))
@@ -376,12 +393,6 @@ Optional second arg --a number, nil or `t'-- if interactively called. "
     (when (and (< 0 count) erg)
       beglist)))
 
-(defun ar--char-delimiters-beginning-push (char)
-  "Changes stack. "
-  (and (< 0 (skip-chars-forward (concat "^" (regexp-quote (char-to-string char))) orig))
-       (char-equal char (char-after))
-       (push (point) stack)))
-
 (defun ar--char-delimiters-beginning-whitespaced-form (char)
   (cond ((eq (char-after) ?\ )
 	 (point))
@@ -391,52 +402,111 @@ Optional second arg --a number, nil or `t'-- if interactively called. "
 		(eq (char-before) ?\ )
 		(1- (point))))))
 
-(defun ar--char-delimiters-beginning-intern (char orig &optional escaped comment first)
+(defun ar--char-delimiters--skip-chars-backward-form (char)
+   (< 0 (abs (skip-chars-backward
+				    (concat "^"
+					    (or (progn (and (stringp char) char))
+						(regexp-quote (char-to-string char)))))))
+   )
+
+(defun ar--char-delimiters--success-form (char)
+  "Returns position if successful. "
+  (and (eq (char-after) char) (not (ar-escaped)) (not (ar-in-comment-p))
+       (point)))
+
+(defun ar--char-delimiters-beginning-no-nesting-forms (char orig &optional escaped comment first)
+  (let (;; make sure there is no selection than the undergoing one
+	(push-mark (point))
+	erg done)
+    (forward-char -1)
+    (or
+     (setq erg (ar--char-delimiters--success-form char))
+     (while
+	 (and
+	  (not (bobp))
+	  (not done)
+	  (progn (forward-char -1) t)
+	  (or (when (ar-in-comment-p) (ar-backward-comment))
+	      (and (eq (char-after) char) (ar-escaped)
+		   (ar--char-delimiters--skip-chars-backward-form char))
+	      (setq done (ar--char-delimiters--success-form char))
+	      (ar--char-delimiters--skip-chars-backward-form char)))
+       (setq done (ar--char-delimiters--success-form char))))
+    (if (and (eq (char-before) char)(not (or (ar-in-comment-p) (ar-backward-comment))))
+	(progn
+	  (forward-char -1)
+	  (unless (ar-escaped)
+	    (setq erg (point))))
+      (when (and (eq (char-after) char)(not (or (ar-in-comment-p) (ar-backward-comment))))
+	(setq erg (point))))))
+
+(defun ar--char-delimiters-count (char orig counter)
+  (and
+   (not (eobp))
+   (or
+    (< 0 (abs (skip-chars-forward (concat "^" (regexp-quote (char-to-string char))) orig)))
+    (when
+	(< (point) orig)
+      (progn (forward-char 1)
+	     (< 0 (abs (skip-chars-forward (concat "^" (regexp-quote (char-to-string char))) orig))) t)))
+   (char-equal char (char-after))
+   (setq counter (1+ counter))))
+
+(defun ar--delimiters-beginning-check-forms (char orig escaped comment counter)
+  (let ((this counter)
+	erg last)
+    (cond ((and escaped comment)
+	   (while
+	       (setq erg (ar--char-delimiters-count char orig counter))
+	     (setq counter erg)))
+	  (escaped
+	   (while
+	       (setq erg char-delimiters-count char orig counter)
+	     (setq counter erg)
+	     (setq pps (parse-partial-sexp (point-min) (point)))
+	     (when (nth 4 pps)
+	       ;; in comment, remove from counter again
+	       (setq counter (1- counter)))))
+	  (comment
+	   (while
+	       (setq erg (char-delimiters-count char orig counter))
+	     (setq counter erg)
+	     (when
+		 (ar-escaped)
+	       ;; escaped, remove from counter again
+	       (setq counter (1- counter)))))
+	  (t (while
+		 (setq erg (ar--char-delimiters-count char orig counter))
+	       (setq counter erg)
+	       (if
+		   (or (ar-escaped) (ar-in-comment-p))
+		   ;; escaped or in comment, remove from counter again
+		   (setq counter (1- counter))
+		 (setq last this)
+		 (setq this (point))))))
+    (if (eq 1 (% counter 2))
+	this
+      (when (and (eq 0 (% counter 2))(eq (char-after) char))
+	last))))
+
+(defun ar--char-delimiters-beginning-nesting-forms (char orig escaped comment)
+  (let ((counter 0))
+    (goto-char (point-min))
+    (when (char-equal char (char-after))
+      (setq counter (1+ counter))
+      (setq last (point))
+      (unless (eobp) (forward-char 1)))
+    (ar--delimiters-beginning-check-forms char orig escaped comment counter)))
+
+(defun ar--char-delimiters-beginning-intern (char orig &optional escaped comment no-check)
+  "With NO-CHECK assume being after or at an opening delimiter or at closing. "
   (if (eq char ?\ )
-      (ar--char-delimiters-beginning-whitespaced-form char)
-    (unless first (goto-char (point-min)))
-    (let ((stack nil)
-	  (push-p t)
-	  pps)
-      (when (char-equal char (char-after))
-	(push (point) stack)
-	(setq push-p nil)
-	;; pusp-p stays nil first time
-	(unless (eobp) (forward-char 1)))
-      (cond ((and escaped comment)
-	     (while
-		 (ar--char-delimiters-beginning-push char)))
-	    (escaped
-	     (while
-		 (and (ar--char-delimiters-beginning-push char)
-		      (setq pps (parse-partial-sexp (point-min) (point)))
-		      (nth 4 pps)
-		      (pop stack))))
-	    (comment
-	     (while
-		 (and
-		  (ar--char-delimiters-beginning-push char)
-		  (ar-escaped)
-		  (pop stack))))
-	    (t
-	     (while
-		 (and (not (eobp))(progn (skip-chars-forward (concat "^" (regexp-quote (char-to-string char))) orig)(<= (point) orig)))
-	       (cond ((nth 4 (setq pps (parse-partial-sexp (point-min) (point)))))
-		     ((and (nth 3 pps) (eq 7 (car (syntax-after (point)))))
-		      (unless (or (eq (point) orig) (ar--escaped))
-			(pop stack) (setq push-p t)))
-		     ((eq (char-after) char)
-		      (unless (ar--escaped)
-			(if
-			    push-p
-			    (progn
-			      (push (point) stack)
-			      (setq push-p nil))
-			  (unless (eq (point) orig) (pop stack))
-			  (setq push-p t)))))
-	       (unless (eobp) (forward-char 1)))))
-      (when stack
-	(pop stack)))))
+      (ignore-errors (goto-char (ar--char-delimiters-beginning-whitespaced-form char)))
+    (let (pps last erg)
+      (if no-check
+	  (setq erg (ar--char-delimiters-beginning-no-nesting-forms char orig escaped comment no-check))
+	(setq erg (ar--char-delimiters-beginning-nesting-forms char orig escaped comment)))
+      (or (ignore-errors (goto-char erg)) (ignore-errors (goto-char last))))))
 
 (defun ar-char-delimiters-beginning (char &optional escaped comment first)
   "If ESCAPED, match also chars which are backslashed.
@@ -444,14 +514,12 @@ Optional second arg --a number, nil or `t'-- if interactively called. "
 With COMMENT much also in comments
 With FIRST don't check from BOB "
   (let* ((orig (point))
-    	 (erg (ar--char-delimiters-beginning-intern char orig escaped comment)))
-    (if erg
-	(goto-char erg)
-      (progn
-	(goto-char orig)
-	nil))))
+    	 (erg (ar--char-delimiters-beginning-intern char orig escaped comment first)))
+    (unless erg
+      (goto-char orig))
+    erg))
 
-(defun ar-char-delimiters-end-raw (char &optional escaped comment)
+(defun ar-char-delimiters-end (char &optional escaped comment)
   (let (erg)
     (cond ((and escaped comment)
 	   (skip-chars-forward (concat "^" (regexp-quote (char-to-string char))))
@@ -462,30 +530,14 @@ With FIRST don't check from BOB "
 		       (setq erg (point))
 		       (ar--escaped)
 		       (setq erg nil))))
-	  ;; ((eq orig (point))
-	  ;;  (and (setq pps (parse-partial-sexp (point-min) (point)))
-	  ;; 	(nth 3 pps)
-	  ;; 	(unless (ar--escaped) (setq erg (point)))))
 	  (t (while (and (not (eobp))
 			 (< 0 (skip-chars-forward (concat "^" (regexp-quote (char-to-string char)))))
 			 (setq pps (parse-partial-sexp (point-min) (point)))
 			 (when (or (ar--escaped) (nth 4 pps))
 			   (forward-char 1)
 			   t)))
-	     (when (eq (char-after) (setq erg (point))))))
+	     (when (eq (char-after) char)(forward-char 1) (setq erg (point)))))
     erg))
-
-(defun ar-char-delimiters-end (char &optional escaped comment)
-  "Expects to be called from delimiters start.
-
-With COMMENT, match inside comments.
-If ESCAPED, also match chars which are backslashed. "
-  (let ((orig (point)))
-    (ar-char-delimiters-end-raw char escaped comment)
-    (unless (eobp)
-      (when (and (char-equal char (char-after))(< orig (point)))
-	(unless (eobp) (forward-char 1))
-	(point)))))
 
 (provide 'beg-end)
 
