@@ -3343,7 +3343,7 @@ it defaults to `<', otherwise it defaults to `string<'."
 	    (funcall (intern-soft (concat "ar-" expr "-" copy-or-alternative "-atpt")) (eq 4  (prefix-numeric-value arg))))))
      ((< 0 arg)
       (if (use-region-p)
-	  (setq erg (funcall (intern-soft (concat "ar-" expr "-region-atpt")) (eq 4  (prefix-numeric-value arg))))
+	  (setq erg (funcall (intern-soft (concat "ar-" expr "-in-region-atpt"))))
 	(or (setq erg (funcall (intern-soft (concat "ar-" expr suffix "-atpt")) (eq 4  (prefix-numeric-value arg))))
 	    (funcall (intern-soft (concat "ar-" expr "-" copy-or-alternative "-atpt")) arg))))
 
