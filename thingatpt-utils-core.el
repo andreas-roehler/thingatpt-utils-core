@@ -4058,7 +4058,6 @@ it defaults to `<', otherwise it defaults to `string<'."
     'region
     'sentence
     'sexp
-    'string
     'shstruct
     'symbol
     'url
