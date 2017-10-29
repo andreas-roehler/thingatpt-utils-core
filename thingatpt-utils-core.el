@@ -3928,6 +3928,7 @@ it defaults to `<', otherwise it defaults to `string<'."
     'clause
     'def-or-class
     'def
+    'delimited
     'expression
     'partial-expression
     'statement
@@ -4040,7 +4041,6 @@ it defaults to `<', otherwise it defaults to `string<'."
     'comment
     'csv
     'date
-    'delimited
     'email
     'filename
     'filenamenondirectory
