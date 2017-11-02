@@ -596,5 +596,14 @@ Defaults aligning to equal and vertical bar sign"
 	(when (<= end (line-end-position))
 	  (setq done t))))))
 
+(defun ar--fetch-previous-indent (orig)
+  "Report the preceding indent. "
+  (save-excursion
+    (goto-char orig)
+    (forward-line -1)
+    (end-of-line)
+    (skip-chars-backward " \t\r\n\f")
+    (current-indentation)))
+
 (provide 'ar-subr)
 ;;; ar-subr.el ends here
