@@ -3031,8 +3031,8 @@ If optional positions BEG-2TH END-2TH are given, works on them instead. "
   " "
   (condition-case nil
       (let* ((bounds (ar-th-bounds thing no-delimiters iact check))
-	     (beg (caar bounds))
-	     (end (or (ignore-errors (cadr (cadr bounds)))(ignore-errors (cdr (cadr bounds))))))
+	     (beg (or (ignore-errors (caar bounds)) (ignore-errors (car bounds))))
+	     (end (or (ignore-errors (cdr (cadr bounds)))(ignore-errors (cadr bounds))(ignore-errors (cadr (cadr bounds))))))
 	(kill-region beg end))
     (error nil)))
 
@@ -3040,8 +3040,8 @@ If optional positions BEG-2TH END-2TH are given, works on them instead. "
   " "
   (condition-case nil
       (let* ((bounds (ar-th-bounds thing no-delimiters iact check))
-	     (beg (caar bounds))
-	     (end (or (ignore-errors (cadr (cadr bounds)))(ignore-errors (cdr (cadr bounds))))))
+	     (beg (or (ignore-errors (caar bounds)) (ignore-errors (car bounds))))
+	     (end (or (ignore-errors (cdr (cadr bounds)))(ignore-errors (cadr bounds))(ignore-errors (cadr (cadr bounds))))))
 	(delete-region beg end))
     (error nil)))
 
@@ -3345,9 +3345,9 @@ it defaults to `<', otherwise it defaults to `string<'."
       (if (use-region-p)
 	  (setq erg (funcall (intern-soft (concat "ar-" expr "-in-region-atpt"))))
 	(or (setq erg (funcall (intern-soft (concat "ar-" expr suffix "-atpt")) arg))
-	    (funcall (intern-soft (concat "ar-" expr "-" copy-or-alternative "-atpt")) arg))))
+	    (funcall (intern-soft (concat "ar-" expr "-" copy-or-alternative "-atpt"))))))
 
-     (t (setq erg (funcall (intern-soft (concat "ar-kill-" expr suffix "-atpt")) arg))))))
+     (t (setq erg (funcall (intern-soft (concat "ar-kill-" expr suffix "-atpt"))))))))
 
 (defvar ar-werkstatt-mode-map nil
     "Keymap used in Sh-Werkstatt mode.")
