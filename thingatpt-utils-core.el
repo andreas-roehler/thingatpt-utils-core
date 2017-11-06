@@ -3032,7 +3032,7 @@ If optional positions BEG-2TH END-2TH are given, works on them instead. "
   (condition-case nil
       (let* ((bounds (ar-th-bounds thing no-delimiters iact check))
 	     (beg (or (ignore-errors (caar bounds)) (ignore-errors (car bounds))))
-	     (end (or (ignore-errors (cdr (cadr bounds)))(ignore-errors (cadr bounds))(ignore-errors (cadr (cadr bounds))))))
+	     (end (or (ignore-errors (cadr (cadr bounds)))(ignore-errors (cdr (cadr bounds)))(ignore-errors (cadr bounds))(ignore-errors (cadr (cadr bounds))))))
 	(kill-region beg end))
     (error nil)))
 
