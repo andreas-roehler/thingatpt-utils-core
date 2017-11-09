@@ -1642,7 +1642,7 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
                 (beginning-of-form-base "[`']" "'" nil 'move nil nil t))
                ((eq (char-after) ?})
                 (beginning-of-form-base "{" "}" nil 'move nil nil t))
-               ((eq (char-after) ?\))
+               ((eq (char-after) 41)
                 (beginning-of-form-base "(" ")" nil 'move nil nil t))
                ((looking-at (concat "[" begdel "][
 ]"))
@@ -1668,8 +1668,10 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
 			  (setq ar-delimiter-string-atpt (buffer-substring-no-properties (point) (+ erg (point) 1)))))
                     (setq ar-delimiter-zeichen-atpt nil)
 		    (setq ar-delimiter-string-atpt nil))))
-	 (when (looking-at (concat "[" begdel "]+"))
-	   (cons (match-beginning 0) (match-end 0))))))
+	 (cond ((or (looking-at (concat "[" th-beg-delimiter "]"))(looking-at (concat "[" ar-delimiters-atpt "]")))
+		(setq ar-delimiter-string-atpt (match-string-no-properties 0))
+
+		(cons (match-beginning 0) (match-end 0)))))))
 
 (put 'delimited 'end-op-at
      (lambda ()
@@ -1699,11 +1701,11 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
 		  ;; (end-of-form-base "(" ")" nil 'move nil nil t)
 		  (forward-list 1)
 		  ;; forward-list doesn't set match-data
-		  (looking-back ")" (line-beginning-position)))
+		  (looking-back "\)" (line-beginning-position)))
 		 ((eq (char-after) ar-delimiter-zeichen-atpt)
 		  (forward-char 1)
 		  (skip-chars-forward (concat "^" (char-to-string ar-delimiter-zeichen-atpt))))
-		 ((looking-at (concat "[" begdel "]"))
+		 ((looking-at (concat "\[" begdel "]"))
 		  (goto-char (match-end 0)) 
 		  (re-search-forward (concat "[" enddel "]") nil t 1)) 
 		 ((looking-at (concat "[" ar-delimiters-atpt "]"))
@@ -1748,17 +1750,17 @@ Otherwise assume being behind an opening delimiter or at a closing "
   :type 'boolean
   :group 'werkstatt)
 
-(defcustom ar-delimiters-atpt "\"'#\$/=?!:*+~§%&-_;"
+(defcustom ar-delimiters-atpt "\"'#\$/=?!:*+~§%&-_\;"
 "Specify the delimiter chars. "
 :type 'string
 :group 'werkstatt)
 
-(defcustom th-beg-delimiter "‘“{<[(/$"
+(defcustom th-beg-delimiter "‘“{<[("
 "Specify the delimiter char."
 :type 'string
 :group 'werkstatt)
 
-(defcustom th-end-delimiter "]}>”)/$’="
+(defcustom th-end-delimiter "]}>”)’"
 "Specify the delimiter char."
 :type 'string
 :group 'werkstatt)
