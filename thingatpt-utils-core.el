@@ -1752,29 +1752,29 @@ Otherwise assume being behind an opening delimiter or at a closing "
 
 (defcustom ar-delimiters-atpt "\"'#\$/=?!:*+~§%&-_\;"
 "Specify the delimiter chars. "
-:type 'string
-:group 'werkstatt)
-
+  :type 'string
+  :group 'werkstatt)
+  
 (defcustom th-beg-delimiter "‘“{<[("
-"Specify the delimiter char."
-:type 'string
-:group 'werkstatt)
+  "Specify the delimiter char."
+  :type 'string
+  :group 'werkstatt)
 
 (defcustom th-end-delimiter "]}>”)’"
-"Specify the delimiter char."
-:type 'string
-:group 'werkstatt)
+  "Specify the delimiter char."
+  :type 'string
+  :group 'werkstatt)
 
 ;; Email
 (put 'email 'beginning-op-at
-(lambda ()
+  (lambda ()
   (when
       (looking-at "[^ \t]")
     (re-search-backward "[,;][[:graph:]]\\|<[[:graph:]]\\|^[[:graph:]]\\|[^[:graph:]][[:graph:]]" (line-beginning-position) t 1)
                         (when (looking-at "[[:space:];,<]")
                                           (forward-char 1)))))
 
-  (put 'email 'end-op-at
+(put 'email 'end-op-at
   (lambda ()
     (when (looking-at "[ <]\\{0,1\\}\\([\041-\132\136-\176]+@[\041-\132\136-\176]+\\)[;,> \t\n]*")
     (goto-char (match-end 1))
