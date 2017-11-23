@@ -1782,12 +1782,12 @@ Otherwise assume being behind an opening delimiter or at a closing "
 
 ;; Filename
 (if (featurep 'xemacs)
-    (defcustom thingatpt-file-name-chars "~//A-Za-z0-9ÄÖÜäöüß_.$?={}#%,:-"
+    (defcustom thingatpt-file-name-chars "@~//A-Za-z0-9ÄÖÜäöüß_.$?={}#%,:-"
       "Characters forseen in filenames. "
       :type 'string
       :group 'werkstatt)
 
-  (defcustom thingatpt-file-name-chars "~//[:alnum:]_.$?={}#%,:-"
+  (defcustom thingatpt-file-name-chars "@~//[:alnum:]_.$?={}#%,:-"
     "Characters forseen in filenames. "
     :type 'string
     :group 'werkstatt))
