@@ -2482,6 +2482,14 @@ it would doublequote a word at point "
 
 ;; (update-directory-autoloads (expand-file-name ar-install-directory))
 
+(defun ar-trim-symbol-atpt ()
+  (interactive "*")
+  (let ((erg (ar-bounds-of-symbol-atpt)))
+    (goto-char (cdr erg))
+    (delete-char -1)
+    (goto-char (car erg))
+    (delete-char 1))) 
+
 
 ;; ML data-forms start
 
