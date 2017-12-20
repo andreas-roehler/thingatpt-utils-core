@@ -1677,9 +1677,17 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
      (lambda ()
        (if (ignore-errors (looking-at ar-delimiter-string-atpt))
 	   (progn
-	     (goto-char (match-end 0)) 
-	     (when (search-forward ar-delimiter-string-atpt nil t 1)
-	       (cons (match-beginning 0) (match-end 0))))
+	     (goto-char (match-end 0))
+	     (if (< (- (match-end 0) (match-beginning 0)) 2)
+		 (progn
+		   (while
+		       (and
+			(search-forward (char-to-string (ar--return-complement-char-maybe (char-before))) nil t 1)
+			(ar-escaped)
+			(nth 8 (parse-partial-sexp (line-beginning-position) (point)))))
+		   (cons (match-beginning 0) (match-end 0)))
+	       (when (search-forward ar-delimiter-string-atpt nil t 1)
+		 (cons (match-beginning 0) (match-end 0)))))
 	 (let ((orig (point))
 	       (begdel (concat th-beg-delimiter ar-delimiters-atpt))
 	       (enddel (or (and ar-delimiter-zeichen-atpt (setq ar-delimiter-zeichen-atpt (ar--return-complement-char-maybe ar-delimiter-zeichen-atpt))) ar-delimiter-string-atpt (concat th-end-delimiter ar-delimiters-atpt))))
@@ -1701,13 +1709,13 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
 		  ;; (end-of-form-base "(" ")" nil 'move nil nil t)
 		  (forward-list 1)
 		  ;; forward-list doesn't set match-data
-		  (looking-back "\)" (line-beginning-position)))
+		  (looking-back ")" (line-beginning-position)))
 		 ((eq (char-after) ar-delimiter-zeichen-atpt)
 		  (forward-char 1)
 		  (skip-chars-forward (concat "^" (char-to-string ar-delimiter-zeichen-atpt))))
-		 ((looking-at (concat "\[" begdel "]"))
-		  (goto-char (match-end 0)) 
-		  (re-search-forward (concat "[" enddel "]") nil t 1)) 
+		 ((looking-at (concat "[" begdel "]"))
+		  (goto-char (match-end 0))
+		  (re-search-forward (concat "[" enddel "]") nil t 1))
 		 ((looking-at (concat "[" ar-delimiters-atpt "]"))
 		  (ar-set-delimiter-zeichen)
 		  (forward-char 1)
