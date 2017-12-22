@@ -256,7 +256,6 @@
 
 (require 'ar-subr)
 (require 'beg-end)
-(require 'thingatpt-utils-map)
 (require 'hideshow)
 (defconst Emacs-Werkstatt-version "1.5")
 
