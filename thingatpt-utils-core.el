@@ -251,7 +251,6 @@
 ;; (global-set-key [(control c)(/)] 'ar-slash-or-copy-atpt)
 ;; (global-set-key [(control c)(*)] 'ar-star-or-copy-atpt)
 
-
 ;;; Code:
 
 (require 'ar-subr)
@@ -278,7 +277,6 @@ Used by `ar-sort-numbers-subr'"
   "If `match-paren' should avoid scanning lists according to syntax but search regexp based. "
   :type 'boolean
   :group 'werkstatt)
-
 
 (defcustom ar-werkstatt-hs-minor-mode-p nil
  ""
@@ -2455,7 +2453,7 @@ If non-nil, return a list composed of
 - beginning position
 - the character used as string-delimiter (in decimal)
 - and length of delimiter, commonly 1 or 3 "
-  (interactive)
+  (interactive "p")
   (save-excursion
     (let* ((pps (parse-partial-sexp (point-min) (point)))
 	   (erg (when (nth 3 pps)
@@ -2468,7 +2466,6 @@ If non-nil, return a list composed of
 	    (setq erg (gen-in-string-p-intern pps)))))
 
     ;; (list (nth 8 pps) (char-before) (1+ (skip-chars-forward (char-to-string (char-before)))))
-    (when (and gen-verbose-p (called-interactively-p 'any)) (message "%s" erg))
     erg)))
 
 ;;
@@ -2679,7 +2676,6 @@ it would doublequote a word at point "
 	  (when (or thing-copy-region iact)
 	    (ar-th-mark thing nil beg end no-delimiters iact check))
 	  (when (or thing-copy-region iact) (kill-new erg))
-	  (when iact (message "%s" erg))
 	  erg))
     (error nil)))
 
@@ -2985,7 +2981,7 @@ Inspired by stuff like `paredit-splice-sexp-killing-backward'; however, instead 
 ;;;###autoload
 (defun ar-th-hide-show (&optional thing beg end no-delimiters iact check)
   "Toggle visibility of existing things at point. "
-  (interactive)
+  (interactive "p")
   (let ((modified (buffer-modified-p))
         (inhibit-read-only t)
         bounds beg end)
@@ -3341,7 +3337,7 @@ it defaults to `<', otherwise it defaults to `string<'."
 	(narrow-to-region beg end)
 	(ar-th-delim-intern thing beg end beg-char end-char)))))
 
-(defun ar-th-base-copy-or (kind arg &optional iact check)
+(defun ar-th-base-copy-or (kind arg &optional check)
   " "
   (let* ((expr (format "%s" kind))
 	 (arg (if arg (prefix-numeric-value arg) 1))
@@ -3590,19 +3586,19 @@ it defaults to `<', otherwise it defaults to `string<'."
 
 (defun ar-syntax-class-atpt (&optional pos)
   "Return the syntax class part of the syntax at point. "
-  (interactive)
+  (interactive "p")
   (let* ((pos (or pos (point)))
         (erg (logand (car (syntax-after pos)) 65535)))
-    (when (called-interactively-p 'any) (message "%s" erg)) erg))
+    (when arg (message "%s" erg)) erg))
 
-(defun syntax-class-bfpt ()
+(defun syntax-class-bfpt (&optional arg) 
   "Return the syntax class part of the syntax at point. "
-  (interactive)
+  (interactive "p")
   (let ((erg (logand (car (syntax-after (1- (point)))) 65535)))
-    (when (called-interactively-p 'any) (message "%s" erg)) erg))
+    (when arg (message "%s" erg)) erg))
 
-(defun ar-syntax-atpt (&optional docu pos)
-  (interactive)
+(defun ar-syntax-atpt (&optional arg docu pos)
+  (interactive "p")
   (when pos
     (goto-char pos))
   (let* ((elt (car (if (featurep 'xemacs)
@@ -3624,7 +3620,7 @@ it defaults to `<', otherwise it defaults to `string<'."
                      ((eq elt 9) "9 escape")
                      ((eq elt 14) "14 generic comment")
                      ((eq elt 15) "15 generic string"))))
-    (when (called-interactively-p 'any)
+    (when arg
       (message (format "%s" stax)))
     (if docu
         (format "%s" stax)
@@ -3641,10 +3637,10 @@ it defaults to `<', otherwise it defaults to `string<'."
       (message "%s" erg)
       erg)))
 
-(defun syntax-bfpt ()
-  (interactive)
+(defun syntax-bfpt (&optional arg) 
+  (interactive "p")
   (let ((stax (syntax-after (1- (point)))))
-    (when (called-interactively-p 'any)
+    (when arg
       (message (format "%s" stax)))
     stax))
 

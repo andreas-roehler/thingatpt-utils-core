@@ -1,4 +1,4 @@
-;;;thingatpt-utils-map --- the menu
+;;; thingatpt-utils-map --- the menu
 
 
 ;; Copyright (C) 2010-2017 Andreas Röhler, unless
