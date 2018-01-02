@@ -2658,7 +2658,7 @@ it would doublequote a word at point "
   (condition-case nil
       (let* ((no-delimiters (or no-delimiters (eq 4 (prefix-numeric-value no-delimiters))))
 	     (check (or check ar-scan-whole-buffer-p))
-	     (bounds (ar-th-bounds thing no-delimiters iact check))
+	     (bounds (ar-th-bounds thing no-delimiters check))
 	     (beg (if no-delimiters
 		      (cond ((ignore-errors (numberp (car-safe bounds)))
 			     (car-safe bounds))
@@ -2673,25 +2673,24 @@ it would doublequote a word at point "
 	(when (and beg end)
 	  (setq erg
 		(buffer-substring-no-properties beg end))
-	  (when (or thing-copy-region iact)
-	    (ar-th-mark thing nil beg end no-delimiters iact check))
-	  (when (or thing-copy-region iact) (kill-new erg))
+	  (when thing-copy-region
+	    (ar-th-mark thing nil beg end no-delimiters check))
+	  (when thing-copy-region (kill-new erg))
 	  erg))
     (error nil)))
 
-(defun ar--th-bounds-char-return (beg end &optional iact check orig no-delimiters)
+(defun ar--th-bounds-char-return (beg end &optional check orig no-delimiters)
   (when (and beg end
 	     (not (eq beg end))
 	     (or (eobp)
 		 (or check
 		     (<= orig end))))
-    (when iact (message "%s %s"  beg end))
     (if no-delimiters
 	(cons (1+ beg) (1- beg))
       (cons beg end))))
 
 (defun ar--th-bounds-list-return (beg end &optional iact check orig no-delimiters)
-  (message "%s" no-delimiters)
+  ;; (message "%s" no-delimiters)
   (let (erg)
     (when
 	(and beg end
@@ -2701,7 +2700,6 @@ it would doublequote a word at point "
 		     (<= orig (or
 			       (ignore-errors (cadr end))
 			       (ignore-errors (cdr end)))))))
-      (when iact (message "%s %s"  beg end))
       (if no-delimiters
 	  (progn
 	    (push (car end) erg)
@@ -2735,7 +2733,7 @@ NO-CHECK assumes being at or behind a closing delimiter, doesn't check for nesti
 	       (beg (funcall (get thing 'beginning-op-at)))
 	       (end (and beg (funcall (get thing 'end-op-at)))))
 	  (if (numberp beg)
-	      (ar--th-bounds-char-return beg end iact check orig no-delimiters)
+	      (ar--th-bounds-char-return beg end check orig no-delimiters)
 	    (ar--th-bounds-list-return beg end iact check orig no-delimiters)))))))
 
 (defun ar-th-beg (thing &optional arg iact check)
@@ -2744,7 +2742,7 @@ NO-CHECK assumes being at or behind a closing delimiter, doesn't check for nesti
       (let* ((bounds (ar-th-bounds thing arg iact check))
 	     (beg (or (ignore-errors (caar bounds)) (car-safe bounds))))
 	(when iact
-	  (message "   %s " beg)
+	  ;; (message "   %s " beg)
           (kill-new (format "%s" beg)))
 	beg)
     (error nil)))
@@ -2754,8 +2752,8 @@ NO-CHECK assumes being at or behind a closing delimiter, doesn't check for nesti
   (condition-case nil
       (let* ((bounds (ar-th-bounds thing arg check))
 	     (end (or (ignore-errors (cdr (cadr bounds)))(ignore-errors (cadr bounds)))))
-	(when iact
-	  (message "   %s "  end))
+	;; (when iact
+	  ;; (message "   %s "  end))
 	end)
     (error nil)))
 
@@ -2838,9 +2836,7 @@ NO-CHECK assumes being at or behind a closing delimiter, doesn't check for nesti
           (progn
             (setq len (string-to-number (format "%f" (- end beg))))
             (setq erg (/ matchcount len))
-            (when iact (message "erg: %f" erg))
             erg))
-        (when iact (message "%s" erg))
         erg))))
 
 ;;;###autoload
@@ -3067,7 +3063,7 @@ If optional positions BEG-2TH END-2TH are given, works on them instead. "
 	  (while (progn (ar-th-forward thing) (< orig (point)))
 	    (let ((bounds (ar-th-bounds thing no-delimiters iact check)))
 	      (delete-region (caar bounds) (cadr (cadr bounds)))
-	      (when iact (message "%s at pos %d %d %s " thing (caar bounds) (cadr (cadr bounds)) "deleted"))
+	      ;; (when iact (message "%s at pos %d %d %s " thing (caar bounds) (cadr (cadr bounds)) "deleted"))
 	      (when (and (empty-line-p) (not (eobp)))
 		(delete-region (line-beginning-position) (1+ (line-end-position))))))))))
 
