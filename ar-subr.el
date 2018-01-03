@@ -126,7 +126,7 @@ Returns position reached if point was moved. "
 
 (defconst ar-eq-assignment-re
   (concat
-   "\\([^=\n \t:]*\\)\\([^=\n:]*\\)\\(=\\)\\([^:]*\\)$")
+   "\\([^=\n:]+\\):?\\([^=\n:]*\\)\\(=\\)\\([^:]*\\)$")
   "Regular expression matching assigment.")
 
 (defconst ar-vertical-line-re
