@@ -2422,12 +2422,12 @@ Otherwise assume being behind an opening delimiter or at a closing "
 ;; Word
 (put 'word 'beginning-op-at
      (lambda () (when (looking-at "\\w")
-		  (unless (looking-back "\\W" (line-beginning-position))
+		  (unless (or (looking-back "\\W" (line-beginning-position))(bolp)) 
 		    (forward-word -1))
 		  (point))))
 
 (put 'word 'end-op-at
-     (lambda () (when (and (looking-back "\\W")(looking-at "\\w"))
+     (lambda () (when (and (or (bolp)(looking-back "\\W"))(looking-at "\\w"))
 		  (forward-word 1)(point))))
 
 ;; Word-alpha-only
