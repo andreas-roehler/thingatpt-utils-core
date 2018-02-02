@@ -3432,19 +3432,14 @@ it defaults to `<', otherwise it defaults to `string<'."
   " "
   (ar-th-delimit--intern thing "'''" "'''" arg iact check))
 
+;;;###autoload
+(defun ar-th-triplebacktick (thing &optional arg iact check)
+  " "
+  (ar-th-delimit--intern thing "```" "```" arg iact check))
+
 ;; ar-triplequote-raw end
 
 ;; ar-insert-delimit-forms-intern ar-unpaired-delimit-aktiv-raw: start
-
-;;;###autoload
-(defun ar-th-backslash (thing &optional arg iact check)
-  " "
-  (ar-th-delimit--intern thing "\\" "\\" arg iact check))
-
-;;;###autoload
-(defun ar-th-backtick (thing &optional arg iact check)
-  " "
-  (ar-th-delimit--intern thing "`" "`" arg iact check))
 
 ;;;###autoload
 (defun ar-th-colon (thing &optional arg iact check)
@@ -3457,9 +3452,29 @@ it defaults to `<', otherwise it defaults to `string<'."
   (ar-th-delimit--intern thing "+" "+" arg iact check))
 
 ;;;###autoload
+(defun ar-th-doubleslash (thing &optional arg iact check)
+  " "
+  (ar-th-delimit--intern thing "//" "//" arg iact check))
+
+;;;###autoload
+(defun ar-th-backslash (thing &optional arg iact check)
+  " "
+  (ar-th-delimit--intern thing "\\" "\\" arg iact check))
+
+;;;###autoload
+(defun ar-th-backtick (thing &optional arg iact check)
+  " "
+  (ar-th-delimit--intern thing "`" "`" arg iact check))
+
+;;;###autoload
 (defun ar-th-dollar (thing &optional arg iact check)
   " "
   (ar-th-delimit--intern thing "$" "$" arg iact check))
+
+;;;###autoload
+(defun ar-th-doublebacktick (thing &optional arg iact check)
+  " "
+  (ar-th-delimit--intern thing "``" "``" arg iact check))
 
 ;;;###autoload
 (defun ar-th-doublequote (thing &optional arg iact check)
@@ -3507,6 +3522,11 @@ it defaults to `<', otherwise it defaults to `string<'."
   (ar-th-delimit--intern thing "~" "~" arg iact check))
 
 ;;;###autoload
+(defun ar-th-triplebacktick (thing &optional arg iact check)
+  " "
+  (ar-th-delimit--intern thing "```" "```" arg iact check))
+
+;;;###autoload
 (defun ar-th-underscore (thing &optional arg iact check)
   " "
   (ar-th-delimit--intern thing "_" "_" arg iact check))
@@ -3515,11 +3535,6 @@ it defaults to `<', otherwise it defaults to `string<'."
 (defun ar-th-whitespace (thing &optional arg iact check)
   " "
   (ar-th-delimit--intern thing " " " " arg iact check))
-
-;;;###autoload
-(defun ar-th-doubleslash (thing &optional arg iact check)
-  " "
-  (ar-th-delimit--intern thing "//" "//" arg iact check))
 ;; ar-insert-delimit-forms-intern ar-unpaired-delimit-aktiv-raw: end
 
 ;; ar-atpt-data-forms-aktiv start
@@ -3548,6 +3563,11 @@ it defaults to `<', otherwise it defaults to `string<'."
 (defun ar-th-doublebacktick (thing &optional arg iact check)
   " "
   (ar-th-delimit--intern thing "``" "``" arg iact check))
+
+;;;###autoload
+(defun ar-th-triplebacktick (thing &optional arg iact check)
+  " "
+  (ar-th-delimit--intern thing "```" "```" arg iact check))
 
 ;;;###autoload
 (defun ar-th-doubleslash (thing &optional arg iact check)
@@ -3751,11 +3771,13 @@ it defaults to `<', otherwise it defaults to `string<'."
 
 (setq ar-unpaired-delimit-aktiv-raw
       (list
-       '(backslash "\\\\")
-       '(backtick "`")
        '(colon ":")
        '(cross "+")
+       '(doubleslash "//")
+       '(backslash "\\\\")
+       '(backtick "`")
        '(dollar "$")
+       '(doublebacktick "``")
        '(doublequote "\"")
        '(equalize "=")
        '(escape "\\\\")
@@ -3765,18 +3787,20 @@ it defaults to `<', otherwise it defaults to `string<'."
        '(slash "/")
        '(star "*")
        '(tild "~")
+       '(triplebacktick "```")
        '(underscore "_")
        '(whitespace " ")
-       '(doubleslash "//")
        ))
 
 (setq ar-unpaired-delimit-aktiv
       (list
-       'backslash
-       'backtick
        'colon
        'cross
+       'doubleslash
+       'backslash
+       'backtick
        'dollar
+       'doublebacktick
        'doublequote
        'equalize
        'escape
@@ -3786,9 +3810,9 @@ it defaults to `<', otherwise it defaults to `string<'."
        'slash
        'star
        'tild
+       'triplebacktick
        'underscore
        'whitespace
-       'doubleslash
        ))
 
 (setq ar-unary-operations
@@ -3842,6 +3866,7 @@ it defaults to `<', otherwise it defaults to `string<'."
        '("doublebackslash" "\\\\\\\\" "\\\\\\\\" nil (quote move) "1" nil nil (quote ar-escaped))
        '("doublebackslashparen" "\\\\\\\\(" "\\\\\\\\)" nil (quote move) "1" nil nil (quote ar-escaped))
        '("doublebacktick" "``" "``" (quote move) "1" nil t (quote ar-escaped))
+       '("triplebacktick" "```" "```" (quote move) "1" nil t (quote ar-escaped))
        '("doubleslash" "//" "//" nil (quote move) "1" nil t (quote ar-escaped))
        '("backslashparen" "\\\\(" "\\\\)" nil (quote move) "1" nil nil (quote ar-escaped))
        '("slashparen" "////(" "////)" nil (quote move) "1" nil nil (quote ar-escaped))
@@ -3854,6 +3879,7 @@ it defaults to `<', otherwise it defaults to `string<'."
        'doublebackslash
        'doublebackslashparen
        'doublebacktick
+       'triplebacktick
        'doubleslash
        'backslashparen
        'slashparen
@@ -3920,6 +3946,7 @@ it defaults to `<', otherwise it defaults to `string<'."
        '(triplequote "\"\"\"\\\\|'''")
        '(triplequotedq "\"\"\"")
        '(triplequotesq "'''")
+       '(triplebacktick "```")
        ))
 
 (setq ar-triplequote
@@ -3927,6 +3954,7 @@ it defaults to `<', otherwise it defaults to `string<'."
        'triplequote
        'triplequotedq
        'triplequotesq
+       'triplebacktick
        ))
 
 (setq ar-atpt-expression-list
@@ -3949,6 +3977,7 @@ it defaults to `<', otherwise it defaults to `string<'."
        '(triplequote "\"\"\"\\\\|'''")
        '(triplequotedq "\"\"\"")
        '(triplequotesq "'''")
+       '(triplebacktick "```")
        ))
 
 (setq ar-expression-triplequote
@@ -3956,6 +3985,7 @@ it defaults to `<', otherwise it defaults to `string<'."
        'triplequote
        'triplequotedq
        'triplequotesq
+       'triplebacktick
        ))
 
 (setq ar-atpt-markup-list
