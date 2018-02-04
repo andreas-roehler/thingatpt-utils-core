@@ -18,14 +18,26 @@
 
 # Code:
 
-WERKSTATT=$HOME/werkstatt
+ORT=${ORT:-1}
+
+echo "\$ORT: $ORT"
+
+if [ $ORT -eq 0 ]; then
+
+    WERKSTATT=$HOME/werkstatt/
+
+else
+
+    WERKSTATT=""
+
+fi
 
 DIR1=thingatpt-utils-core
 
 TESTDIR1=$WERKSTATT/$DIR1/test
 TESTDIR2=test
 
-FILE1=$WERKSTATT/$DIR1/beg-end.el
+FILE1=${WERKSTATT}$DIR1/beg-end.el
 FILE2=$WERKSTATT/$DIR1/ar-subr.el
 FILE3=$WERKSTATT/$DIR1/thingatpt-utils-map.el
 FILE4=$WERKSTATT/$DIR1/thingatpt-utils-core.el
@@ -33,7 +45,7 @@ FILE4=$WERKSTATT/$DIR1/thingatpt-utils-core.el
 TEST1=$TESTDIR1/thingatpt-utils-core-setup-tests.el
 TEST2=$TESTDIR1/thingatpt-utils-core-tests.el
 
-FILE5=beg-end.el
+FILE5=${WERKSTATT}beg-end.el
 FILE6=ar-subr.el
 FILE7=thingatpt-utils-map.el
 FILE8=thingatpt-utils-core.el
@@ -81,10 +93,6 @@ entfernt () {
 -f ert-run-tests-batch-and-exit
 }
 
-
-ORT=${ORT:-1}
-
-echo "\$ORT: $ORT"
 
 if [ $ORT -eq 0 ]; then
     hier
