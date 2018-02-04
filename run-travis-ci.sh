@@ -73,6 +73,8 @@ entfernt () {
 }
 
 
+ORT={ORT:-1}
+
 if [ $ORT -eq 0 ]; then
     hier
     echo "Lade \$DIR6 und \$DIR7"
