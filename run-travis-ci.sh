@@ -83,6 +83,7 @@ if [ $ORT -eq 0 ]; then
 else
     echo "entfernt"
     echo "Lade testumgebung \"ENTFERNT\""
+    entfernt
 fi
 
 # -load $FILE3 \
