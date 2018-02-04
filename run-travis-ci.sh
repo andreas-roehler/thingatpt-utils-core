@@ -23,6 +23,7 @@ WERKSTATT=$HOME/werkstatt
 DIR1=thingatpt-utils-core
 
 TESTDIR1=$WERKSTATT/$DIR1/test
+TESTDIR2=test
 
 FILE1=$WERKSTATT/$DIR1/beg-end.el
 FILE2=$WERKSTATT/$DIR1/ar-subr.el
@@ -31,6 +32,14 @@ FILE4=$WERKSTATT/$DIR1/thingatpt-utils-core.el
 
 TEST1=$TESTDIR1/thingatpt-utils-core-setup-tests.el
 TEST2=$TESTDIR1/thingatpt-utils-core-tests.el
+
+FILE5=beg-end.el
+FILE6=ar-subr.el
+FILE7=thingatpt-utils-map.el
+FILE8=thingatpt-utils-core.el
+
+TEST3=$TESTDIR2/thingatpt-utils-core-setup-tests.el
+TEST4=$TESTDIR2/thingatpt-utils-core-tests.el
 
 if [ -s emacs24 ]; then
     EMACS=emacs24
@@ -62,13 +71,13 @@ entfernt () {
 --eval "(add-to-list 'load-path (getenv \"WERKSTATT/\"))" \
 --eval "(add-to-list 'load-path (getenv \"DIR1\"))" \
 --eval "(add-to-list 'load-path (getenv \"TESTDIR1\"))" \
--load $FILE1 \
--load $FILE2 \
--load $FILE3 \
--load $FILE4 \
+-load $FILE5 \
+-load $FILE6 \
+-load $FILE7 \
+-load $FILE8 \
 \
--load $TEST1 \
--load $TEST2 \
+-load $TEST3 \
+-load $TEST4 \
 -f ert-run-tests-batch-and-exit
 }
 
