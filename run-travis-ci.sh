@@ -25,25 +25,27 @@ echo "\$ORT: $ORT"
 if [ $ORT -eq 0 ]; then
 
     WERKSTATT=$HOME/werkstatt/
+    DIR1=thingatpt-utils-core/
 
 else
 
     WERKSTATT=""
+    DIR1=""
 
 fi
 
-DIR1=thingatpt-utils-core
 
-TESTDIR1=$WERKSTATT/$DIR1/test
-TESTDIR2=test
 
-FILE1=${WERKSTATT}$DIR1/beg-end.el
-FILE2=$WERKSTATT/$DIR1/ar-subr.el
-FILE3=$WERKSTATT/$DIR1/thingatpt-utils-map.el
-FILE4=$WERKSTATT/$DIR1/thingatpt-utils-core.el
+TESTDIR1=${WERKSTATT}${DIR1}test/
+TESTDIR2=test/
 
-TEST1=$TESTDIR1/thingatpt-utils-core-setup-tests.el
-TEST2=$TESTDIR1/thingatpt-utils-core-tests.el
+FILE1=${WERKSTATT}${DIR1}beg-end.el
+FILE2=${WERKSTATT}${DIR1}ar-subr.el
+FILE3=${WERKSTATT}${DIR1}thingatpt-utils-map.el
+FILE4=${WERKSTATT}${DIR1}thingatpt-utils-core.el
+
+TEST1=${TESTDIR1}thingatpt-utils-core-setup-tests.el
+TEST2=${TESTDIR1}thingatpt-utils-core-tests.el
 
 FILE5=${WERKSTATT}beg-end.el
 FILE6=ar-subr.el
@@ -83,13 +85,13 @@ entfernt () {
 --eval "(add-to-list 'load-path (getenv \"WERKSTATT/\"))" \
 --eval "(add-to-list 'load-path (getenv \"DIR1\"))" \
 --eval "(add-to-list 'load-path (getenv \"TESTDIR1\"))" \
--load $FILE5 \
--load $FILE6 \
--load $FILE7 \
--load $FILE8 \
+-load $FILE1 \
+-load $FILE2 \
+-load $FILE3 \
+-load $FILE4 \
 \
--load $TEST3 \
--load $TEST4 \
+-load $TEST1 \
+-load $TEST2 \
 -f ert-run-tests-batch-and-exit
 }
 
