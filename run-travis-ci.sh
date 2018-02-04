@@ -73,7 +73,9 @@ entfernt () {
 }
 
 
-ORT={ORT:-1}
+ORT=${ORT:-1}
+
+echo "\$ORT: $ORT"
 
 if [ $ORT -eq 0 ]; then
     hier
