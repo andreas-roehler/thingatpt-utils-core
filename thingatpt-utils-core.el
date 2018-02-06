@@ -2494,6 +2494,14 @@ it would doublequote a word at point "
     (goto-char (car erg))
     (delete-char 1))) 
 
+(defun ar-trim-region-atpt ()
+  (interactive "*")
+  (let ((erg (ar-bounds-of-region-atpt)))
+    (goto-char (cdr erg))
+    (delete-char -1)
+    (goto-char (car erg))
+    (delete-char 1))) 
+
 
 ;; ML data-forms start
 
