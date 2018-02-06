@@ -418,7 +418,7 @@ Optional second arg --a number, nil or `t'-- if interactively called. "
   (let (;; make sure there is no selection than the undergoing one
 	(push-mark (point))
 	erg done)
-    (forward-char -1)
+    (unless (bolp) (forward-char -1))
     (or
      (setq erg (ar--char-delimiters--success-form char))
      (while
