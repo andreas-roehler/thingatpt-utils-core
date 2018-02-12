@@ -2916,11 +2916,11 @@ Inspired by stuff like `paredit-splice-sexp-killing-backward'; however, instead 
 "
   (let* ((outer (ar-th-bounds thing no-delimiters iact check))
 	 (outer-start (caar outer))
-	 (outer-end (or (ignore-errors (cadr (cadr outer)))(car (cadr outer))))
+	 (outer-end (copy-marker (or (ignore-errors (cadr (cadr outer)))(cdr (cadr outer))(car (cadr outer)))))
 	 inner-start inner-end)
     (when (eq (point) outer-start)(forward-char 1))
     (skip-syntax-forward "^(")
-    (setq inner-start (point))
+    (setq inner-start (copy-marker (point)))
     (forward-sexp)
     (delete-region (point) outer-end)
     (backward-sexp)
