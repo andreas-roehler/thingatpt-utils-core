@@ -77,14 +77,5 @@
     (ar-beginning-of-defun)
   (should (bobp))))
 
-(ert-deftest ar-ert-peel-list-test-1 ()
-  (ar-test-with-elisp-buffer-point-min
-      "(/ (* (* n 1) (1+ (* n 1))) 2)"
-      (forward-char 2)
-    (ar-peel-list-atpt)
-    (goto-char (point-min))
-    (forward-sexp)
-    (should (eobp))))
-
 (provide 'ar-core-tests-1)
 ;;; ar-core-tests-1.el ends here
