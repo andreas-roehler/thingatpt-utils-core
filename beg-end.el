@@ -508,13 +508,14 @@ Optional second arg --a number, nil or `t'-- if interactively called. "
 	(setq erg (ar--char-delimiters-beginning-nesting-forms char orig escaped comment)))
       (or (ignore-errors (goto-char erg)) (ignore-errors (goto-char last))))))
 
-(defun ar-char-delimiters-beginning (char &optional escaped comment first)
+(defun ar-char-delimiters-beginning (char &optional escaped comment first no-check)
   "If ESCAPED, match also chars which are backslashed.
 
-With COMMENT much also in comments
-With FIRST don't check from BOB "
+COMMENT: match also in comments
+FIRST: don't check from BOB
+NO-CHECK: don't consider nesting"
   (let* ((orig (point))
-    	 (erg (ar--char-delimiters-beginning-intern char orig escaped comment first)))
+    	 (erg (ar--char-delimiters-beginning-intern char orig escaped comment first no-check)))
     (unless erg
       (goto-char orig))
     erg))
