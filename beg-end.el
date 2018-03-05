@@ -49,11 +49,12 @@
   :type 'boolean
   :group 'werkstatt)
 
-(defcustom ar-thing-no-nest t
-  "Assume being at or behind an opening delimter.
+(defcustom ar-scan-whole-buffer nil
+  "Unary delimiters require the scan from beginning-of-buffer
 
-Don't check for nested.
-Otherwise delimiters must be searched from BOB . "
+in order to detect if inside a delimited form.
+As this might be slow with large buffers, switching it off is an option.
+If off, results are only reliable when called from inside a delimited form, resp. from before or after if forward- or backward- form is called."
   :type 'boolean
   :group 'werkstatt)
 
@@ -176,6 +177,16 @@ Set comment to `t' if forms inside comments should match - also for processing c
 		  (setq nesting (1+ nesting))))))))))
   nesting)
 
+(defun beginning-of-form-core (begstr endstr regexp searchform bound noerror nesting permit-comment permit-string condition)
+  (when
+      (or
+       ;; (looking-back searchform (line-beginning-position))
+       (and (or regexp (and begstr endstr))
+	    (re-search-backward searchform bound noerror))
+       (and (not regexp) (not (and begstr endstr))
+	    (search-backward searchform bound noerror)))
+    (setq nesting (beginning-of-form-base-intern nesting begstr endstr permit-comment permit-string condition))))
+
 ;; should `parse-sexp-ignore-comments' be usedq?
 (defun beginning-of-form-base (begstr &optional endstr bound noerror nesting permit-comment regexp condition permit-string)
   "Assume being inside ary delimiters, go to start.
@@ -201,23 +212,18 @@ If IN-STRING is non-nil, forms inside string match.
          (orig (point))
          (permit-comment (or permit-comment ar-thing-inside-comments))
          beg-pos-delimiter end-pos-delimiter)
+    (when
+	(setq nesting (beginning-of-form-core begstr endstr regexp searchform bound noerror nesting permit-comment permit-string condition))
+      (when (< nesting 1)
+	(setq beg-pos-delimiter (match-beginning 0))
+	(setq end-pos-delimiter (match-end 0))))
     (while
         (and
          (or (< 0 nesting)) (not (bobp)))
-      (when
-	  (or
-	   (looking-back searchform (line-beginning-position))
-	   (and (or regexp (and begstr endstr))
-		(re-search-backward searchform bound noerror nesting))
-	   (and (not regexp) (not (and begstr endstr))
-		(search-backward searchform bound noerror nesting)))
-        (setq erg (beginning-of-form-base-intern nesting begstr endstr permit-comment permit-string condition))
-	(if (< erg nesting)
-	    (progn
-	      (setq beg-pos-delimiter (match-beginning 0))
-	      (setq end-pos-delimiter (match-end 0))
-	      (setq nesting erg))
-	  (setq nesting erg))))
+      (setq nesting (beginning-of-form-core begstr endstr regexp searchform bound noerror nesting permit-comment permit-string condition)))
+    (when (eq nesting 0)
+	(setq beg-pos-delimiter (match-beginning 0))
+	(setq end-pos-delimiter (match-end 0)))
     (when (and beg-pos-delimiter end-pos-delimiter)
       (goto-char beg-pos-delimiter)
       (list beg-pos-delimiter end-pos-delimiter))))
@@ -238,13 +244,20 @@ If IN-STRING is non-nil, forms inside string match.
 		(if permit-comment
 		    (setq nesting (1- nesting))
 		  (unless (ar-in-comment-p)
-		    (setq nesting (1- nesting))))
-		nesting)
+		    (setq nesting (1- nesting)))))
             ;; got another beginning while moving down
-            (if permit-comment
-                (setq nesting (1+ nesting))
-              (unless (ar-in-comment-p)
-                (setq nesting (1+ nesting)))))))))nesting)
+	    (if permit-comment
+		(setq nesting (1+ nesting))
+	      (unless (ar-in-comment-p)
+		(setq nesting (1+ nesting))))))))
+    nesting))
+
+(defun end-of-form-core (begstr endstr regexp nesting permit-comment permit-string condition searchform bound noerror)
+  (when
+      (or (and regexp (re-search-forward searchform bound noerror))
+	  (progn (goto-char orig) (search-forward searchform bound noerror)))
+    (setq nesting (end-of-form-base-intern nesting begstr endstr permit-comment permit-string condition))
+    nesting))
 
 (defun end-of-form-base (begstr endstr &optional bound noerror nesting permit-comment regexp condition permit-string)
   "Goto closing of a programming structure in this level.
@@ -262,33 +275,28 @@ If IN-STRING is non-nil, forms inside string match.
                               (setq regexp t)
                               (concat begstr "\\|" endstr)))
                            (t endstr)))
-         (nesting (or nesting 1))
+         (nesting (or nesting 0))
          (orig (point))
          (permit-comment (or permit-comment ar-thing-inside-comments))
-         beg-pos-delimiter end-pos-delimiter erg)
+         beg-pos-delimiter end-pos-delimiter erg done)
+    (when (looking-at begstr)
+      (goto-char (match-end 0)))
+    (when (and (< 1 (length endstr))(looking-at searchform))
+      (goto-char (match-end 0)))
+    ;; (and (string= (prin1-to-string (char-after)) endstr)
+    ;; (forward-char 1)))
+    (setq nesting (end-of-form-core begstr endstr regexp nesting permit-comment permit-string condition searchform bound noerror))
+    ;; (when (< nesting 0)
+    ;;   (setq beg-pos-delimiter (match-beginning 0))
+    ;;   (setq end-pos-delimiter (match-end 0)))
     (while
         (and
          (< 0 nesting) (not (eobp)))
-      (if (< 1 (length endstr))
-	  (and (looking-at searchform)
-	       (goto-char (match-end 0)))
-	(and (string= (prin1-to-string (char-after)) endstr)
-	     (forward-char 1)))
-      (when
-	  (or (and regexp (re-search-forward searchform bound noerror))
-	      (search-forward searchform bound noerror))
-	(setq erg (end-of-form-base-intern nesting begstr endstr permit-comment permit-string condition))
-	(if  (< erg nesting)
-	  (progn
-	    (setq beg-pos-delimiter (match-beginning 0))
-	    (setq end-pos-delimiter (match-end 0))
-	    (setq nesting erg))
-        (setq nesting erg))))
-	;; (list (match-beginning 0) (match-end 0)))
-    (if (and beg-pos-delimiter end-pos-delimiter)
-        (list beg-pos-delimiter end-pos-delimiter)
-      (goto-char orig)
-      nil)))
+      (setq done t)
+      (setq nesting (end-of-form-core begstr endstr regexp nesting permit-comment permit-string condition searchform bound noerror)))
+    (if (ignore-errors (and (match-beginning 0) (match-end 0)))
+	(list (match-beginning 0) (match-end 0))
+      (goto-char orig))))
 
 (defvar match-paren-key-char "%")
 
@@ -324,14 +332,12 @@ Key per default is \"%\" as with elisp's `match-paren'. "
            (match-paren arg))
           (t (beginning-of-form-base begstr endstr bound noerror count permit-comment)))))
 
-;; Fixme: Instead use of condition `ar-in-comment-p-atpt' is hard-corded for the moment
 (defun ar-in-delimiter-base (regexp &optional condition guess-delimiter)
   "REGEXP expected of an unary delimiter, for example
 \"\\\\\\\"\\\\\\\"\\\\\\\"\\\\|'''\\\\|\\\\\\\"\\\\|'\" indicating string delimiters in Python.
 Optional second arg --a number, nil or `t'-- if interactively called. "
   (let ((orig (point))
         (count 0)
-        ;;        (regexp (replace-regexp-in-string "\"" "\\\\\""  regexp))
         tell beglist)
     (save-excursion
       (save-restriction
@@ -403,124 +409,195 @@ Optional second arg --a number, nil or `t'-- if interactively called. "
 		(1- (point))))))
 
 (defun ar--char-delimiters--skip-chars-backward-form (char)
-   (< 0 (abs (skip-chars-backward
-				    (concat "^"
-					    (or (progn (and (stringp char) char))
-						(regexp-quote (char-to-string char)))))))
-   )
+  (< 0 (abs (skip-chars-backward
+	     (concat "^"
+		     (if (stringp char)
+			 char
+		       (regexp-quote (char-to-string char))))))))
 
 (defun ar--char-delimiters--success-form (char)
   "Returns position if successful. "
-  (and (eq (char-after) char) (not (ar-escaped)) (not (ar-in-comment-p))
-       (point)))
+  (when (eq (char-before) char)
+       (1- (point))))
 
-(defun ar--char-delimiters-beginning-no-nesting-forms (char orig &optional escaped comment first)
-  (let (;; make sure there is no selection than the undergoing one
-	(push-mark (point))
-	erg done)
-    (unless (bolp) (forward-char -1))
-    (or
-     (setq erg (ar--char-delimiters--success-form char))
-     (while
-	 (and
-	  (not (bobp))
-	  (not done)
-	  (progn (forward-char -1) t)
-	  (or (when (ar-in-comment-p) (ar-backward-comment))
-	      (and (eq (char-after) char) (ar-escaped)
-		   (ar--char-delimiters--skip-chars-backward-form char))
-	      (setq done (ar--char-delimiters--success-form char))
-	      (ar--char-delimiters--skip-chars-backward-form char)))
-       (setq done (ar--char-delimiters--success-form char))))
-    (if (and (eq (char-before) char)(not (or (ar-in-comment-p) (ar-backward-comment))))
-	(progn
-	  (forward-char -1)
-	  (unless (ar-escaped)
-	    (setq erg (point))))
-      (when (and (eq (char-after) char)(not (or (ar-in-comment-p) (ar-backward-comment))))
-	(setq erg (point))))))
+(defun ar--char-delimiters-beginning-no-check-forms (char orig &optional escaped comment)
+  "Expects starting point after opening delimiter."
+  (let (erg)
+    (if (eq char 32)
+	;; optional args not implemented yet
+	(setq erg (ar--char-delimiters-beginning-whitespaced-form char))
+      (cond ((and escaped comment)
+	     (when (ar--char-delimiters--skip-chars-backward-form char))
+	     (setq erg (ar--char-delimiters--success-form char)))
+	    (escaped
+	     (when (and (ar--char-delimiters--skip-chars-backward-form char) (ar-in-comment-p)))
+	     (setq erg (ar--char-delimiters--success-form char)))
+	    (t (when (and (ar--char-delimiters--skip-chars-backward-form char) (ar-escaped) (ar-in-comment-p)))
+	       (setq erg (ar--char-delimiters--success-form char)))))
+    erg))
 
-(defun ar--char-delimiters-count (char orig counter)
-  (and
-   (not (eobp))
-   (or
-    (< 0 (abs (skip-chars-forward (concat "^" (regexp-quote (char-to-string char))) orig)))
-    (when
-	(< (point) orig)
-      (progn (forward-char 1)
-	     (< 0 (abs (skip-chars-forward (concat "^" (regexp-quote (char-to-string char))) orig))) t)))
-   (char-equal char (char-after))
-   (setq counter (1+ counter))))
+(defun ar--char-delimiters-forward (char &optional orig)
+  (unless (eobp)
+    (when (char-equal char (char-after))
+      (forward-char 1))
+    (< 0 (abs (skip-chars-forward (concat "^" (regexp-quote (char-to-string char))) orig)))))
 
-(defun ar--delimiters-beginning-check-forms (char orig escaped comment counter)
+(defun ar--delimiters-beginning-nesting-intern (char orig escaped comment counter)
   (let ((this counter)
 	erg last)
     (cond ((and escaped comment)
 	   (while
-	       (setq erg (ar--char-delimiters-count char orig counter))
-	     (setq counter erg)))
+	       (ar--char-delimiters-forward char orig)
+	     (when (eq (char-after) char)
+	       (unless
+	       	   ;; called from closing delimiter
+		   (<=  orig (point))
+ 		 (setq counter (1+ counter))
+		 (setq this (point))))))
 	  (escaped
 	   (while
-	       (setq erg char-delimiters-count char orig counter)
-	     (setq counter erg)
-	     (setq pps (parse-partial-sexp (point-min) (point)))
-	     (when (nth 4 pps)
-	       ;; in comment, remove from counter again
-	       (setq counter (1- counter)))))
+	       (ar--char-delimiters-forward char orig)
+	     (when (eq (char-after) char)
+	       (setq pps (parse-partial-sexp (point-min) (point)))
+	       (unless (or (nth 4 pps)
+			   ;; called from closing delimiter
+			   (<= orig (point)))
+		 (setq counter (1+ counter))
+		 (setq this (point))))))
 	  (comment
 	   (while
-	       (setq erg (char-delimiters-count char orig counter))
-	     (setq counter erg)
-	     (when
-		 (ar-escaped)
-	       ;; escaped, remove from counter again
-	       (setq counter (1- counter)))))
-	  (t (while
-		 (setq erg (ar--char-delimiters-count char orig counter))
-	       (setq counter erg)
-	       (if
-		   (or (ar-escaped) (ar-in-comment-p))
-		   ;; escaped or in comment, remove from counter again
-		   (setq counter (1- counter))
-		 (setq last this)
+	       (ar--char-delimiters-forward char orig)
+	     (when (eq (char-after) char)
+	       (unless (or (ar-escaped)
+			   ;; called from closing delimiter
+			   (<= orig (point)))
+		 (setq counter (1+ counter))
 		 (setq this (point))))))
-    (if (eq 1 (% counter 2))
-	this
-      (when (and (eq 0 (% counter 2))(eq (char-after) char))
-	last))))
+	  (t (while
+		 (ar--char-delimiters-forward char orig)
+	       (when (eq (char-after) char)
+		 (setq pps (parse-partial-sexp (point-min) (point)))
+		 (unless (or (nth 4 pps) (ar-escaped)
+			     ;; called from closing delimiter
+			     (<= orig (point)))
+ 		   (setq counter (1+ counter))
+		   (setq this (point)))))))
+    (when (eq 1 (% counter 2))
+      this)))
+	;; (when (and (eq 0 (% counter 2))(eq (char-after) char))
+	;; last))))
 
-(defun ar--char-delimiters-beginning-nesting-forms (char orig escaped comment)
+(defun ar--char-delimiters-beginning-check-forms (char orig escaped comment)
   (let ((counter 0))
     (goto-char (point-min))
     (when (char-equal char (char-after))
       (setq counter (1+ counter))
       (setq last (point))
       (unless (eobp) (forward-char 1)))
-    (ar--delimiters-beginning-check-forms char orig escaped comment counter)))
+    (ar--delimiters-beginning-nesting-intern char orig escaped comment counter)))
 
-(defun ar--char-delimiters-beginning-intern (char orig &optional escaped comment no-check)
+(defun ar--char-delimiters-beginning-intern (char orig &optional escaped comment whole-buffer)
   "With NO-CHECK assume being after or at an opening delimiter or at closing. "
   (if (eq char ?\ )
       (ignore-errors (goto-char (ar--char-delimiters-beginning-whitespaced-form char)))
     (let (pps last erg)
-      (if no-check
-	  (setq erg (ar--char-delimiters-beginning-no-nesting-forms char orig escaped comment no-check))
-	(setq erg (ar--char-delimiters-beginning-nesting-forms char orig escaped comment)))
+      (if whole-buffer
+	  (setq erg (ar--char-delimiters-beginning-check-forms char orig escaped comment))
+	(setq erg (ar--char-delimiters-beginning-no-check-forms char orig escaped comment))
+	)
       (or (ignore-errors (goto-char erg)) (ignore-errors (goto-char last))))))
 
-(defun ar-char-delimiters-beginning (char &optional escaped comment first no-check)
-  "If ESCAPED, match also chars which are backslashed.
+(defun ar-char-delimiters-beginning (char &optional escaped comment whole-buffer)
+  "Determine beginning of forms delimited by a single character.
 
+WRT forms delimited by a string or regexp use ‘beginning-of-form-base’.
+
+ESCAPED: match also chars which are backslashed.
 COMMENT: match also in comments
-FIRST: don't check from BOB
 NO-CHECK: don't consider nesting"
   (let* ((orig (point))
-    	 (erg (ar--char-delimiters-beginning-intern char orig escaped comment first no-check)))
+    	 (erg (ar--char-delimiters-beginning-intern char orig escaped comment whole-buffer)))
     (unless erg
       (goto-char orig))
     erg))
 
-(defun ar-char-delimiters-end (char &optional escaped comment)
+(defun ar--delimiters-end-check-forms-intern (char orig escaped comment counter)
+  (let ((this counter)
+	erg last done)
+    (cond ((and escaped comment)
+	   (while
+	       (ar--char-delimiters-forward char orig)
+	     (setq counter (1+ counter)))
+	   ;; try another one beyond limit set by orig
+	   (when (and (not done) (ar--char-delimiters-forward char))
+		 ;; don't raise counter, as it must remain uneven
+	     (setq done t))
+	   (when (eq (char-after) char)
+	     (setq last (1+ (point)))))
+	  (escaped
+	   (while
+	       (setq erg (ar--char-delimiters-forward char orig))
+	     (setq counter erg)
+	     (forward-char 1)
+	     (setq last (point))
+	     (setq pps (parse-partial-sexp (point-min) (point)))
+	     (when (nth 4 pps)
+	       ;; in comment, remove from counter again
+	       (setq counter (1- counter))))
+	   ;; try another one beyond limit set by orig
+	   (when
+	       (setq erg (ar--char-delimiters-forward char))
+	     (forward-char 1)
+	     (setq counter erg)
+	     (setq last (point))
+	     (setq pps (parse-partial-sexp (point-min) (point)))
+	     (when (nth 4 pps)
+	       ;; in comment, remove from counter again
+	       (setq counter (1- counter)))))
+	  (comment
+	   (while
+	       (setq erg (ar--char-delimiters-forward char orig))
+	     (setq counter erg)
+	     (forward-char 1)
+	     (setq last (point))
+	     (when
+		 (ar-escaped)
+	       ;; escaped, remove from counter again
+	       (setq counter (1- counter))))
+	   ;; try another one beyond limit set by orig
+	   (when
+	       (setq erg (ar--char-delimiters-forward char))
+	     (setq counter erg)
+	     (forward-char 1)
+	     (setq last (point))
+	     (when
+		 (ar-escaped)
+	       ;; escaped, remove from counter again
+	       (setq counter (1- counter)))))
+	  (t (while (ar--char-delimiters-forward char orig)
+	       (unless
+		   (or (ar-escaped) (ar-in-comment-p))
+		 (setq counter (1+ counter))))
+	     (while (and (not done) (ar--char-delimiters-forward char))
+	       (unless
+		   (or (ar-escaped) (ar-in-comment-p))
+		 ;; don't raise counter, as it must remain uneven
+		 (setq done t)))
+	     (when (eq (char-after) char)
+	       (setq last (1+ (point))))))
+    (when (eq 1 (% counter 2))
+      last)))
+
+(defun ar--char-delimiters-end-check-forms (char orig escaped comment)
+  (goto-char (point-min))
+  (let ((counter 0))
+    (when (char-equal char (char-after))
+      (setq counter (1+ counter))
+      (setq last (point))
+      (unless (eobp) (forward-char 1)))
+    (ar--delimiters-end-check-forms-intern char orig escaped comment counter)))
+
+(defun ar--char-delimiters-end-no-check-forms (char &optional escaped comment)
   (let (erg)
     (cond ((and escaped comment)
 	   (skip-chars-forward (concat "^" (regexp-quote (char-to-string char))))
@@ -539,6 +616,149 @@ NO-CHECK: don't consider nesting"
 			   t)))
 	     (when (eq (char-after) char)(forward-char 1) (setq erg (point)))))
     erg))
+
+(defun ar--char-delimiters-end-intern (char orig &optional escaped comment whole-buffer)
+  "optional WHOLE-BUFFER: check from point-min
+otherwise assume being after or at an opening delimiter or at closing. "
+  (if whole-buffer
+      (ar--char-delimiters-end-check-forms char orig escaped comment)
+    (ar--char-delimiters-end-no-check-forms char escaped comment)))
+
+(defun ar-char-delimiters-end (char &optional escaped comment whole-buffer)
+  "Determine end of forms delimited by a single character.
+
+WRT forms delimited by a string or regexp use ‘end-of-form-base’.
+
+ESCAPED: match also chars which are backslashed.
+COMMENT: match also in comments
+NO-CHECK: don't consider nesting"
+  (let* ((orig (point))
+    	 (erg (ar--char-delimiters-end-intern char orig escaped comment whole-buffer)))
+    (unless erg
+      (goto-char orig))
+    erg))
+
+;; (defun ar--delimiters-forward-check-forms-intern (char escaped comment counter)
+;;   (let ((this counter)
+;; 	erg last)
+;;     (cond ((and escaped comment)
+;; 	   (when
+;; 	       (setq erg (ar--char-delimiters-forward char))
+;; 	     (forward-char 1)
+;; 	     (setq last (point))
+;; 	     (setq counter erg)))
+;; 	  (escaped
+;; 	   (when
+;; 	       (setq erg (ar--char-delimiters-forward char))
+;; 	     (forward-char 1)
+;; 	     (setq counter erg)
+;; 	     (setq last (point))
+;; 	     (setq pps (parse-partial-sexp (point-min) (point)))
+;; 	     (when (nth 4 pps)
+;; 	       ;; in comment, remove from counter again
+;; 	       (setq counter (1- counter)))))
+;; 	  (comment
+;; 	   (when
+;; 	       (setq erg (ar--char-delimiters-forward char))
+;; 	     (setq counter erg)
+;; 	     (forward-char 1)
+;; 	     (setq last (point))
+;; 	     (when
+;; 		 (ar-escaped)
+;; 	       ;; escaped, remove from counter again
+;; 	       (setq counter (1- counter)))))
+;; 	  (t (when
+;; 		 (setq erg (ar--char-delimiters-forward char))
+;; 	       (setq counter erg)
+;; 	       (if
+;; 		   (or (ar-escaped) (ar-in-comment-p))
+;; 		   ;; escaped or in comment, remove from counter again
+;; 		   (setq counter (1- counter))
+;; 		 ;; (forward-char 1)
+;; 		 (setq this (point))
+;; 		 (setq last this)))))
+;;     ;; (if (eq 1 (% counter 2))
+;;     ;; 	last
+;;     ;;   (when (and (eq 0 (% counter 2))(eq (char-after) char))
+;;     ;; 	last))
+;;     last))
+
+
+
+
+(defun ar--delimiters-forward-intern (char escaped comment orig)
+  "Expects being called from end of a delimited form."
+  (let (last)
+    (cond ((and escaped comment)
+	   (when
+	       (and (ar--char-delimiters-forward char) (eq (char-after) char))
+	     (forward-char 1)
+	     (setq last (point))))
+	  (escaped
+	   (when
+	       (and (ar--char-delimiters-forward char)(eq (char-after) char))
+	     (setq pps (parse-partial-sexp (point-min) (point)))
+	     (unless
+		 (nth 4 pps)
+	       (setq last (point)))))
+	  (comment
+	   (when
+	       (and (ar--char-delimiters-forward char)(eq (char-after) char))
+	     (unless
+		 (ar-escaped)
+	       (setq last (point)))))
+	  (t (when
+		 (and (ar--char-delimiters-forward char)(eq (char-after) char))
+	       (unless (or (ar-escaped) (ar-in-comment-p))
+		 (setq last (point))))))
+    last))
+
+(defun ar-char-delimiters-forward (char &optional escaped comment)
+  "Determine forward of forms delimited by a single character.
+
+WRT forms delimited by a string or regexp use ‘end-of-form-base’.
+
+ESCAPED: match also chars which are backslashed.
+COMMENT: match also in comments
+NO-CHECK: don't consider nesting"
+  (let* ((orig (point))
+    	 erg)
+    ;; maybe not at end yet?
+    (setq erg (ar-char-delimiters-end char ar-thing-escaped ar-thing-inside-comments ar-scan-whole-buffer))
+    (if (and erg (< orig (point)))
+	(point)
+
+      (setq erg (ar--delimiters-forward-intern char escaped comment orig))
+      (when erg
+	;; make sure the end of form is reached
+	(when (ar-char-delimiters-end char ar-thing-escaped ar-thing-inside-comments ar-scan-whole-buffer)
+	  (setq erg (point))))
+      (unless erg
+	(goto-char orig))
+      erg)))
+
+(defun ar-char-paren-delimiters-forward (char &optional escaped comment form)
+  "Determine forward of forms delimited by a single character.
+
+WRT forms delimited by a string or regexp use ‘end-of-form-base’.
+
+optional ESCAPED: match also chars which are backslashed.
+optional COMMENT: match also in comments
+optional FORM: a symbol, for example 'bracketed
+when provided, go to the end of FORM"
+  (let* ((orig (point))
+	 (erg (end-of-form-base (regexp-quote (char-to-string char)) (regexp-quote (char-to-string (ar--return-complement-char-maybe char))) nil 'move 0 nil t 'ar-syntax t))
+	 ;; (when form (funcall (car (read-from-string (concat "ar-end-of-" (prin1-to-string form) "-atpt")))))
+	 )
+    ;; maybe not at end yet?
+    (if (and erg (< orig (point)))
+	(point)
+      (setq erg (ar--delimiters-forward-intern char escaped comment orig))
+      (when erg
+	;; make sure the end of form is reached
+	(setq erg
+	      (end-of-form-base (regexp-quote (char-to-string char)) (regexp-quote (char-to-string (ar--return-complement-char-maybe char))) nil 'move 0 nil t 'ar-syntax t))
+	erg))))
 
 (provide 'beg-end)
 
