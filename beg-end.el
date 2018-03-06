@@ -291,7 +291,7 @@ If IN-STRING is non-nil, forms inside string match.
     ;;   (setq end-pos-delimiter (match-end 0)))
     (while
         (and
-         (< 0 nesting) (not (eobp)))
+         (< -1 nesting) (not (eobp)))
       (setq done t)
       (setq nesting (end-of-form-core begstr endstr regexp nesting permit-comment permit-string condition searchform bound noerror)))
     (if (ignore-errors (and (match-beginning 0) (match-end 0)))

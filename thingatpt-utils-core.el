@@ -1671,60 +1671,70 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
 
 		(cons (match-beginning 0) (match-end 0)))))))
 
+(defun ar-paired-delimit-aktiv-raw-complement-char-maybe (char)
+  (let (erg)
+    (dolist (ele (map-values ar-paired-delimit-aktiv-raw))
+      (when (member char ele)
+	(setq erg (cadr ele))))
+    erg))
+
+(defun ar-delimited-end-intern ()
+  (if (< (- (match-end 0) (match-beginning 0)) 2)
+      (progn
+	(while
+	    (and
+	     (search-forward (char-to-string (ar--return-complement-char-maybe (char-before))) nil t 1)
+	     (ar-escaped)
+	     (nth 8 (parse-partial-sexp (line-beginning-position) (point)))))
+	(cons (match-beginning 0) (match-end 0)))
+    (when (search-forward ar-delimiter-string-atpt nil t 1)
+      (cons (match-beginning 0) (match-end 0)))))
+
 (put 'delimited 'end-op-at
      (lambda ()
-       (if (ignore-errors (looking-at (regexp-quote ar-delimiter-string-atpt)))
-	   (progn
-	     (goto-char (match-end 0))
-	     (if (< (- (match-end 0) (match-beginning 0)) 2)
-		 (progn
-		   (while
-		       (and
-			(search-forward (char-to-string (ar--return-complement-char-maybe (char-before))) nil t 1)
-			(ar-escaped)
-			(nth 8 (parse-partial-sexp (line-beginning-position) (point)))))
-		   (cons (match-beginning 0) (match-end 0)))
-	       (when (search-forward ar-delimiter-string-atpt nil t 1)
-		 (cons (match-beginning 0) (match-end 0)))))
-	 (let ((orig (point))
-	       (begdel (concat th-beg-delimiter ar-delimiters-atpt))
-	       (enddel (or (and ar-delimiter-zeichen-atpt (setq ar-delimiter-zeichen-atpt (ar--return-complement-char-maybe ar-delimiter-zeichen-atpt))) ar-delimiter-string-atpt (concat th-end-delimiter ar-delimiters-atpt))))
-	   (if (and enddel (characterp enddel) (setq enddel (char-to-string enddel)))
-	       (while (and
-		       (prog1
-			   (< 0 (abs (skip-chars-forward (concat "^" enddel))))
-			 (forward-char 1))
-		       (nth 8 (parse-partial-sexp orig (point)))))
-	     (cond
-	      ((eq 4 (car (syntax-after (point))))
-	       (when (looking-at "{")
+       (if (setq erg (ar-paired-delimit-aktiv-raw-complement-char-maybe (char-after)))
+	   (end-of-form-base (char-to-string (char-after)) (char-to-string erg) nil 'move 0 nil nil 'ar-syntax t)
+	 (if (ignore-errors (looking-at (regexp-quote ar-delimiter-string-atpt)))
+	     (ar-delimited-end-intern)
+	   (let ((orig (point))
+		 (begdel (concat th-beg-delimiter ar-delimiters-atpt))
+		 (enddel (or (and ar-delimiter-zeichen-atpt (setq ar-delimiter-zeichen-atpt (ar--return-complement-char-maybe ar-delimiter-zeichen-atpt))) ar-delimiter-string-atpt (concat th-end-delimiter ar-delimiters-atpt))))
+	     (if (and enddel (characterp enddel) (setq enddel (char-to-string enddel)))
+		 (while (and
+			 (prog1
+			     (< 0 (abs (skip-chars-forward (concat "^" enddel))))
+			   (forward-char 1))
+			 (nth 8 (parse-partial-sexp orig (point)))))
+	       (cond
+		((eq 4 (car (syntax-after (point))))
+		 (when (looking-at "{")
+		   (goto-char (match-end 0))
+		   (end-of-form-base "{" "}" nil 'move nil nil t)))
+		((eq (char-after) 40)
+		 (forward-list 1)
+		 ;; forward-list doesn't set match-data
+		 (looking-back ")" (line-beginning-position)))
+		((eq (char-after) ar-delimiter-zeichen-atpt)
+		 (forward-char 1)
+		 (skip-chars-forward (concat "^" (char-to-string ar-delimiter-zeichen-atpt))))
+		((looking-at (concat "[" begdel "]"))
 		 (goto-char (match-end 0))
-		 (end-of-form-base "{" "}" nil 'move nil nil t)))
-	      ((eq (char-after) 40)
-	       (forward-list 1)
-	       ;; forward-list doesn't set match-data
-	       (looking-back ")" (line-beginning-position)))
-	      ((eq (char-after) ar-delimiter-zeichen-atpt)
-	       (forward-char 1)
-	       (skip-chars-forward (concat "^" (char-to-string ar-delimiter-zeichen-atpt))))
-	      ((looking-at (concat "[" begdel "]"))
-	       (goto-char (match-end 0))
-	       (re-search-forward (concat "[" enddel "]") nil t 1))
-	      ((looking-at (concat "[" ar-delimiters-atpt "]"))
-	       (ar-set-delimiter-zeichen)
-	       (forward-char 1)
-	       (if
-		   (eq 92 ar-delimiter-zeichen-atpt)
-		   (search-forward (prin1-to-string 92))
-		 (while (and (search-forward (char-to-string ar-delimiter-zeichen-atpt))
-			     (ar-escaped)))))
-	      (t (forward-char 1)
-		 (search-forward (char-to-string ar-delimiter-zeichen-atpt) nil nil 1))))
-	   (setq ar-delimiter-zeichen-atpt nil)
-	   (if (eq 5 (car (syntax-after (1- (point)))))
-	       (cons (1- (point)) (point))
-	     (when (looking-back (concat "[" enddel "]") (line-beginning-position))
-	       (cons (match-beginning 0) (match-end 0))))))))
+		 (re-search-forward (concat "[" enddel "]") nil t 1))
+		((looking-at (concat "[" ar-delimiters-atpt "]"))
+		 (ar-set-delimiter-zeichen)
+		 (forward-char 1)
+		 (if
+		     (eq 92 ar-delimiter-zeichen-atpt)
+		     (search-forward (prin1-to-string 92))
+		   (while (and (search-forward (char-to-string ar-delimiter-zeichen-atpt))
+			       (ar-escaped)))))
+		(t (forward-char 1)
+		   (search-forward (char-to-string ar-delimiter-zeichen-atpt) nil nil 1))))
+	     (setq ar-delimiter-zeichen-atpt nil)
+	     (if (eq 5 (car (syntax-after (1- (point)))))
+		 (cons (1- (point)) (point))
+	       (when (looking-back (concat "[" enddel "]") (line-beginning-position))
+		 (cons (match-beginning 0) (match-end 0)))))))))
 
 (defun ar-set-delimiter-zeichen ()
   (setq ar-delimiter-zeichen-atpt
@@ -1892,7 +1902,7 @@ Otherwise assume being behind an opening delimiter or at a closing "
      (lambda ()
        (when (eq 4 (car (syntax-after (point))))
 	 (forward-sexp)
-         (forward-char -1) 
+         (forward-char -1)
 	 (cons (point)(1+ (point))))))
 
 ;; Markup
@@ -2386,7 +2396,7 @@ Otherwise assume being behind an opening delimiter or at a closing "
 	   (goto-char (match-end 0))
 	   (while (and (search-forward triplequotedsq nil 'move 1)
 		       (ar-in-delimiter-base triplequotedsq)))
-	   (when (looking-back triplequotedsq (line-beginning-position)) 
+	   (when (looking-back triplequotedsq (line-beginning-position))
 	     (list (match-beginning 0) (match-end 0)))))))
 
 (put 'triplequotedsq 'forward-op-at
@@ -2420,7 +2430,7 @@ Otherwise assume being behind an opening delimiter or at a closing "
 ;; Word
 (put 'word 'beginning-op-at
      (lambda () (when (looking-at "\\w")
-		  (unless (or (looking-back "\\W" (line-beginning-position))(bolp)) 
+		  (unless (or (looking-back "\\W" (line-beginning-position))(bolp))
 		    (forward-word -1))
 		  (point))))
 
@@ -2490,7 +2500,7 @@ it would doublequote a word at point "
     (goto-char (cdr erg))
     (delete-char -1)
     (goto-char (car erg))
-    (delete-char 1))) 
+    (delete-char 1)))
 
 (defun ar-trim-region-atpt ()
   (interactive "*")
@@ -2498,7 +2508,7 @@ it would doublequote a word at point "
     (goto-char (cdr erg))
     (delete-char -1)
     (goto-char (car erg))
-    (delete-char 1))) 
+    (delete-char 1)))
 
 
 ;; ML data-forms start
@@ -2513,7 +2523,7 @@ it would doublequote a word at point "
 (put 'beginendquoted 'end-op-at
      (lambda ()
        (when (ignore-errors (looking-at "\\begin{quote}"))
-	 (goto-char (match-end 0)) 
+	 (goto-char (match-end 0))
 	 (end-of-form-base "\\begin{quote}" "\\end{quote}" nil (quote move) 1 nil nil nil))))
 
 
@@ -2527,7 +2537,7 @@ it would doublequote a word at point "
 (put 'blok 'end-op-at
      (lambda ()
        (when (ignore-errors (looking-at "{% "))
-	 (goto-char (match-end 0)) 
+	 (goto-char (match-end 0))
 	 (end-of-form-base "{% " " %}" nil (quote move) 1 nil t nil))))
 
 
@@ -2541,7 +2551,7 @@ it would doublequote a word at point "
 (put 'doublebackslashed 'end-op-at
      (lambda ()
        (when (ignore-errors (looking-at "\\\\"))
-	 (goto-char (match-end 0)) 
+	 (goto-char (match-end 0))
 	 (end-of-form-base "\\\\" "\\\\" nil (quote move) 1 nil nil (quote ar-escaped)))))
 
 
@@ -2555,7 +2565,7 @@ it would doublequote a word at point "
 (put 'doublebackticked 'end-op-at
      (lambda ()
        (when (ignore-errors (looking-at "``"))
-	 (goto-char (match-end 0)) 
+	 (goto-char (match-end 0))
 	 (end-of-form-base "``" "``" nil (quote move) 1 nil nil (quote ar-escaped)))))
 
 
@@ -2569,7 +2579,7 @@ it would doublequote a word at point "
 (put 'doubleslashed 'end-op-at
      (lambda ()
        (when (ignore-errors (looking-at "//"))
-	 (goto-char (match-end 0)) 
+	 (goto-char (match-end 0))
 	 (end-of-form-base "//" "//" nil (quote move) 1 nil nil (quote ar-escaped)))))
 
 
@@ -2583,7 +2593,7 @@ it would doublequote a word at point "
 (put 'doublebackslashedparen 'end-op-at
      (lambda ()
        (when (ignore-errors (looking-at "\\\\\\\\("))
-	 (goto-char (match-end 0)) 
+	 (goto-char (match-end 0))
 	 (end-of-form-base "\\\\\\\\(" "\\\\\\\\)" nil (quote move) 1 nil nil (quote ar-escaped)))))
 
 
@@ -2597,7 +2607,7 @@ it would doublequote a word at point "
 (put 'tabledatap 'end-op-at
      (lambda ()
        (when (ignore-errors (looking-at "<td[^>]*>"))
-	 (goto-char (match-end 0)) 
+	 (goto-char (match-end 0))
 	 (end-of-form-base "<td[^>]*>" "</td>" nil (quote move) 1 nil nil nil))))
 
 
@@ -2611,7 +2621,7 @@ it would doublequote a word at point "
 (put 'backslashedparen 'end-op-at
      (lambda ()
        (when (ignore-errors (looking-at "\\\\("))
-	 (goto-char (match-end 0)) 
+	 (goto-char (match-end 0))
 	 (end-of-form-base "\\\\(" "\\\\)" nil (quote move) 1 nil nil (quote ar-escaped)))))
 
 
@@ -2625,7 +2635,7 @@ it would doublequote a word at point "
 (put 'slashedparen 'end-op-at
      (lambda ()
        (when (ignore-errors (looking-at "////////("))
-	 (goto-char (match-end 0)) 
+	 (goto-char (match-end 0))
 	 (end-of-form-base "////////(" "////////)" nil (quote move) 1 nil nil (quote ar-escaped)))))
 
 
@@ -2639,7 +2649,7 @@ it would doublequote a word at point "
 (put 'xslstylesheetp 'end-op-at
      (lambda ()
        (when (ignore-errors (looking-at "<xsl:stylesheet[^<]+>.*$"))
-	 (goto-char (match-end 0)) 
+	 (goto-char (match-end 0))
 	 (end-of-form-base "<xsl:stylesheet[^<]+>.*$" "</xsl:stylesheet>" nil (quote move) 1 nil nil nil))))
 
 
@@ -2725,7 +2735,7 @@ it would doublequote a word at point "
 With CHECK count nesting
 
 With NO-DELIMITERS
-Returns two lists composed of positions of delimiters 
+Returns two lists composed of positions of delimiters
 
 NO-CHECK assumes being at or behind a closing delimiter, doesn't check for nesting.
 
@@ -3617,7 +3627,7 @@ it defaults to `<', otherwise it defaults to `string<'."
 	 (erg (logand (car (syntax-after pos)) 65535)))
     (when arg (message "%s" erg)) erg))
 
-(defun syntax-class-bfpt (&optional arg) 
+(defun syntax-class-bfpt (&optional arg)
   "Return the syntax class part of the syntax at point. "
   (interactive "p")
   (let ((erg (logand (car (syntax-after (1- (point)))) 65535)))
@@ -3663,7 +3673,7 @@ it defaults to `<', otherwise it defaults to `string<'."
       (message "%s" erg)
       erg)))
 
-(defun syntax-bfpt (&optional arg) 
+(defun syntax-bfpt (&optional arg)
   (interactive "p")
   (let ((stax (syntax-after (1- (point)))))
     (when arg
@@ -3731,11 +3741,11 @@ it defaults to `<', otherwise it defaults to `string<'."
 	(progn
 	  ;; (funcall (car (read-from-string (concat "ar-trim-" from "-atpt"))))
 	  (goto-char (caar bounds))
-	  (delete-char 1) 
+	  (delete-char 1)
 	  ;; (insert "[")
 	  (ar--transform-insert-opening-delimiter-according-to-type new-delimiter)
 	  (goto-char end)
-	  (delete-char -1) 
+	  (delete-char -1)
 	  ;; (insert "]")
 	  (insert (ar--transform-return-closing-delimiter-according-to-type new-delimiter)))
       (message (concat "ar--transform-delimited-intern: can't see " from)))))
