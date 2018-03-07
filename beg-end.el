@@ -295,7 +295,9 @@ If IN-STRING is non-nil, forms inside string match.
       (setq done t)
       (setq nesting (end-of-form-core begstr endstr regexp nesting permit-comment permit-string condition searchform bound noerror)))
     (if (ignore-errors (and (match-beginning 0) (match-end 0)))
-	(list (match-beginning 0) (match-end 0))
+	(progn
+	  (goto-char (1- (match-end 0)))
+	  (list (match-beginning 0) (match-end 0)))
       (goto-char orig))))
 
 (defvar match-paren-key-char "%")
@@ -747,9 +749,7 @@ optional COMMENT: match also in comments
 optional FORM: a symbol, for example 'bracketed
 when provided, go to the end of FORM"
   (let* ((orig (point))
-	 (erg (end-of-form-base (regexp-quote (char-to-string char)) (regexp-quote (char-to-string (ar--return-complement-char-maybe char))) nil 'move 0 nil t 'ar-syntax t))
-	 ;; (when form (funcall (car (read-from-string (concat "ar-end-of-" (prin1-to-string form) "-atpt")))))
-	 )
+	 (erg (end-of-form-base (regexp-quote (char-to-string char)) (regexp-quote (char-to-string (ar--return-complement-char-maybe char))) nil 'move 0 nil t 'ar-syntax t)))
     ;; maybe not at end yet?
     (if (and erg (< orig (point)))
 	(point)
