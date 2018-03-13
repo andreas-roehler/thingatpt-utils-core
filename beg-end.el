@@ -255,7 +255,7 @@ If IN-STRING is non-nil, forms inside string match.
 (defun end-of-form-core (begstr endstr regexp nesting permit-comment permit-string condition searchform bound noerror)
   (when
       (or (and regexp (re-search-forward searchform bound noerror))
-	  (progn (goto-char orig) (search-forward searchform bound noerror)))
+	  (search-forward searchform bound noerror))
     (setq nesting (end-of-form-base-intern nesting begstr endstr permit-comment permit-string condition))
     nesting))
 
