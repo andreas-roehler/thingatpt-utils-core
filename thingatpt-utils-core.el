@@ -16,8 +16,6 @@
 
 (put 'backslashed 'forward-op-at
      (lambda ()
-       ;; (when (char-equal (char-after) ?\\)
-       ;;   (forward-char 1))
        (ar-char-delimiters-forward ?\\ ar-thing-escaped ar-thing-inside-comments)))
 
 (put 'backslashed 'backward-op-at
@@ -42,8 +40,6 @@
 
 (put 'backticked 'forward-op-at
      (lambda ()
-       ;; (when (char-equal (char-after) ?`)
-       ;;   (forward-char 1))
        (ar-char-delimiters-forward ?` ar-thing-escaped ar-thing-inside-comments)))
 
 (put 'backticked 'backward-op-at
@@ -68,8 +64,6 @@
 
 (put 'coloned 'forward-op-at
      (lambda ()
-       ;; (when (char-equal (char-after) ?:)
-       ;;   (forward-char 1))
        (ar-char-delimiters-forward ?: ar-thing-escaped ar-thing-inside-comments)))
 
 (put 'coloned 'backward-op-at
@@ -94,8 +88,6 @@
 
 (put 'dollared 'forward-op-at
      (lambda ()
-       ;; (when (char-equal (char-after) ?$)
-       ;;   (forward-char 1))
        (ar-char-delimiters-forward ?$ ar-thing-escaped ar-thing-inside-comments)))
 
 (put 'dollared 'backward-op-at
@@ -120,8 +112,6 @@
 
 (put 'doublequoted 'forward-op-at
      (lambda ()
-       ;; (when (char-equal (char-after) ?\")
-       ;;   (forward-char 1))
        (ar-char-delimiters-forward ?\" ar-thing-escaped ar-thing-inside-comments)))
 
 (put 'doublequoted 'backward-op-at
@@ -146,8 +136,6 @@
 
 (put 'equalized 'forward-op-at
      (lambda ()
-       ;; (when (char-equal (char-after) ?=)
-       ;;   (forward-char 1))
        (ar-char-delimiters-forward ?= ar-thing-escaped ar-thing-inside-comments)))
 
 (put 'equalized 'backward-op-at
@@ -172,8 +160,6 @@
 
 (put 'hyphened 'forward-op-at
      (lambda ()
-       ;; (when (char-equal (char-after) ?-)
-       ;;   (forward-char 1))
        (ar-char-delimiters-forward ?- ar-thing-escaped ar-thing-inside-comments)))
 
 (put 'hyphened 'backward-op-at
@@ -198,8 +184,6 @@
 
 (put 'singlequoted 'forward-op-at
      (lambda ()
-       ;; (when (char-equal (char-after) ?')
-       ;;   (forward-char 1))
        (ar-char-delimiters-forward ?' ar-thing-escaped ar-thing-inside-comments)))
 
 (put 'singlequoted 'backward-op-at
@@ -224,8 +208,6 @@
 
 (put 'slashed 'forward-op-at
      (lambda ()
-       ;; (when (char-equal (char-after) ?/)
-       ;;   (forward-char 1))
        (ar-char-delimiters-forward ?/ ar-thing-escaped ar-thing-inside-comments)))
 
 (put 'slashed 'backward-op-at
@@ -250,8 +232,6 @@
 
 (put 'stared 'forward-op-at
      (lambda ()
-       ;; (when (char-equal (char-after) ?*)
-       ;;   (forward-char 1))
        (ar-char-delimiters-forward ?* ar-thing-escaped ar-thing-inside-comments)))
 
 (put 'stared 'backward-op-at
@@ -276,8 +256,6 @@
 
 (put 'underscored 'forward-op-at
      (lambda ()
-       ;; (when (char-equal (char-after) ?_)
-       ;;   (forward-char 1))
        (ar-char-delimiters-forward ?_ ar-thing-escaped ar-thing-inside-comments)))
 
 (put 'underscored 'backward-op-at
@@ -302,8 +280,6 @@
 
 (put 'whitespaced 'forward-op-at
      (lambda ()
-       ;; (when (char-equal (char-after) ? )
-       ;;   (forward-char 1))
        (ar-char-delimiters-forward ?  ar-thing-escaped ar-thing-inside-comments)))
 
 (put 'whitespaced 'backward-op-at
