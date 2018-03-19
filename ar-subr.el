@@ -328,7 +328,7 @@ Skip comments, empty lines and strings "
   (interactive)
   (unless (eobp)
     (let ((orig (point))
-	  cmm strg)
+	  strg)
       (forward-line 1)
       (back-to-indentation)
       (while (and (eolp) (not (eobp)))
@@ -703,7 +703,6 @@ Defaults aligning to equal and vertical bar sign"
   (interactive "*")
   (save-excursion
     (let* ((orig (copy-marker (point)))
-	   (end (line-end-position))
 	   (regexp (or regexp (concat ar-eq-assignment-re "\\|" ar-vertical-line-re)))
 	   (downcol (progn (beginning-of-line)
 			   (when (looking-at regexp)
