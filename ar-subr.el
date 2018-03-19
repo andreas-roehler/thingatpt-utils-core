@@ -546,8 +546,8 @@ otherwise return complement char"
 (defun ar--return-complement-char-maybe (char)
   "Reverse reciproke chars as \"[\" to \"]\"."
          (pcase char
-	       (?' ?")
-	       (?" ?')
+	       (?' ?\")
+	       (?\" ?')
 	       (?‘ ?’)
 	       (?` ?')
 	       (?< ?>)
