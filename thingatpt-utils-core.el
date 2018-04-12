@@ -2761,7 +2761,7 @@ it would doublequote a word at point "
 With CHECK count nesting
 
 With NO-DELIMITERS
-Returns two lists composed of positions of delimiters 
+Returns two lists composed of positions of delimiters
 
 NO-CHECK assumes being at or behind a closing delimiter, doesn't check for nesting.
 
@@ -2770,13 +2770,18 @@ NO-CHECK assumes being at or behind a closing delimiter, doesn't check for nesti
     (if (eq thing 'region)
 	(ignore-errors (cons (region-beginning) (region-end)))
       (save-excursion
-	(let* ((orig (point))
-               ;; (scan-whole-buffer check)
-	       (beg (funcall (get thing 'beginning-op-at)))
-	       (end (and beg (funcall (get thing 'end-op-at)))))
-	  (if (numberp beg)
-	      (ar--th-bounds-char-return beg end check orig no-delimiters)
-	    (ar--th-bounds-list-return beg end iact check orig no-delimiters)))))))
+	(save-restriction
+	  (let ((regstart (when (use-region-p) (region-beginning)))
+		(regend (when (use-region-p) (region-end))))
+	    (when (use-region-p)
+	      (narrow-to-region regstart regend))
+	    (let* ((orig (point))
+		   ;; (scan-whole-buffer check)
+		   (beg (funcall (get thing 'beginning-op-at)))
+		   (end (and beg (funcall (get thing 'end-op-at)))))
+	      (if (numberp beg)
+		  (ar--th-bounds-char-return beg end check orig no-delimiters)
+		(ar--th-bounds-list-return beg end iact check orig no-delimiters)))))))))
 
 (defun ar-th-beg (thing &optional arg iact check)
   "Return beginning position of THING. "
