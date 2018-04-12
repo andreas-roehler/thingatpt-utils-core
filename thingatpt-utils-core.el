@@ -3728,29 +3728,7 @@ it defaults to `<', otherwise it defaults to `string<'."
       (message (format "%s" stax)))
     stax))
 
-(defvar ar-paired-delimited-passiv-raw
-  (list
-   '(braced "{" "}")
-   '(bracketed "[" "]")
-   '(lesserangled "<" ">")
-   '(greaterangled ">" "<")
-   '(leftrightsinglequoted "‘" "’")
-   '(parentized "(" ")")))
 
-(defvar ar-unpaired-delimited-raw
-  (list
-   '(backslashed "\\\\")
-   '(backticked "`")
-   '(coloned ":")
-   '(dollared "$")
-   '(doublequoted "\\\"")
-   '(equalized "=")
-   '(hyphened "-")
-   '(singlequoted "'")
-   '(slashed "/")
-   '(stared "*")
-   '(underscored "_")
-   '(whitespaced " ")))
 
 (defun ar--transform-delimited-new-delimiter (to)
   "Return the new delimiter - either paired or unpaired. "
