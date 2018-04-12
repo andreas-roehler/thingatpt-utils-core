@@ -252,7 +252,6 @@
 ;; (global-set-key [(control c)(*)] 'ar-star-or-copy-atpt)
 
 ;;; Code:
-
 (require 'ar-subr)
 (require 'beg-end)
 (require 'hideshow)
@@ -2523,7 +2522,9 @@ it would doublequote a word at point "
 	 (end (or
 	       (ignore-errors (and (numberp (cdr bounds)) (cdr bounds)))
 	       (ignore-errors (and (numberp (cadr (cadr bounds)))(cadr (cadr bounds))))
-	       (ignore-errors (and (numberp (cadr bounds))(cadr bounds))))))
+	       (ignore-errors (and (numberp (cadr bounds))(cadr bounds)))
+	       (ignore-errors (and (numberp (cdr (cadr bounds)))(cdr (cadr bounds))))
+	       )))
     (if (ignore-errors (numberp beg))
 	(save-excursion
 	  (goto-char beg)
