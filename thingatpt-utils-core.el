@@ -2774,8 +2774,8 @@ NO-CHECK assumes being at or behind a closing delimiter, doesn't check for nesti
 	(save-restriction
 	  (let ((regstart (when (use-region-p) (region-beginning)))
 		(regend (when (use-region-p) (region-end))))
-	    (when (use-region-p)
-	      (narrow-to-region regstart regend))
+	    ;; (when (use-region-p)
+	    ;;   (narrow-to-region regstart regend))
 	    (let* ((orig (point))
 		   ;; (scan-whole-buffer check)
 		   (beg (funcall (get thing 'beginning-op-at)))
