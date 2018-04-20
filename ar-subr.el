@@ -743,5 +743,111 @@ Defaults aligning to equal and vertical bar sign"
     (skip-chars-backward " \t\r\n\f")
     (current-indentation)))
 
+(defun ar-backward-top-level (&optional arg) 
+  "Go to end of a top-level form.
+
+Returns position if successful, nil otherwise"
+  (interactive "p")
+  (unless (eobp)
+    (forward-line -1)
+    (beginning-of-line)
+    (let* ((arg (or arg 1))
+	   (orig (point))
+	   (pps (parse-partial-sexp (point-min) (point)))
+	   ;; set ppss start point
+	   (limit (or (nth 8 pps) (point-min)))
+	   (comment-start (ar-fix-comment-start))
+	   erg this)
+      (unless (bobp)
+	(while (and
+		(prog1 (re-search-backward "^[^ \t\n\f\r]" nil 'move arg)
+		  (beginning-of-line))
+		(or (ignore-errors (looking-at comment-start))(ignore-errors (looking-at comment-start-skip))
+		    (and (setq this (ignore-errors (nth 8 (parse-partial-sexp limit (point)))))
+			 (setq limit this))
+		    (member (char-after) top-level-nostart-chars)) )
+	  (forward-line -1)
+	  (beginning-of-line)))
+      (when (< orig (point))
+	(setq erg (point))
+	(when (and ar-verbose-p (interactive-p)) (message "%s" erg)))
+      erg)))
+
+(defun ar--forward-top-level-intern (orig pps)
+  (let (last)
+    (unless (ar--beginning-of-expression-p orig pps)
+      (ar-backward-expression))
+    (unless (eq 0 (current-column))
+      (ar-backward-top-level))
+    (unless (< orig (point))
+      (while (and
+	      (not (eobp))
+	      (save-excursion
+		(ar-forward-expression orig nil nil pps)
+		(setq last (point)))
+	      (ar-down-expression)(< 0 (current-indentation)))))
+    ;; (if (looking-at (ar-rx builtin-declaration))
+    ;; (ar-forward-top-level)
+    (and last (goto-char last))
+    ;; (ar-forward-expression)
+    ;;)
+))
+
+(defvar top-level-nostart-chars (list ?-))
+
+(defun ar-forward-top-level (&optional arg) 
+  "Go to end of a top-level form.
+
+Returns position if successful, nil otherwise"
+  (interactive "p")
+  (unless (eobp)
+    (forward-line 1)
+    (beginning-of-line)
+    (let* ((arg (or arg 1))
+	   (orig (point))
+	   (pps (parse-partial-sexp (point-min) (point)))
+	   ;; set ppss start point
+	   (limit (or (nth 8 pps) (point-min)))
+	   (comment-start (ar-fix-comment-start))
+	   erg this)
+      (unless (eobp)
+	(while (and
+		(prog1 (re-search-forward "^[^ \t\n\f\r]" nil 'move arg)
+		  (beginning-of-line))
+		(or (ignore-errors (looking-at comment-start))(ignore-errors (looking-at comment-start-skip))
+		    (and (setq this (ignore-errors (nth 8 (parse-partial-sexp limit (point)))))
+			 (setq limit this))
+		    (member (char-after) top-level-nostart-chars)) )
+	  (forward-line 1)
+	  (beginning-of-line)))
+
+      ;; (if (and (ar--forward-top-level-intern orig pps)
+      ;; 	       (< orig (point)))
+      ;; 	  (setq erg (point))
+      ;; 	(ar-down-expression)
+      ;; 	(ar-forward-top-level)))
+      (when (< orig (point))
+	(setq erg (point))
+	(when (and ar-verbose-p (interactive-p)) (message "%s" erg)))
+      erg)))
+
+(defun ar-forward-top-level-bol ()
+  "Go to beginning of line after end of a top-level form.
+
+Returns position if successful, nil otherwise"
+  (interactive)
+  (let ((orig (point))
+        erg last)
+    (unless (eobp)
+      (when (ar--forward-top-level-intern orig pps)
+	(if (eobp)
+	    (newline)
+	  (forward-line 1)
+	  (beginning-of-line)))
+      (when (< orig (point))
+	(setq erg (point))))
+    (when (and ar-verbose-p (interactive-p)) (message "%s" erg))
+    erg))
+
 (provide 'ar-subr)
 ;;; ar-subr.el ends here
