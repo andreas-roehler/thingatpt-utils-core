@@ -3390,7 +3390,7 @@ it defaults to `<', otherwise it defaults to `string<'."
 	(ar-th-delim-intern thing beg end beg-char end-char)))))
 
 (defun ar-th-base-copy-or (kind arg &optional check)
-  " "
+  "Internally used by ‘ar-parentize-or-copy-atpt’ and the like."
   (let* ((expr (format "%s" kind))
 	 (arg (if arg (prefix-numeric-value arg) 1))
 	 (suffix
@@ -3406,13 +3406,13 @@ it defaults to `<', otherwise it defaults to `string<'."
 	  (setq erg (funcall (intern-soft (concat "ar-trim- " expr "-in-region-atpt"))))
 	(or (setq erg (funcall (intern-soft (concat "ar-trim-" expr suffix "-atpt"))))
 	    (funcall (intern-soft (concat "ar-" expr "-" copy-or-alternative "-atpt")) arg))))
-     ((use-region-p)
-      (setq erg (funcall (intern-soft (concat "ar-" expr "-in-region-atpt")))))
      ((eq 4 (prefix-numeric-value arg))
       (if (use-region-p)
 	  (setq erg (funcall (intern-soft (concat "ar-" expr "-in-region-atpt"))))
 	(or (setq erg (funcall (intern-soft (concat "ar-" expr suffix "-atpt")) arg))
 	    (funcall (intern-soft (concat "ar-" expr "-" copy-or-alternative "-atpt"))))))
+     ((< arg 0)
+      (setq erg (funcall (intern-soft (concat "ar-kill-" expr suffix "-atpt")))))
      ((< 0 arg)
       (or (setq bounds (funcall (intern-soft (concat "ar-bounds-of-" expr suffix "-atpt"))))
 	  (setq bounds (funcall (intern-soft (concat "ar-bounds-of-" expr "-" copy-or-alternative "-atpt")))))
@@ -3429,7 +3429,8 @@ it defaults to `<', otherwise it defaults to `string<'."
 	  (goto-char beg)
 	  (push-mark (point) t t)
 	  (goto-char end))))
-     (t (setq erg (funcall (intern-soft (concat "ar-kill-" expr suffix "-atpt"))))))
+     ((use-region-p)
+      (setq erg (funcall (intern-soft (concat "ar-" expr "-in-region-atpt"))))))
     erg))
 
 (defvar ar-werkstatt-mode-map nil
