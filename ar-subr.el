@@ -188,6 +188,8 @@ Travel empty lines "
   (let ((orig (or pos (point)))
 	(char (or char (string-to-char comment-start)))
 	last)
+    (unless (ar-in-comment-p)
+      (search-forward comment-start nil t 1))
     (while (and (not (eobp))
 		(forward-comment 99999)))
     (when (eq (point) orig)
@@ -205,7 +207,9 @@ Travel empty lines "
     (when last
       (goto-char last)
       (skip-chars-forward " \t\r\n\f")
-      (back-to-indentation))))
+      (back-to-indentation))
+    (unless (eq (point) orig)
+      (point))))
 
 (defun ar-in-comment-p (&optional start)
   "Return the beginning of current line's comment, if inside. "
@@ -614,7 +618,6 @@ otherwise return complement char"
 	       (?\⧘ ?\⧙)
 	       (?\⦉ ?\⦊)
 	       (?\⦇ ?\⦈)
-	       (?‘ ?’)
 	       (?\〉 ?\〈)
 	       (?\⦒ ?\⦑)
 	       (?\⦔ ?\⦓)

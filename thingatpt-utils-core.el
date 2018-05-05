@@ -272,6 +272,14 @@ Used by `ar-sort-numbers-subr'"
   :type 'boolean
   :group 'werkstatt)
 
+(defcustom ar-match-in-string-p nil
+  "Whether forms match inside a string.
+
+Default is nil"
+
+  :type 'boolean
+  :group 'werkstatt)
+
 (defcustom match-paren-no-use-syntax-pps nil
   "If `match-paren' should avoid scanning lists according to syntax but search regexp based. "
   :type 'boolean
@@ -862,13 +870,13 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
      (lambda ()
        (if (ignore-errors (char-equal ?{ (char-after)))
            (list (point) (1+ (point)))
-	 (beginning-of-form-base "{" "}" nil 'move 0 nil nil 'ar-syntax t))))
+	 (beginning-of-form-base "{" "}" nil 'move 0 nil nil 'ar-syntax ar-match-in-string-p))))
 
 (put 'braced 'end-op-at
      (lambda ()
        (when (ignore-errors (char-equal ?{ (char-after)))
          (forward-char 1))
-       (end-of-form-base "{" "}" nil 'move 0 nil nil 'ar-syntax t)))
+       (end-of-form-base "{" "}" nil 'move 0 nil nil 'ar-syntax ar-match-in-string-p)))
 
 (put 'braced 'forward-op-at
      (lambda ()
@@ -881,13 +889,13 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
      (lambda ()
        (if (ignore-errors (char-equal ?\[ (char-after)))
            (list (point) (1+ (point)))
-	 (beginning-of-form-base "\\[" "\]" nil 'move 0 nil t 'ar-syntax t))))
+	 (beginning-of-form-base "\\[" "\]" nil 'move 0 nil t 'ar-syntax ar-match-in-string-p))))
 
 (put 'bracketed 'end-op-at
      (lambda ()
        (when (ignore-errors (char-equal ?\[ (char-after)))
          (forward-char 1))
-       (end-of-form-base "\\[" "\]" nil 'move 0 nil t 'ar-syntax t)))
+       (end-of-form-base "\\[" "\]" nil 'move 0 nil t 'ar-syntax ar-match-in-string-p)))
 
 (put 'bracketed 'forward-op-at
      (lambda ()
@@ -900,13 +908,13 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
      (lambda ()
        (if (ignore-errors (char-equal ?< (char-after)))
            (list (point) (1+ (point)))
-	 (beginning-of-form-base "<" ">" nil 'move 0 nil nil 'ar-syntax t))))
+	 (beginning-of-form-base "<" ">" nil 'move 0 nil nil 'ar-syntax ar-match-in-string-p))))
 
 (put 'lesserangled 'end-op-at
      (lambda ()
        (when (ignore-errors (char-equal ?< (char-after)))
          (forward-char 1))
-       (end-of-form-base "<" ">" nil 'move 0 nil nil 'ar-syntax t)))
+       (end-of-form-base "<" ">" nil 'move 0 nil nil 'ar-syntax ar-match-in-string-p)))
 
 (put 'lesserangled 'forward-op-at
      (lambda ()
@@ -919,13 +927,13 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
      (lambda ()
        (if (ignore-errors (char-equal ?> (char-after)))
            (list (point) (1+ (point)))
-	 (beginning-of-form-base ">" "<" nil 'move 0 nil nil 'ar-syntax t))))
+	 (beginning-of-form-base ">" "<" nil 'move 0 nil nil 'ar-syntax ar-match-in-string-p))))
 
 (put 'greaterangled 'end-op-at
      (lambda ()
        (when (ignore-errors (char-equal ?> (char-after)))
          (forward-char 1))
-       (end-of-form-base ">" "<" nil 'move 0 nil nil 'ar-syntax t)))
+       (end-of-form-base ">" "<" nil 'move 0 nil nil 'ar-syntax ar-match-in-string-p)))
 
 (put 'greaterangled 'forward-op-at
      (lambda ()
@@ -938,13 +946,13 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
      (lambda ()
        (if (ignore-errors (char-equal ?‘ (char-after)))
            (list (point) (1+ (point)))
-	 (beginning-of-form-base "‘" "’" nil 'move 0 nil nil 'ar-syntax t))))
+	 (beginning-of-form-base "‘" "’" nil 'move 0 nil nil 'ar-syntax ar-match-in-string-p))))
 
 (put 'leftrightsinglequoted 'end-op-at
      (lambda ()
        (when (ignore-errors (char-equal ?‘ (char-after)))
          (forward-char 1))
-       (end-of-form-base "‘" "’" nil 'move 0 nil nil 'ar-syntax t)))
+       (end-of-form-base "‘" "’" nil 'move 0 nil nil 'ar-syntax ar-match-in-string-p)))
 
 (put 'leftrightsinglequoted 'forward-op-at
      (lambda ()
@@ -957,13 +965,13 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
      (lambda ()
        (if (ignore-errors (char-equal ?“ (char-after)))
            (list (point) (1+ (point)))
-	 (beginning-of-form-base "“" "”" nil 'move 0 nil nil 'ar-syntax t))))
+	 (beginning-of-form-base "“" "”" nil 'move 0 nil nil 'ar-syntax ar-match-in-string-p))))
 
 (put 'leftrightdoublequoted 'end-op-at
      (lambda ()
        (when (ignore-errors (char-equal ?“ (char-after)))
          (forward-char 1))
-       (end-of-form-base "“" "”" nil 'move 0 nil nil 'ar-syntax t)))
+       (end-of-form-base "“" "”" nil 'move 0 nil nil 'ar-syntax ar-match-in-string-p)))
 
 (put 'leftrightdoublequoted 'forward-op-at
      (lambda ()
@@ -976,13 +984,13 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
      (lambda ()
        (if (ignore-errors (char-equal ?\( (char-after)))
            (list (point) (1+ (point)))
-	 (beginning-of-form-base "\(" "\)" nil 'move 0 nil nil 'ar-syntax t))))
+	 (beginning-of-form-base "\(" "\)" nil 'move 0 nil nil 'ar-syntax ar-match-in-string-p))))
 
 (put 'parentized 'end-op-at
      (lambda ()
        (when (ignore-errors (char-equal ?\( (char-after)))
          (forward-char 1))
-       (end-of-form-base "\(" "\)" nil 'move 0 nil nil 'ar-syntax t)))
+       (end-of-form-base "\(" "\)" nil 'move 0 nil nil 'ar-syntax ar-match-in-string-p)))
 
 (put 'parentized 'forward-op-at
      (lambda ()
