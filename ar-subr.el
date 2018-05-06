@@ -514,9 +514,9 @@ See http://debbugs.gnu.org/cgi/bugreport.cgi?bug=7115"
     erg))
 
 (defun ar-list-indents ()
-  "Return a list of indentations up to start of top-level. "
+  "Return a list of indentations up to start of toplevel. "
   (save-excursion
-    (let ((beg (save-excursion (ar-backward-top-level)))
+    (let ((beg (save-excursion (ar-backward-toplevel)))
 	  ilist)
       (save-restriction
 	(narrow-to-region beg (point))
@@ -746,8 +746,8 @@ Defaults aligning to equal and vertical bar sign"
     (skip-chars-backward " \t\r\n\f")
     (current-indentation)))
 
-(defun ar-backward-top-level (&optional arg) 
-  "Go to end of a top-level form.
+(defun ar-backward-toplevel (&optional arg) 
+  "Go to end of a toplevel form.
 
 Returns position if successful, nil otherwise"
   (interactive "p")
@@ -768,7 +768,7 @@ Returns position if successful, nil otherwise"
 		(or (ignore-errors (looking-at comment-start))(ignore-errors (looking-at comment-start-skip))
 		    (and (setq this (ignore-errors (nth 8 (parse-partial-sexp limit (point)))))
 			 (setq limit this))
-		    (member (char-after) top-level-nostart-chars)) )
+		    (member (char-after) toplevel-nostart-chars)) )
 	  (forward-line -1)
 	  (beginning-of-line)))
       (when (< orig (point))
@@ -776,12 +776,12 @@ Returns position if successful, nil otherwise"
 	(when (and ar-verbose-p (interactive-p)) (message "%s" erg)))
       erg)))
 
-(defun ar--forward-top-level-intern (orig pps)
+(defun ar--forward-toplevel-intern (orig pps)
   (let (last)
     (unless (ar--beginning-of-expression-p orig pps)
       (ar-backward-expression))
     (unless (eq 0 (current-column))
-      (ar-backward-top-level))
+      (ar-backward-toplevel))
     (unless (< orig (point))
       (while (and
 	      (not (eobp))
@@ -790,16 +790,16 @@ Returns position if successful, nil otherwise"
 		(setq last (point)))
 	      (ar-down-expression)(< 0 (current-indentation)))))
     ;; (if (looking-at (ar-rx builtin-declaration))
-    ;; (ar-forward-top-level)
+    ;; (ar-forward-toplevel)
     (and last (goto-char last))
     ;; (ar-forward-expression)
     ;;)
 ))
 
-(defvar top-level-nostart-chars (list ?-))
+(defvar toplevel-nostart-chars (list ?-))
 
-(defun ar-forward-top-level (&optional arg) 
-  "Go to end of a top-level form.
+(defun ar-forward-toplevel (&optional arg) 
+  "Go to end of a toplevel form.
 
 Returns position if successful, nil otherwise"
   (interactive "p")
@@ -820,29 +820,29 @@ Returns position if successful, nil otherwise"
 		(or (ignore-errors (looking-at comment-start))(ignore-errors (looking-at comment-start-skip))
 		    (and (setq this (ignore-errors (nth 8 (parse-partial-sexp limit (point)))))
 			 (setq limit this))
-		    (member (char-after) top-level-nostart-chars)) )
+		    (member (char-after) toplevel-nostart-chars)) )
 	  (forward-line 1)
 	  (beginning-of-line)))
 
-      ;; (if (and (ar--forward-top-level-intern orig pps)
+      ;; (if (and (ar--forward-toplevel-intern orig pps)
       ;; 	       (< orig (point)))
       ;; 	  (setq erg (point))
       ;; 	(ar-down-expression)
-      ;; 	(ar-forward-top-level)))
+      ;; 	(ar-forward-toplevel)))
       (when (< orig (point))
 	(setq erg (point))
 	(when (and ar-verbose-p (interactive-p)) (message "%s" erg)))
       erg)))
 
-(defun ar-forward-top-level-bol ()
-  "Go to beginning of line after end of a top-level form.
+(defun ar-forward-toplevel-bol ()
+  "Go to beginning of line after end of a toplevel form.
 
 Returns position if successful, nil otherwise"
   (interactive)
   (let ((orig (point))
         erg last)
     (unless (eobp)
-      (when (ar--forward-top-level-intern orig pps)
+      (when (ar--forward-toplevel-intern orig pps)
 	(if (eobp)
 	    (newline)
 	  (forward-line 1)
