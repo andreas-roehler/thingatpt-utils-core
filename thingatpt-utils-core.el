@@ -3056,13 +3056,15 @@ Inspired by stuff like `paredit-splice-sexp-killing-backward'; however, instead 
   (let* ((bounds (ar-th-bounds thing arg iact check))
          (beg (copy-marker (caar bounds)))
          (end (copy-marker (or (ignore-errors (cadr (cadr bounds)))(ignore-errors (cdr (cadr bounds)))))))
-    (goto-char beg)
-    (when (not (looking-back "^[ \t\r\f\n]*" (line-beginning-position)))
-      (newline ar-newlines-separate-before))
-    (indent-according-to-mode)
-    (goto-char end)
-    (when (not (looking-at "^[ \t\r\f\n]*$"))
-      (newline))))
+    (when (ignore-errors (goto-char beg))
+      (when (not (looking-back "^[ 	
+]*" (line-beginning-position)))
+	(newline ar-newlines-separate-before))
+      (indent-according-to-mode)
+      (goto-char end)
+      (when (not (looking-at "^[ 	
+]*$"))
+	(newline)))))
 
 ;;;###autoload
 (defun ar-thing-in-thing (thing-1th thing-2th th-function &optional iact beg-2th end-2th)
@@ -3202,22 +3204,23 @@ If optional positions BEG-2TH END-2TH are given, works on them instead. "
 
 searches backward with negative argument "
   (let ((orig (point))
-	(arg (or arg 1))
-	erg)
+	(arg (or arg 1)))
     (if (< 0 arg)
 	(progn
 	  (if (functionp (get thing 'forward-op-at))
-	      (setq erg (ar-th-forward-function-call thing arg))
-	    (setq erg (ar-th-forward-fallback arg after thing)))
-	  (when (or (ignore-errors (< orig erg)) (ignore-errors (< orig (car-safe (cdr-safe erg)))))
-	    (point)))
-      (when (functionp (get thing 'backward-op-at))
-	(progn
-	  (or
-	   (setq erg (ar-th-backward-function-call arg thing))
-	   (setq erg (ar-th-backward-fallback arg thing)))
-	  (when (< erg orig)
-	    erg))))))
+	      (ar-th-forward-function-call thing arg)
+	    (ar-th-forward-fallback arg after thing))
+	  (when (< orig (point)))
+	  (point))
+      (if (functionp (get thing 'backward-op-at))
+	  (progn
+	    (or
+	     (ar-th-backward-function-call arg thing)
+	     (ar-th-backward-fallback arg thing)))
+	(when (functionp (get thing 'beginning-op-at))
+	  (funcall (get thing 'beginning-op-at))))
+      (when (< (point) orig)
+	(point)))))
 
 (defun ar-th-un-ml (thing &optional beg end)
   (save-excursion
