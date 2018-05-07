@@ -3054,17 +3054,17 @@ Inspired by stuff like `paredit-splice-sexp-killing-backward'; however, instead 
 (defun ar-th-separate (thing &optional arg iact check)
   "Optional CHECK is ignored "
   (let* ((bounds (ar-th-bounds thing arg iact check))
-         (beg (copy-marker (caar bounds)))
+         (beg (caar bounds))
          (end (copy-marker (or (ignore-errors (cadr (cadr bounds)))(ignore-errors (cdr (cadr bounds)))))))
-    (when (ignore-errors (goto-char beg))
-      (when (not (looking-back "^[ 	
+    (when beg (goto-char beg)
+	  (when (not (looking-back "^[ 	
 ]*" (line-beginning-position)))
-	(newline ar-newlines-separate-before))
-      (indent-according-to-mode)
-      (goto-char end)
-      (when (not (looking-at "^[ 	
+	    (newline ar-newlines-separate-before))
+	  (indent-according-to-mode)
+	  (goto-char end)
+	  (when (not (looking-at "^[ 	
 ]*$"))
-	(newline)))))
+	    (newline)))))
 
 ;;;###autoload
 (defun ar-thing-in-thing (thing-1th thing-2th th-function &optional iact beg-2th end-2th)
