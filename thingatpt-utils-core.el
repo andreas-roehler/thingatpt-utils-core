@@ -1609,11 +1609,17 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
 	     erg)
          (cond ((nth 8 pps)
 		(or
-		 ;; in string
+		 ;; don't go to start in string
 		 (ignore-errors (goto-char (and (nth 3 pps) (nth 8 pps))))
 		 ;; in comment
 		 (goto-char (nth 8 pps))))
-	       ((looking-at (concat "[" th-beg-delimiter "]")))
+	       ((or (looking-at (concat "[" th-beg-delimiter "]"))(looking-at (concat "[" ar-delimiters-atpt "]")))
+		(if (< 1 (length (match-string-no-properties 0)))
+
+		    (setq ar-delimiter-string-atpt (match-string-no-properties 0))
+		  (setq ar-delimiter-zeichen-atpt (char-after)))
+
+		(cons (match-beginning 0) (match-end 0)))
 	       ((eq 5 (car (syntax-after (point))))
 		(forward-char 1)
 		(forward-list -1))
@@ -1648,11 +1654,8 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
 			  (when (< 0 (setq erg (abs (skip-chars-backward (char-to-string ar-delimiter-zeichen-atpt)))))
 			    (setq ar-delimiter-string-atpt (buffer-substring-no-properties (point) (+ erg (point) 1)))))
 		      (setq ar-delimiter-zeichen-atpt nil)
-		      (setq ar-delimiter-string-atpt nil)))))
-	 (cond ((or (looking-at (concat "[" th-beg-delimiter "]"))(looking-at (concat "[" ar-delimiters-atpt "]")))
-		(setq ar-delimiter-string-atpt (match-string-no-properties 0))
+		      (setq ar-delimiter-string-atpt nil))))))))
 
-		(cons (match-beginning 0) (match-end 0)))))))
 
 (defun ar-delimited-end-intern ()
   (if (< (- (match-end 0) (match-beginning 0)) 2)
@@ -1700,12 +1703,13 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
      (lambda ()
        (let ((orig (point))
 	     (begdel (concat th-beg-delimiter ar-delimiters-atpt))
-	     (enddel (or (and ar-delimiter-zeichen-atpt (setq ar-delimiter-zeichen-atpt (ar--return-complement-char-maybe ar-delimiter-zeichen-atpt))) ar-delimiter-string-atpt (concat th-end-delimiter ar-delimiters-atpt))) opener closer)
+	     (enddel (or (and ar-delimiter-zeichen-atpt (setq ar-delimiter-zeichen-atpt (ar--return-complement-char-maybe ar-delimiter-zeichen-atpt))) ar-delimiter-string-atpt (concat th-end-delimiter ar-delimiters-atpt))) opener closer erg)
 	 (or
-	  (ar-delimited-end-from-openening begdel enddel)
+	  (setq erg (ar-delimited-end-from-openening begdel enddel))
 	  (unless (eobp)
 	    (forward-char 1)
-	    (skip-chars-forward " \t\r\n\f"))
+	    (skip-chars-forward " 	
+"))
 	  (cond
 	   ;; at an opener
 	   ((< (char-after) (ar--return-complement-char-maybe (char-after)))
@@ -1729,10 +1733,11 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
 	   (t
 	    (re-search-forward (concat "[" enddel "]") nil t 1))))
 	 (setq ar-delimiter-zeichen-atpt nil)
-	 (if (eq 5 (car (syntax-after (1- (point)))))
-	     (cons (1- (point)) (point))
-	   (when (looking-back (concat "[" enddel "]") (line-beginning-position))
-	     (cons (match-beginning 0) (match-end 0)))))))
+	 (or erg
+	     (if (eq 5 (car (syntax-after (1- (point)))))
+		 (cons (1- (point)) (point))
+	       (when (looking-back (concat "[" enddel "]") (line-beginning-position))
+		 (cons (match-beginning 0) (match-end 0))))))))
 
 (put 'delimited 'forward-op-at
      (lambda ()
