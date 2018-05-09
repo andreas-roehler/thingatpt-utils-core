@@ -748,7 +748,7 @@ Defaults aligning to equal and vertical bar sign"
     (skip-chars-backward " \t\r\n\f")
     (current-indentation)))
 
-(defun ar-backward-toplevel (&optional arg) 
+(defun ar-backward-toplevel (&optional arg)
   "Go to end of a toplevel form.
 
 Returns position if successful, nil otherwise"
@@ -800,7 +800,7 @@ Returns position if successful, nil otherwise"
 
 (defvar toplevel-nostart-chars (list ?-))
 
-(defun ar-forward-toplevel (&optional arg) 
+(defun ar-forward-toplevel (&optional arg)
   "Go to end of a toplevel form.
 
 Returns position if successful, nil otherwise"
@@ -853,6 +853,29 @@ Returns position if successful, nil otherwise"
 	(setq erg (point))))
     (when (and ar-verbose-p (interactive-p)) (message "%s" erg))
     erg))
+
+(defun ar-reverse-at-point (&optional beg end)
+  "Replace a string or region at point by result of ‘reverse’."
+  (interactive "*")
+  (let* ((pps (parse-partial-sexp (point-min) (point)))
+	 ;; (save-excursion (cadr (ar-beginning-of-string-atpt)))
+	 (beg (cond (beg)
+		    ((use-region-p)
+		     (region-beginning))
+		    ((and (nth 8 pps)(nth 3 pps))
+		     (goto-char (nth 8 pps))
+		     (point))))
+	 ;; (copy-marker (cdr (ar-end-of-string-atpt)))
+	 (end (cond (end)
+		    ((use-region-p)
+		     (copy-marker (region-end)))
+		    ((and (nth 8 pps)(nth 3 pps))
+		     (forward-sexp)
+		     (copy-marker (point)))))
+	 (erg (buffer-substring beg end)))
+    (when (and beg end)
+      (delete-region beg end)
+      (insert (reverse erg)))))
 
 (provide 'ar-subr)
 ;;; ar-subr.el ends here
