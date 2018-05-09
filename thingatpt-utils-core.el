@@ -4176,6 +4176,7 @@ it defaults to `<', otherwise it defaults to `string<'."
        'greateranglednested
        'lesseranglednested
        'buffer
+       'char
        'comment
        'csv
        'date
