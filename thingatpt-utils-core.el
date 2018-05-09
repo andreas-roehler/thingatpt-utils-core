@@ -1324,7 +1324,6 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
 (put 'char 'beginning-op-at
      (lambda ()(point) ))
 
-
 (put 'char 'end-op-at
      (lambda ()(1+ (point))))
 
@@ -4060,6 +4059,7 @@ it defaults to `<', otherwise it defaults to `string<'."
       (list
        'block
        'block-or-clause
+       'char
        'class
        'clause
        'def-or-class
