@@ -3469,7 +3469,7 @@ it defaults to `<', otherwise it defaults to `string<'."
        (add-hook 'ar-werkstatt-mode-hook 'hs-minor-mode)))
 
 (defun ar-th-delimit--intern (thing string1 string2 &optional arg iact check)
-  (let* ((bounds (ar-th-bounds thing (eq 4 (prefix-numeric-value arg)) iact check))
+  (let* ((bounds (ar-th-bounds thing nil iact check))
          (beg (or (ignore-errors (caar bounds))(car-safe bounds)))
 	 (end (or (ignore-errors (cdr (cadr bounds)))(ignore-errors (cadr (cadr bounds)))(cdr-safe bounds))))
     (ar-th-delim thing arg string1 string2 iact beg end)))
