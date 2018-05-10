@@ -880,7 +880,8 @@ Returns position if successful, nil otherwise"
 
 Works at any string detected at position, unless
 optional BEG as start and
-optional END as end are given as arguments"
+optional END as end are given as arguments or
+an active region is set deliberately"
   (interactive "*")
   (let* ((pps (parse-partial-sexp (point-min) (point)))
 	 ;; (save-excursion (cadr (ar-beginning-of-string-atpt)))
