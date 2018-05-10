@@ -879,9 +879,8 @@ Returns position if successful, nil otherwise"
   "Replace a string or region at point by result of ‘reverse’.
 
 Works at any string detected at position, unless
-optional BEG as start or
-optional END as end are given as arguments or
-region is specified interactivelly"
+optional BEG as start and
+optional END as end are given as arguments"
   (interactive "*")
   (let* ((pps (parse-partial-sexp (point-min) (point)))
 	 ;; (save-excursion (cadr (ar-beginning-of-string-atpt)))
