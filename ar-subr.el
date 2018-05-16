@@ -340,7 +340,7 @@ Skip comments, empty lines and strings"
     (setq ar-move-line-this-column (current-column)))
   (forward-line arg)
   (while (and (not (eolp)) (< (current-column) ar-move-line-this-column))
-    (or (forward-char 1) (insert 32))))
+    (forward-char 1)))
 
 (defun ar-forward-line-keep-column (&optional arg)
   "Go to current column of next line.
@@ -354,7 +354,7 @@ If line is shorter, go to end of line"
 
 If line is shorter, go to end of line"
   (interactive "p")
-  (ar-move-line-keep-column-intern (- arg)))
+  (ar-move-line-keep-column-intern (- (or arg 1))))
 
 (defun ar-forward-line ()
   "Go to indentation of next source-code line.
