@@ -2083,8 +2083,7 @@ Otherwise assume being behind an opening delimiter or at a closing "
 		 (t
 		  (while
 		      (and
-		       ;; (re-search-forward "#?[xo]?[a-f0-9]+" nil t 1)
-		       (re-search-forward "[0-9]+" nil t 1)
+                       (re-search-forward "#x[a-fA-F0-9]+\\|#o[0-8]+\\|[0-9]+" nil t 1)
 		       (nth 8 (parse-partial-sexp (point-min) (point)))))
 		  (when (ignore-errors (match-beginning 0))
 		    (goto-char (match-beginning 0)))
