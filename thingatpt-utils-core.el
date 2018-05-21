@@ -2068,7 +2068,7 @@ Otherwise assume being behind an opening delimiter or at a closing "
      (lambda ()
        (let ((case-fold-search t)
 	     erg)
-	 (cond ((looking-at "#?x?[0-9a-f]+")
+	 (cond ((looking-at "#[0-9a-fA-F]+\|x[0-9]+")
 		(forward-char 2)
 		(skip-chars-forward "0-9a-f" (line-end-position))
 		(and (< 0 (skip-chars-forward "^0-9"))(point)))
