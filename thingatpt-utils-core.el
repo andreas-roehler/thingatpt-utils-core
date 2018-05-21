@@ -2066,56 +2066,58 @@ Otherwise assume being behind an opening delimiter or at a closing "
 
 (put 'number 'forward-op-at
      (lambda ()
-       (let ((case-fold-search t)
-	     erg)
-	 (cond ((looking-at "#[0-9a-fA-F]+\|x[0-9]+")
-		(forward-char 2)
-		(skip-chars-forward "0-9a-f" (line-end-position))
-		(and (< 0 (skip-chars-forward "^0-9"))(point)))
-	       ((looking-at "#o[0-9]+")
-		(forward-char 2)
-		(skip-chars-forward "0-9" (line-end-position))
-		(and (< 0 (skip-chars-forward "^0-9"))(point)))
-	       ((looking-at "[0-9]+")
-		(skip-chars-forward "0-9" (line-end-position))
-		(and (< 0 (skip-chars-forward "^0-9"))(point)))
-	       (t
-		(while
-		    (or
-		     (and
-		      (re-search-forward "#?[xo]?[a-f0-9]+" nil t 1)
-		      (nth 8 (parse-partial-sexp (point-min) (point))))
-		     (forward-char -1)
-		     (cond ((looking-at "#[xX][a-fA-F0-9]+")
-			    (setq erg (point))
-			    nil)
-			   ((looking-at "#o[0-9]+")
-			    (setq erg (point))
-			    nil)
-			   ((looking-at "[0-9]+")
-			    (setq erg (point))
-			    nil)
-			   (t (forward-char 1)
-			      (unless (eobp)
-				(forward-char 1)
-				(not (eobp)))))))))
-	 erg)))
+       (unless (eobp)
+	 (let ((case-fold-search t)
+	       erg)
+	   (cond ((looking-at "#[0-9a-fA-F]+\|x[0-9]+")
+		  (forward-char 2)
+		  (skip-chars-forward "0-9a-f" (line-end-position))
+		  (and (< 0 (skip-chars-forward "^0-9"))(point)))
+		 ((looking-at "#o[0-9]+")
+		  (forward-char 2)
+		  (skip-chars-forward "0-9" (line-end-position))
+		  (and (< 0 (skip-chars-forward "^0-9"))(point)))
+		 ((looking-at "[0-9]+")
+		  (skip-chars-forward "0-9" (line-end-position))
+		  (and (< 0 (skip-chars-forward "^0-9"))(point)))
+		 (t
+		  (while
+		      (or
+		       (and
+			(re-search-forward "#?[xo]?[a-f0-9]+" nil t 1)
+			(nth 8 (parse-partial-sexp (point-min) (point))))
+		       (forward-char -1)
+		       (cond ((looking-at "#[xX][a-fA-F0-9]+")
+			      (setq erg (point))
+			      nil)
+			     ((looking-at "#o[0-9]+")
+			      (setq erg (point))
+			      nil)
+			     ((looking-at "[0-9]+")
+			      (setq erg (point))
+			      nil)
+			     (t (forward-char 1)
+				(unless (eobp)
+				  (forward-char 1)
+				  (not (eobp)))))))))
+	   erg))))
 
 (put 'number 'backward-op-at
      (lambda ()
-       (let ((case-fold-search t)
-	     erg)
-	 (cond ((and (looking-back "#?x?[0-9a-f]+" (line-beginning-position))
-		     (goto-char (match-beginning 0))
-		     (ar-number-atpt)))
-	       (t
-		(while
-		    (or
-		     (and
-		      (re-search-backward "#?[xo]?[a-f0-9]+" nil t 1)
-		      (goto-char (match-beginning 0))
-		      (not (setq erg (ar-number-atpt))))))))
-	 erg)))
+       (unless (bobp) 
+         (let ((case-fold-search t)
+	       erg)
+	   (cond ((and (looking-back "#?x?[0-9a-f]+" (line-beginning-position))
+		       (goto-char (match-beginning 0))
+		       (ar-number-atpt)))
+		 (t
+		  (while
+		      (or
+		       (and
+			(re-search-backward "#?[xo]?[a-f0-9]+" nil t 1)
+			(goto-char (match-beginning 0))
+			(not (setq erg (ar-number-atpt))))))))
+	   erg))))
 
 ;; Name
 (defcustom ar-name-chars-atpt "a-zA-Z_;-"
