@@ -1612,7 +1612,7 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
 (put 'delimited 'beginning-op-at
      (lambda ()
        (let ((begdel (concat th-beg-delimiter ar-delimiters-atpt))
-             (pps (syntax-ppss))
+	     (pps (syntax-ppss))
 	     erg)
          (cond ((nth 8 pps)
 		(or
@@ -1620,25 +1620,26 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
 		 (ignore-errors (goto-char (and (nth 3 pps) (nth 8 pps))))
 		 ;; in comment
 		 (goto-char (nth 8 pps))))
-	       ((or (looking-at (concat "[" th-beg-delimiter "]"))(looking-at (concat "[" ar-delimiters-atpt "]")))
-		(if (< 1 (length (match-string-no-properties 0)))
+	       ((or (looking-at (concat "[" th-beg-delimiter "]"))(looking-at (concat "[" ar-delimiters-atpt "]"))))
+	       ;; this should be done by ar--delimited-beginning-finish
+	       ;; (if (< 1 (length (match-string-no-properties 0)))
 
-		    (setq ar-delimiter-string-atpt (match-string-no-properties 0))
-		  (setq ar-delimiter-zeichen-atpt (char-after)))
+	       ;;     (setq ar-delimiter-string-atpt (match-string-no-properties 0))
+	       ;;   (setq ar-delimiter-zeichen-atpt (char-after)))
 
-		(cons (match-beginning 0) (match-end 0)))
+	       ;; (cons (match-beginning 0) (match-end 0)))
 	       ((eq 5 (car (syntax-after (point))))
 		(forward-char 1)
 		(forward-list -1))
-               ((eq (char-after) 93)
+	       ((eq (char-after) 93)
                 (beginning-of-form-base "[" "]" nil 'move nil nil t))
 	       ((eq (char-after) ?')
                 (beginning-of-form-base "[`']" "'" nil 'move nil nil t))
-               ((eq (char-after) ?})
+	       ((eq (char-after) ?})
                 (beginning-of-form-base "{" "}" nil 'move nil nil t))
-               ((eq (char-after) 41)
+	       ((eq (char-after) 41)
                 (beginning-of-form-base "(" ")" nil 'move nil nil t))
-               ((looking-at (concat "[" begdel "][
+	       ((looking-at (concat "[" begdel "][
 ]"))
 		(progn
 		  (ar-set-delimiter-zeichen)
@@ -1647,22 +1648,27 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
 		  (skip-chars-backward (concat "^" (char-to-string ar-delimiter-zeichen-atpt))))
 		(when (eq (char-before) ar-delimiter-zeichen-atpt)
 		  (forward-char -1)))
-               ((nth 1 pps)
+	       ((nth 1 pps)
 		;; brace etc. not covered by (nth 1 pps)
 		(skip-chars-backward (concat "^" begdel))
 		(when (looking-back (concat "[" begdel "]") (line-beginning-position))
 		  (forward-char -1)))
-               (t (when (and (not (bobp))(re-search-backward (concat "[" begdel "]") nil 'move 1))
-		    ;; (re-search-backward (concat "[" begdel "]") nil 'move 1))
-		    (if
-			(looking-at (concat "[" begdel "]"))
-			(progn
-			  (ar-set-delimiter-zeichen)
-			  (when (< 0 (setq erg (abs (skip-chars-backward (char-to-string ar-delimiter-zeichen-atpt)))))
-			    (setq ar-delimiter-string-atpt (buffer-substring-no-properties (point) (+ erg (point) 1)))))
-		      (setq ar-delimiter-zeichen-atpt nil)
-		      (setq ar-delimiter-string-atpt nil))))))))
+	       (t (and (not (bobp))(re-search-backward (concat "[" begdel "]") nil 'move 1)
+		       ;; (re-search-backward (concat "[" begdel "]") nil 'move 1))
+		       )))
+	 (ar--delimited-beginning-finish begdel))))
 
+(defun ar--delimited-beginning-finish (begdel)
+  (if
+      (looking-at (concat "[" begdel "]"))
+      (progn
+	(ar-set-delimiter-zeichen)
+	(when (< 0 (setq erg (abs (skip-chars-backward (char-to-string ar-delimiter-zeichen-atpt)))))
+	  (setq ar-delimiter-string-atpt (buffer-substring-no-properties (point) (+ erg (point) 1))))
+	(cons (match-beginning 0) (match-end 0))
+	)
+    (setq ar-delimiter-zeichen-atpt nil)
+    (setq ar-delimiter-string-atpt nil)))
 
 (defun ar-delimited-end-intern ()
   (if (< (- (match-end 0) (match-beginning 0)) 2)
