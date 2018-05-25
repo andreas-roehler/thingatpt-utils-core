@@ -926,5 +926,29 @@ an active region is set deliberately"
       (delete-region beg end)
       (insert (reverse erg)))))
 
+
+(defun ar-replace--in-list (elem replacement list)
+  "Expects a LIST of strings.
+
+ELEM: element to replace by arg REPLACEMENT
+
+Example:
+
+(setq mylist (quote (\"apple\" \"pear\" \"peach\" \"nectarine\" \"watermelon\")))
+
+(ar-replace--in-list \"pear\" \"cherry\" (quote (\"apple\" \"pear\" \"peach\" \"nectarine\" \"watermelon\")))
+==>
+(\"apple\" \"cherry\" \"peach\" \"nectarine\" \"watermelon\")
+"
+  (let (newlist)
+    (dolist (ele list)
+      (if (string= ele elem)
+	  (push replacement newlist)
+	(push ele newlist)))
+    (nreverse newlist)))
+
+
+
+
 (provide 'ar-subr)
 ;;; ar-subr.el ends here
