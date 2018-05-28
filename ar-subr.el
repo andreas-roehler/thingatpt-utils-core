@@ -926,29 +926,25 @@ an active region is set deliberately"
       (delete-region beg end)
       (insert (reverse erg)))))
 
+(defun ar-replace--in-list (pred elem replacement list)
+  "Expects a LIST whose type must fit to arg PRED.
 
-(defun ar-replace--in-list (elem replacement list)
-  "Expects a LIST of strings.
-
-ELEM: element to replace by arg REPLACEMENT
-
-Example:
-
-(setq mylist (quote (\"apple\" \"pear\" \"peach\" \"nectarine\" \"watermelon\")))
-
-(ar-replace--in-list \"pear\" \"cherry\" (quote (\"apple\" \"pear\" \"peach\" \"nectarine\" \"watermelon\")))
-==>
-(\"apple\" \"cherry\" \"peach\" \"nectarine\" \"watermelon\")
-"
+PRED: a function to select elem
+ELEM: element to replace by arg REPLACEMENT"
   (let (newlist)
     (dolist (ele list)
-      (if (string= ele elem)
-	  (push replacement newlist)
-	(push ele newlist)))
+      (push (if (funcall pred ele elem)
+		replacement ele)
+	    newlist))
     (nreverse newlist)))
 
+(defun ar-default-directory-into-load-path ()
+  "Push the current directory into Emacs load-path
 
-
+unless not already there"
+  (interactive) 
+  (unless (member (substring default-directory 0 -1) load-path)
+    (push (substring default-directory 0 -1) load-path)))
 
 (provide 'ar-subr)
 ;;; ar-subr.el ends here
