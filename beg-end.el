@@ -228,6 +228,22 @@ If IN-STRING is non-nil, forms inside string match.
       (goto-char beg-pos-delimiter)
       (list beg-pos-delimiter end-pos-delimiter))))
 
+(defun end-of-form-base-update-nesting (nesting endstr permit-comment)
+  (save-match-data
+    (let (erg)
+      (if (string-match endstr (match-string-no-properties 0))
+	  (progn
+	    (if permit-comment
+		(setq erg (1- nesting))
+	      (unless (ar-in-comment-p)
+		(setq erg (1- nesting)))))
+        ;; got another beginning while moving down
+	(if permit-comment
+	    (setq erg (1+ nesting))
+	  (unless (ar-in-comment-p)
+	    (setq erg (1+ nesting)))))
+      erg)))
+
 (defun end-of-form-base-intern (nesting begstr endstr permit-comment permit-string &optional condition regexp)
   (let ((pps (parse-partial-sexp (point-min) (point))))
     ;; in string
@@ -235,21 +251,11 @@ If IN-STRING is non-nil, forms inside string match.
         (progn
           (forward-char 1)
           (while (and (setq pps (parse-partial-sexp (point-min) (point)))(nth 3 pps)(nth 8 pps))
-            (forward-char 1)))
+	    (goto-char (nth 8 pps)) 
+            (forward-sexp)))
       (unless (save-match-data
                 (and condition (funcall condition)))
-        (save-match-data
-          (if (string-match endstr (match-string-no-properties 0))
-	      (progn
-		(if permit-comment
-		    (setq nesting (1- nesting))
-		  (unless (ar-in-comment-p)
-		    (setq nesting (1- nesting)))))
-            ;; got another beginning while moving down
-	    (if permit-comment
-		(setq nesting (1+ nesting))
-	      (unless (ar-in-comment-p)
-		(setq nesting (1+ nesting))))))))
+	(setq nesting (end-of-form-base-update-nesting nesting endstr permit-comment))))
     nesting))
 
 (defun end-of-form-core (begstr endstr regexp nesting permit-comment permit-string condition searchform bound noerror)
