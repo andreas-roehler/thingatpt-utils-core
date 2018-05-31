@@ -882,7 +882,7 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
      (lambda ()
        (unless (eobp)
 	 (forward-char 1)
-	 (ar-char-paren-delimiters-forward ?{ ar-thing-escaped ar-thing-inside-comments 'braced))))
+	 (ar-char-paren-delimiters-forward ?{ ar-thing-escaped ar-thing-inside-comment 'braced))))
 
 ;; Bracketed
 (put 'bracketed 'beginning-op-at
@@ -901,7 +901,7 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
      (lambda ()
        (unless (eobp)
 	 (forward-char 1)
-	 (ar-char-paren-delimiters-forward ?\[ ar-thing-escaped ar-thing-inside-comments 'bracketed))))
+	 (ar-char-paren-delimiters-forward ?\[ ar-thing-escaped ar-thing-inside-comment 'bracketed))))
 
 ;; Lesserangled
 (put 'lesserangled 'beginning-op-at
@@ -920,7 +920,7 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
      (lambda ()
        (unless (eobp)
 	 (forward-char 1)
-	 (ar-char-paren-delimiters-forward ?< ar-thing-escaped ar-thing-inside-comments 'lesserangled))))
+	 (ar-char-paren-delimiters-forward ?< ar-thing-escaped ar-thing-inside-comment 'lesserangled))))
 
 ;; Greaterangled
 (put 'greaterangled 'beginning-op-at
@@ -939,7 +939,7 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
      (lambda ()
        (unless (eobp)
 	 (forward-char 1)
-	 (ar-char-paren-delimiters-forward ?> ar-thing-escaped ar-thing-inside-comments 'greaterangled))))
+	 (ar-char-paren-delimiters-forward ?> ar-thing-escaped ar-thing-inside-comment 'greaterangled))))
 
 ;; Leftrightsinglequoted
 (put 'leftrightsinglequoted 'beginning-op-at
@@ -958,7 +958,7 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
      (lambda ()
        (unless (eobp)
 	 (forward-char 1)
-	 (ar-char-paren-delimiters-forward ?‘ ar-thing-escaped ar-thing-inside-comments 'leftrightsinglequoted))))
+	 (ar-char-paren-delimiters-forward ?‘ ar-thing-escaped ar-thing-inside-comment 'leftrightsinglequoted))))
 
 ;; Leftrightdoublequoted
 (put 'leftrightdoublequoted 'beginning-op-at
@@ -977,7 +977,7 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
      (lambda ()
        (unless (eobp)
 	 (forward-char 1)
-	 (ar-char-paren-delimiters-forward ?“ ar-thing-escaped ar-thing-inside-comments 'leftrightdoublequoted))))
+	 (ar-char-paren-delimiters-forward ?“ ar-thing-escaped ar-thing-inside-comment 'leftrightdoublequoted))))
 
 ;; Parentized
 (put 'parentized 'beginning-op-at
@@ -996,7 +996,7 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
      (lambda ()
        (unless (eobp)
 	 (forward-char 1)
-	 (ar-char-paren-delimiters-forward ?\( ar-thing-escaped ar-thing-inside-comments 'parentized))))
+	 (ar-char-paren-delimiters-forward ?\( ar-thing-escaped ar-thing-inside-comment 'parentized))))
 
 
 ;; Paired delimited forms end
@@ -1006,7 +1006,7 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
 ;; Backslashed
 (put 'backslashed 'beginning-op-at
      (lambda ()
-       (let ((beg (ar-char-delimiters-beginning ?\\ ar-thing-escaped ar-thing-inside-comments ar-scan-whole-buffer)))
+       (let ((beg (ar-char-delimiters-beginning ?\\ ar-thing-escaped ar-thing-inside-comment ar-scan-whole-buffer)))
          (when beg
            (cons beg (1+ beg))))))
 
@@ -1014,23 +1014,23 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
      (lambda ()
        (when (char-equal (char-after) ?\\)
          (forward-char 1))
-       (let ((end (ar-char-delimiters-end ?\\ ar-thing-escaped ar-thing-inside-comments)))
+       (let ((end (ar-char-delimiters-end ?\\ ar-thing-escaped ar-thing-inside-comment)))
          (when end
            (cons (1- end) end)))))
 
 (put 'backslashed 'forward-op-at
      (lambda ()
-       (ar-char-delimiters-forward ?\\ ar-thing-escaped ar-thing-inside-comments)))
+       (ar-char-delimiters-forward ?\\ ar-thing-escaped ar-thing-inside-comment)))
 
 (put 'backslashed 'backward-op-at
      (lambda ()
-       (ar-char-delimiters-beginning ?\\ ar-thing-escaped ar-thing-inside-comments ar-scan-whole-buffer)))
+       (ar-char-delimiters-beginning ?\\ ar-thing-escaped ar-thing-inside-comment ar-scan-whole-buffer)))
 
 
 ;; Backticked
 (put 'backticked 'beginning-op-at
      (lambda ()
-       (let ((beg (ar-char-delimiters-beginning ?` ar-thing-escaped ar-thing-inside-comments ar-scan-whole-buffer)))
+       (let ((beg (ar-char-delimiters-beginning ?` ar-thing-escaped ar-thing-inside-comment ar-scan-whole-buffer)))
          (when beg
            (cons beg (1+ beg))))))
 
@@ -1038,23 +1038,23 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
      (lambda ()
        (when (char-equal (char-after) ?`)
          (forward-char 1))
-       (let ((end (ar-char-delimiters-end ?` ar-thing-escaped ar-thing-inside-comments)))
+       (let ((end (ar-char-delimiters-end ?` ar-thing-escaped ar-thing-inside-comment)))
          (when end
            (cons (1- end) end)))))
 
 (put 'backticked 'forward-op-at
      (lambda ()
-       (ar-char-delimiters-forward ?` ar-thing-escaped ar-thing-inside-comments)))
+       (ar-char-delimiters-forward ?` ar-thing-escaped ar-thing-inside-comment)))
 
 (put 'backticked 'backward-op-at
      (lambda ()
-       (ar-char-delimiters-beginning ?` ar-thing-escaped ar-thing-inside-comments ar-scan-whole-buffer)))
+       (ar-char-delimiters-beginning ?` ar-thing-escaped ar-thing-inside-comment ar-scan-whole-buffer)))
 
 
 ;; Coloned
 (put 'coloned 'beginning-op-at
      (lambda ()
-       (let ((beg (ar-char-delimiters-beginning ?: ar-thing-escaped ar-thing-inside-comments ar-scan-whole-buffer)))
+       (let ((beg (ar-char-delimiters-beginning ?: ar-thing-escaped ar-thing-inside-comment ar-scan-whole-buffer)))
          (when beg
            (cons beg (1+ beg))))))
 
@@ -1062,23 +1062,23 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
      (lambda ()
        (when (char-equal (char-after) ?:)
          (forward-char 1))
-       (let ((end (ar-char-delimiters-end ?: ar-thing-escaped ar-thing-inside-comments)))
+       (let ((end (ar-char-delimiters-end ?: ar-thing-escaped ar-thing-inside-comment)))
          (when end
            (cons (1- end) end)))))
 
 (put 'coloned 'forward-op-at
      (lambda ()
-       (ar-char-delimiters-forward ?: ar-thing-escaped ar-thing-inside-comments)))
+       (ar-char-delimiters-forward ?: ar-thing-escaped ar-thing-inside-comment)))
 
 (put 'coloned 'backward-op-at
      (lambda ()
-       (ar-char-delimiters-beginning ?: ar-thing-escaped ar-thing-inside-comments ar-scan-whole-buffer)))
+       (ar-char-delimiters-beginning ?: ar-thing-escaped ar-thing-inside-comment ar-scan-whole-buffer)))
 
 
 ;; Dollared
 (put 'dollared 'beginning-op-at
      (lambda ()
-       (let ((beg (ar-char-delimiters-beginning ?$ ar-thing-escaped ar-thing-inside-comments ar-scan-whole-buffer)))
+       (let ((beg (ar-char-delimiters-beginning ?$ ar-thing-escaped ar-thing-inside-comment ar-scan-whole-buffer)))
          (when beg
            (cons beg (1+ beg))))))
 
@@ -1086,23 +1086,23 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
      (lambda ()
        (when (char-equal (char-after) ?$)
          (forward-char 1))
-       (let ((end (ar-char-delimiters-end ?$ ar-thing-escaped ar-thing-inside-comments)))
+       (let ((end (ar-char-delimiters-end ?$ ar-thing-escaped ar-thing-inside-comment)))
          (when end
            (cons (1- end) end)))))
 
 (put 'dollared 'forward-op-at
      (lambda ()
-       (ar-char-delimiters-forward ?$ ar-thing-escaped ar-thing-inside-comments)))
+       (ar-char-delimiters-forward ?$ ar-thing-escaped ar-thing-inside-comment)))
 
 (put 'dollared 'backward-op-at
      (lambda ()
-       (ar-char-delimiters-beginning ?$ ar-thing-escaped ar-thing-inside-comments ar-scan-whole-buffer)))
+       (ar-char-delimiters-beginning ?$ ar-thing-escaped ar-thing-inside-comment ar-scan-whole-buffer)))
 
 
 ;; Doublequoted
 (put 'doublequoted 'beginning-op-at
      (lambda ()
-       (let ((beg (ar-char-delimiters-beginning ?\" ar-thing-escaped ar-thing-inside-comments ar-scan-whole-buffer)))
+       (let ((beg (ar-char-delimiters-beginning ?\" ar-thing-escaped ar-thing-inside-comment ar-scan-whole-buffer)))
          (when beg
            (cons beg (1+ beg))))))
 
@@ -1110,23 +1110,23 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
      (lambda ()
        (when (char-equal (char-after) ?\")
          (forward-char 1))
-       (let ((end (ar-char-delimiters-end ?\" ar-thing-escaped ar-thing-inside-comments)))
+       (let ((end (ar-char-delimiters-end ?\" ar-thing-escaped ar-thing-inside-comment)))
          (when end
            (cons (1- end) end)))))
 
 (put 'doublequoted 'forward-op-at
      (lambda ()
-       (ar-char-delimiters-forward ?\" ar-thing-escaped ar-thing-inside-comments)))
+       (ar-char-delimiters-forward ?\" ar-thing-escaped ar-thing-inside-comment)))
 
 (put 'doublequoted 'backward-op-at
      (lambda ()
-       (ar-char-delimiters-beginning ?\" ar-thing-escaped ar-thing-inside-comments ar-scan-whole-buffer)))
+       (ar-char-delimiters-beginning ?\" ar-thing-escaped ar-thing-inside-comment ar-scan-whole-buffer)))
 
 
 ;; Equalized
 (put 'equalized 'beginning-op-at
      (lambda ()
-       (let ((beg (ar-char-delimiters-beginning ?= ar-thing-escaped ar-thing-inside-comments ar-scan-whole-buffer)))
+       (let ((beg (ar-char-delimiters-beginning ?= ar-thing-escaped ar-thing-inside-comment ar-scan-whole-buffer)))
          (when beg
            (cons beg (1+ beg))))))
 
@@ -1134,23 +1134,23 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
      (lambda ()
        (when (char-equal (char-after) ?=)
          (forward-char 1))
-       (let ((end (ar-char-delimiters-end ?= ar-thing-escaped ar-thing-inside-comments)))
+       (let ((end (ar-char-delimiters-end ?= ar-thing-escaped ar-thing-inside-comment)))
          (when end
            (cons (1- end) end)))))
 
 (put 'equalized 'forward-op-at
      (lambda ()
-       (ar-char-delimiters-forward ?= ar-thing-escaped ar-thing-inside-comments)))
+       (ar-char-delimiters-forward ?= ar-thing-escaped ar-thing-inside-comment)))
 
 (put 'equalized 'backward-op-at
      (lambda ()
-       (ar-char-delimiters-beginning ?= ar-thing-escaped ar-thing-inside-comments ar-scan-whole-buffer)))
+       (ar-char-delimiters-beginning ?= ar-thing-escaped ar-thing-inside-comment ar-scan-whole-buffer)))
 
 
 ;; Hyphened
 (put 'hyphened 'beginning-op-at
      (lambda ()
-       (let ((beg (ar-char-delimiters-beginning ?- ar-thing-escaped ar-thing-inside-comments ar-scan-whole-buffer)))
+       (let ((beg (ar-char-delimiters-beginning ?- ar-thing-escaped ar-thing-inside-comment ar-scan-whole-buffer)))
          (when beg
            (cons beg (1+ beg))))))
 
@@ -1158,23 +1158,23 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
      (lambda ()
        (when (char-equal (char-after) ?-)
          (forward-char 1))
-       (let ((end (ar-char-delimiters-end ?- ar-thing-escaped ar-thing-inside-comments)))
+       (let ((end (ar-char-delimiters-end ?- ar-thing-escaped ar-thing-inside-comment)))
          (when end
            (cons (1- end) end)))))
 
 (put 'hyphened 'forward-op-at
      (lambda ()
-       (ar-char-delimiters-forward ?- ar-thing-escaped ar-thing-inside-comments)))
+       (ar-char-delimiters-forward ?- ar-thing-escaped ar-thing-inside-comment)))
 
 (put 'hyphened 'backward-op-at
      (lambda ()
-       (ar-char-delimiters-beginning ?- ar-thing-escaped ar-thing-inside-comments ar-scan-whole-buffer)))
+       (ar-char-delimiters-beginning ?- ar-thing-escaped ar-thing-inside-comment ar-scan-whole-buffer)))
 
 
 ;; Singlequoted
 (put 'singlequoted 'beginning-op-at
      (lambda ()
-       (let ((beg (ar-char-delimiters-beginning ?' ar-thing-escaped ar-thing-inside-comments ar-scan-whole-buffer)))
+       (let ((beg (ar-char-delimiters-beginning ?' ar-thing-escaped ar-thing-inside-comment ar-scan-whole-buffer)))
          (when beg
            (cons beg (1+ beg))))))
 
@@ -1182,23 +1182,23 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
      (lambda ()
        (when (char-equal (char-after) ?')
          (forward-char 1))
-       (let ((end (ar-char-delimiters-end ?' ar-thing-escaped ar-thing-inside-comments)))
+       (let ((end (ar-char-delimiters-end ?' ar-thing-escaped ar-thing-inside-comment)))
          (when end
            (cons (1- end) end)))))
 
 (put 'singlequoted 'forward-op-at
      (lambda ()
-       (ar-char-delimiters-forward ?' ar-thing-escaped ar-thing-inside-comments)))
+       (ar-char-delimiters-forward ?' ar-thing-escaped ar-thing-inside-comment)))
 
 (put 'singlequoted 'backward-op-at
      (lambda ()
-       (ar-char-delimiters-beginning ?' ar-thing-escaped ar-thing-inside-comments ar-scan-whole-buffer)))
+       (ar-char-delimiters-beginning ?' ar-thing-escaped ar-thing-inside-comment ar-scan-whole-buffer)))
 
 
 ;; Slashed
 (put 'slashed 'beginning-op-at
      (lambda ()
-       (let ((beg (ar-char-delimiters-beginning ?/ ar-thing-escaped ar-thing-inside-comments ar-scan-whole-buffer)))
+       (let ((beg (ar-char-delimiters-beginning ?/ ar-thing-escaped ar-thing-inside-comment ar-scan-whole-buffer)))
          (when beg
            (cons beg (1+ beg))))))
 
@@ -1206,23 +1206,23 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
      (lambda ()
        (when (char-equal (char-after) ?/)
          (forward-char 1))
-       (let ((end (ar-char-delimiters-end ?/ ar-thing-escaped ar-thing-inside-comments)))
+       (let ((end (ar-char-delimiters-end ?/ ar-thing-escaped ar-thing-inside-comment)))
          (when end
            (cons (1- end) end)))))
 
 (put 'slashed 'forward-op-at
      (lambda ()
-       (ar-char-delimiters-forward ?/ ar-thing-escaped ar-thing-inside-comments)))
+       (ar-char-delimiters-forward ?/ ar-thing-escaped ar-thing-inside-comment)))
 
 (put 'slashed 'backward-op-at
      (lambda ()
-       (ar-char-delimiters-beginning ?/ ar-thing-escaped ar-thing-inside-comments ar-scan-whole-buffer)))
+       (ar-char-delimiters-beginning ?/ ar-thing-escaped ar-thing-inside-comment ar-scan-whole-buffer)))
 
 
 ;; Stared
 (put 'stared 'beginning-op-at
      (lambda ()
-       (let ((beg (ar-char-delimiters-beginning ?* ar-thing-escaped ar-thing-inside-comments ar-scan-whole-buffer)))
+       (let ((beg (ar-char-delimiters-beginning ?* ar-thing-escaped ar-thing-inside-comment ar-scan-whole-buffer)))
          (when beg
            (cons beg (1+ beg))))))
 
@@ -1230,23 +1230,23 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
      (lambda ()
        (when (char-equal (char-after) ?*)
          (forward-char 1))
-       (let ((end (ar-char-delimiters-end ?* ar-thing-escaped ar-thing-inside-comments)))
+       (let ((end (ar-char-delimiters-end ?* ar-thing-escaped ar-thing-inside-comment)))
          (when end
            (cons (1- end) end)))))
 
 (put 'stared 'forward-op-at
      (lambda ()
-       (ar-char-delimiters-forward ?* ar-thing-escaped ar-thing-inside-comments)))
+       (ar-char-delimiters-forward ?* ar-thing-escaped ar-thing-inside-comment)))
 
 (put 'stared 'backward-op-at
      (lambda ()
-       (ar-char-delimiters-beginning ?* ar-thing-escaped ar-thing-inside-comments ar-scan-whole-buffer)))
+       (ar-char-delimiters-beginning ?* ar-thing-escaped ar-thing-inside-comment ar-scan-whole-buffer)))
 
 
 ;; Underscored
 (put 'underscored 'beginning-op-at
      (lambda ()
-       (let ((beg (ar-char-delimiters-beginning ?_ ar-thing-escaped ar-thing-inside-comments ar-scan-whole-buffer)))
+       (let ((beg (ar-char-delimiters-beginning ?_ ar-thing-escaped ar-thing-inside-comment ar-scan-whole-buffer)))
          (when beg
            (cons beg (1+ beg))))))
 
@@ -1254,23 +1254,23 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
      (lambda ()
        (when (char-equal (char-after) ?_)
          (forward-char 1))
-       (let ((end (ar-char-delimiters-end ?_ ar-thing-escaped ar-thing-inside-comments)))
+       (let ((end (ar-char-delimiters-end ?_ ar-thing-escaped ar-thing-inside-comment)))
          (when end
            (cons (1- end) end)))))
 
 (put 'underscored 'forward-op-at
      (lambda ()
-       (ar-char-delimiters-forward ?_ ar-thing-escaped ar-thing-inside-comments)))
+       (ar-char-delimiters-forward ?_ ar-thing-escaped ar-thing-inside-comment)))
 
 (put 'underscored 'backward-op-at
      (lambda ()
-       (ar-char-delimiters-beginning ?_ ar-thing-escaped ar-thing-inside-comments ar-scan-whole-buffer)))
+       (ar-char-delimiters-beginning ?_ ar-thing-escaped ar-thing-inside-comment ar-scan-whole-buffer)))
 
 
 ;; Whitespaced
 (put 'whitespaced 'beginning-op-at
      (lambda ()
-       (let ((beg (ar-char-delimiters-beginning ?  ar-thing-escaped ar-thing-inside-comments ar-scan-whole-buffer)))
+       (let ((beg (ar-char-delimiters-beginning ?  ar-thing-escaped ar-thing-inside-comment ar-scan-whole-buffer)))
          (when beg
            (cons beg (1+ beg))))))
 
@@ -1278,17 +1278,17 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
      (lambda ()
        (when (char-equal (char-after) ? )
          (forward-char 1))
-       (let ((end (ar-char-delimiters-end ?  ar-thing-escaped ar-thing-inside-comments)))
+       (let ((end (ar-char-delimiters-end ?  ar-thing-escaped ar-thing-inside-comment)))
          (when end
            (cons (1- end) end)))))
 
 (put 'whitespaced 'forward-op-at
      (lambda ()
-       (ar-char-delimiters-forward ?  ar-thing-escaped ar-thing-inside-comments)))
+       (ar-char-delimiters-forward ?  ar-thing-escaped ar-thing-inside-comment)))
 
 (put 'whitespaced 'backward-op-at
      (lambda ()
-       (ar-char-delimiters-beginning ?  ar-thing-escaped ar-thing-inside-comments ar-scan-whole-buffer)))
+       (ar-char-delimiters-beginning ?  ar-thing-escaped ar-thing-inside-comment ar-scan-whole-buffer)))
 
 
 ;; Unpaired delimited forms end
@@ -2589,13 +2589,13 @@ it would doublequote a word at point "
      (lambda ()
        (if (ignore-errors (looking-at "\\begin{quote}"))
            (list (match-beginning 0) (match-end 0))
-         (beginning-of-form-base "\\begin{quote}" "\\end{quote}" nil (quote move) 1 nil nil nil))))
+         (beginning-of-form-base "\\begin{quote}" "\\end{quote}" nil 'move 1 nil nil nil))))
 
 (put 'beginendquoted 'end-op-at
      (lambda ()
        (when (ignore-errors (looking-at "\\begin{quote}"))
          (goto-char (match-end 0)) 
-         (end-of-form-base "\\begin{quote}" "\\end{quote}" nil (quote move) 1 nil nil nil))))
+         (end-of-form-base "\\begin{quote}" "\\end{quote}" nil 'move 1 nil nil nil))))
 
 
 ;; Blok
@@ -2603,13 +2603,13 @@ it would doublequote a word at point "
      (lambda ()
        (if (ignore-errors (looking-at "{% "))
            (list (match-beginning 0) (match-end 0))
-         (beginning-of-form-base "{% " " %}" nil (quote move) 1 nil t nil))))
+         (beginning-of-form-base "{% " " %}" nil 'move 1 nil t nil))))
 
 (put 'blok 'end-op-at
      (lambda ()
        (when (ignore-errors (looking-at "{% "))
          (goto-char (match-end 0)) 
-         (end-of-form-base "{% " " %}" nil (quote move) 1 nil t nil))))
+         (end-of-form-base "{% " " %}" nil 'move 1 nil t nil))))
 
 
 ;; Doublebackslashed
@@ -2617,13 +2617,13 @@ it would doublequote a word at point "
      (lambda ()
        (if (ignore-errors (looking-at "\\\\"))
            (list (match-beginning 0) (match-end 0))
-         (beginning-of-form-base "\\\\" "\\\\" nil (quote move) 1 nil nil (quote ar-escaped)))))
+         (beginning-of-form-base "\\\\" "\\\\" nil 'move 1 nil nil 'ar-escaped))))
 
 (put 'doublebackslashed 'end-op-at
      (lambda ()
        (when (ignore-errors (looking-at "\\\\"))
          (goto-char (match-end 0)) 
-         (end-of-form-base "\\\\" "\\\\" nil (quote move) 1 nil nil (quote ar-escaped)))))
+         (end-of-form-base "\\\\" "\\\\" nil 'move 1 nil nil 'ar-escaped))))
 
 
 ;; Doublebackticked
@@ -2631,13 +2631,13 @@ it would doublequote a word at point "
      (lambda ()
        (if (ignore-errors (looking-at "``"))
            (list (match-beginning 0) (match-end 0))
-         (beginning-of-form-base "``" "``" nil (quote move) 1 nil nil (quote ar-escaped)))))
+         (beginning-of-form-base "``" "``" nil 'move 1 nil nil 'ar-escaped))))
 
 (put 'doublebackticked 'end-op-at
      (lambda ()
        (when (ignore-errors (looking-at "``"))
          (goto-char (match-end 0)) 
-         (end-of-form-base "``" "``" nil (quote move) 1 nil nil (quote ar-escaped)))))
+         (end-of-form-base "``" "``" nil 'move 1 nil nil 'ar-escaped))))
 
 
 ;; Doubleslashed
@@ -2645,13 +2645,13 @@ it would doublequote a word at point "
      (lambda ()
        (if (ignore-errors (looking-at "//"))
            (list (match-beginning 0) (match-end 0))
-         (beginning-of-form-base "//" "//" nil (quote move) 1 nil nil (quote ar-escaped)))))
+         (beginning-of-form-base "//" "//" nil 'move 1 nil nil 'ar-escaped))))
 
 (put 'doubleslashed 'end-op-at
      (lambda ()
        (when (ignore-errors (looking-at "//"))
          (goto-char (match-end 0)) 
-         (end-of-form-base "//" "//" nil (quote move) 1 nil nil (quote ar-escaped)))))
+         (end-of-form-base "//" "//" nil 'move 1 nil nil 'ar-escaped))))
 
 
 ;; Doublebackslashedparen
@@ -2659,13 +2659,13 @@ it would doublequote a word at point "
      (lambda ()
        (if (ignore-errors (looking-at "\\\\\\\\("))
            (list (match-beginning 0) (match-end 0))
-         (beginning-of-form-base "\\\\\\\\(" "\\\\\\\\)" nil (quote move) 1 nil nil (quote ar-escaped)))))
+         (beginning-of-form-base "\\\\\\\\(" "\\\\\\\\)" nil 'move 1 nil nil 'ar-escaped))))
 
 (put 'doublebackslashedparen 'end-op-at
      (lambda ()
        (when (ignore-errors (looking-at "\\\\\\\\("))
          (goto-char (match-end 0)) 
-         (end-of-form-base "\\\\\\\\(" "\\\\\\\\)" nil (quote move) 1 nil nil (quote ar-escaped)))))
+         (end-of-form-base "\\\\\\\\(" "\\\\\\\\)" nil 'move 1 nil nil 'ar-escaped))))
 
 
 ;; Tabledatap
@@ -2673,13 +2673,13 @@ it would doublequote a word at point "
      (lambda ()
        (if (ignore-errors (looking-at "<td[^>]*>"))
            (list (match-beginning 0) (match-end 0))
-         (beginning-of-form-base "<td[^>]*>" "</td>" nil (quote move) 1 nil nil nil))))
+         (beginning-of-form-base "<td[^>]*>" "</td>" nil 'move 1 nil nil nil))))
 
 (put 'tabledatap 'end-op-at
      (lambda ()
        (when (ignore-errors (looking-at "<td[^>]*>"))
          (goto-char (match-end 0)) 
-         (end-of-form-base "<td[^>]*>" "</td>" nil (quote move) 1 nil nil nil))))
+         (end-of-form-base "<td[^>]*>" "</td>" nil 'move 1 nil nil nil))))
 
 
 ;; Backslashedparen
@@ -2687,13 +2687,13 @@ it would doublequote a word at point "
      (lambda ()
        (if (ignore-errors (looking-at "\\\\("))
            (list (match-beginning 0) (match-end 0))
-         (beginning-of-form-base "\\\\(" "\\\\)" nil (quote move) 1 nil nil (quote ar-escaped)))))
+         (beginning-of-form-base "\\\\(" "\\\\)" nil 'move 1 nil nil 'ar-escaped))))
 
 (put 'backslashedparen 'end-op-at
      (lambda ()
        (when (ignore-errors (looking-at "\\\\("))
          (goto-char (match-end 0)) 
-         (end-of-form-base "\\\\(" "\\\\)" nil (quote move) 1 nil nil (quote ar-escaped)))))
+         (end-of-form-base "\\\\(" "\\\\)" nil 'move 1 nil nil 'ar-escaped))))
 
 
 ;; Slashedparen
@@ -2701,13 +2701,13 @@ it would doublequote a word at point "
      (lambda ()
        (if (ignore-errors (looking-at "////////("))
            (list (match-beginning 0) (match-end 0))
-         (beginning-of-form-base "////////(" "////////)" nil (quote move) 1 nil nil (quote ar-escaped)))))
+         (beginning-of-form-base "////////(" "////////)" nil 'move 1 nil nil 'ar-escaped))))
 
 (put 'slashedparen 'end-op-at
      (lambda ()
        (when (ignore-errors (looking-at "////////("))
          (goto-char (match-end 0)) 
-         (end-of-form-base "////////(" "////////)" nil (quote move) 1 nil nil (quote ar-escaped)))))
+         (end-of-form-base "////////(" "////////)" nil 'move 1 nil nil 'ar-escaped))))
 
 
 ;; Xslstylesheetp
@@ -2715,13 +2715,13 @@ it would doublequote a word at point "
      (lambda ()
        (if (ignore-errors (looking-at "<xsl:stylesheet[^<]+>.*$"))
            (list (match-beginning 0) (match-end 0))
-         (beginning-of-form-base "<xsl:stylesheet[^<]+>.*$" "</xsl:stylesheet>" nil (quote move) 1 nil nil nil))))
+         (beginning-of-form-base "<xsl:stylesheet[^<]+>.*$" "</xsl:stylesheet>" nil 'move 1 nil nil nil))))
 
 (put 'xslstylesheetp 'end-op-at
      (lambda ()
        (when (ignore-errors (looking-at "<xsl:stylesheet[^<]+>.*$"))
          (goto-char (match-end 0)) 
-         (end-of-form-base "<xsl:stylesheet[^<]+>.*$" "</xsl:stylesheet>" nil (quote move) 1 nil nil nil))))
+         (end-of-form-base "<xsl:stylesheet[^<]+>.*$" "</xsl:stylesheet>" nil 'move 1 nil nil nil))))
 
 
 ;; ML data-forms end
@@ -3983,15 +3983,15 @@ it defaults to `<', otherwise it defaults to `string<'."
 
 (setq ar-atpt-data-forms-aktiv-raw
       (list
-       '("beginendquote" "\\\\begin{quote}" "\\\\end{quote}" nil (quote move) 1 nil t nil)
-       '("blok" "{% " " %}" nil (quote move) "1" nil t)
-       '("doublebackslash" "\\\\\\\\" "\\\\\\\\" nil (quote move) "1" nil nil (quote ar-escaped))
-       '("doublebackslashparen" "\\\\\\\\(" "\\\\\\\\)" nil (quote move) "1" nil nil (quote ar-escaped))
-       '("doublebacktick" "``" "``" (quote move) "1" nil t (quote ar-escaped))
-       '("triplebacktick" "```" "```" (quote move) "1" nil t (quote ar-escaped))
-       '("doubleslash" "//" "//" nil (quote move) "1" nil t (quote ar-escaped))
-       '("backslashparen" "\\\\(" "\\\\)" nil (quote move) "1" nil nil (quote ar-escaped))
-       '("slashparen" "////(" "////)" nil (quote move) "1" nil nil (quote ar-escaped))
+       '("beginendquote" "\\\\begin{quote}" "\\\\end{quote}" nil 'move 1 nil t nil)
+       '("blok" "{% " " %}" nil 'move "1" nil t)
+       '("doublebackslash" "\\\\\\\\" "\\\\\\\\" nil 'move "1" nil nil 'ar-escaped)
+       '("doublebackslashparen" "\\\\\\\\(" "\\\\\\\\)" nil 'move "1" nil nil 'ar-escaped)
+       '("doublebacktick" "``" "``" 'move "1" nil t 'ar-escaped)
+       '("triplebacktick" "```" "```" 'move "1" nil t 'ar-escaped)
+       '("doubleslash" "//" "//" nil 'move "1" nil t 'ar-escaped)
+       '("backslashparen" "\\\\(" "\\\\)" nil 'move "1" nil nil 'ar-escaped)
+       '("slashparen" "////(" "////)" nil 'move "1" nil nil 'ar-escaped)
        ))
 
 (setq ar-atpt-data-forms-aktiv
@@ -4009,16 +4009,16 @@ it defaults to `<', otherwise it defaults to `string<'."
 
 (setq ar-atpt-data-forms-passiv-raw
       (list
-       '("beginendquoted" "\\\\begin{quote}" "\\\\end{quote}" nil (quote move) 1 nil nil nil)
-       '("blok" "{% " " %}" nil (quote move) "1" nil t)
-       '("doublebackslashed" "\\\\\\\\" "\\\\\\\\" nil (quote move) "1" nil nil (quote ar-escaped))
-       '("doublebackticked" "``" "``" nil (quote move) "1" nil nil (quote ar-escaped))
-       '("doubleslashed" "//" "//" nil (quote move) "1" nil nil (quote ar-escaped))
-       '("doublebackslashedparen" "\\\\\\\\\\\\\\\\(" "\\\\\\\\\\\\\\\\)" nil (quote move) "1" nil nil (quote ar-escaped))
-       '("tabledatap" "<td[^>]*>" "</td>" nil (quote move) "1" nil nil nil)
-       '("backslashedparen" "\\\\\\\\(" "\\\\\\\\)" nil (quote move) "1" nil nil (quote ar-escaped))
-       '("slashedparen" "////////(" "////////)" nil (quote move) "1" nil nil (quote ar-escaped))
-       '("xslstylesheetp" "<xsl:stylesheet[^<]+>.*$" "</xsl:stylesheet>" nil (quote move) "1" nil nil nil)
+       '("beginendquoted" "\\\\begin{quote}" "\\\\end{quote}" nil 'move 1 nil nil nil)
+       '("blok" "{% " " %}" nil 'move "1" nil t)
+       '("doublebackslashed" "\\\\\\\\" "\\\\\\\\" nil 'move "1" nil nil 'ar-escaped)
+       '("doublebackticked" "``" "``" nil 'move "1" nil nil 'ar-escaped)
+       '("doubleslashed" "//" "//" nil 'move "1" nil nil 'ar-escaped)
+       '("doublebackslashedparen" "\\\\\\\\\\\\\\\\(" "\\\\\\\\\\\\\\\\)" nil 'move "1" nil nil 'ar-escaped)
+       '("tabledatap" "<td[^>]*>" "</td>" nil 'move "1" nil nil nil)
+       '("backslashedparen" "\\\\\\\\(" "\\\\\\\\)" nil 'move "1" nil nil 'ar-escaped)
+       '("slashedparen" "////////(" "////////)" nil 'move "1" nil nil 'ar-escaped)
+       '("xslstylesheetp" "<xsl:stylesheet[^<]+>.*$" "</xsl:stylesheet>" nil 'move "1" nil nil nil)
        ))
 
 (setq ar-atpt-data-forms-passiv
