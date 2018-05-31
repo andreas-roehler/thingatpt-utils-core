@@ -39,8 +39,13 @@
   :prefix "ar-"
   )
 
-(defcustom ar-thing-inside-comments nil
-  "If text inside comments matches when determining the border of a THING. "
+(defcustom ar-thing-inside-comment nil
+  "If text inside COMMENT matches when determining the border of a THING. "
+  :type 'boolean
+  :group 'werkstatt)
+
+(defcustom ar-thing-inside-string nil
+  "If text inside STRING matches when determining the border of a THING. "
   :type 'boolean
   :group 'werkstatt)
 
@@ -58,12 +63,19 @@ If off, results are only reliable when called from inside a delimited form, resp
   :type 'boolean
   :group 'werkstatt)
 
-(defun ar-toggle-thing-inside-comments ()
+(defun ar-toggle-thing-inside-comment ()
   "If thing-at-point forms should match inside comments.
 
-Toggles value of `ar-thing-inside-comments'. Default is nil "
+Toggles value of `ar-thing-inside-comment'. Default is nil "
   (interactive)
-  (setq ar-thing-inside-comments (not ar-thing-inside-comments)))
+  (setq ar-thing-inside-comment (not ar-thing-inside-comment)))
+
+(defun ar-toggle-thing-inside-string ()
+  "If thing-at-point forms should match inside string.
+
+Toggles value of `ar-thing-inside-string'. Default is nil "
+  (interactive)
+  (setq ar-thing-inside-string (not ar-thing-inside-string)))
 
 (defun mark-form (begstr endstr &optional bound noerror count permit-comment)
   (beginning-of-form-base begstr endstr bound noerror count permit-comment)
@@ -210,7 +222,7 @@ If IN-STRING is non-nil, forms inside string match.
 		       begstr))
          (nesting (or nesting 0))
          (orig (point))
-         (permit-comment (or permit-comment ar-thing-inside-comments))
+         (permit-comment (or permit-comment ar-thing-inside-comment))
          beg-pos-delimiter end-pos-delimiter)
     (when
 	(setq nesting (beginning-of-form-core begstr endstr regexp searchform bound noerror nesting permit-comment permit-string condition))
@@ -283,7 +295,7 @@ If IN-STRING is non-nil, forms inside string match.
                            (t endstr)))
          (nesting (or nesting 0))
          (orig (point))
-         (permit-comment (or permit-comment ar-thing-inside-comments))
+         (permit-comment (or permit-comment ar-thing-inside-comment))
          beg-pos-delimiter end-pos-delimiter erg done)
     (when (looking-at begstr)
       (goto-char (match-end 0)))
@@ -382,7 +394,7 @@ Optional second arg --a number, nil or `t'-- if interactively called. "
 			t)
 		    t)
 		  (setq first (point))
-		  (not ar-thing-inside-comments)
+		  (not ar-thing-inside-comment)
 		  (save-match-data
 		    ;; (ar-in-comment-p-atpt)
 		    (or (progn (setq pps (syntax-ppss)) (nth 4 pps)) (nth 7 pps)))))
@@ -395,7 +407,7 @@ Optional second arg --a number, nil or `t'-- if interactively called. "
               (setq delimiter (concat "\\([^\\]\\)" (match-string-no-properties 0) "\\|\\(\\\\\\\\\\)" (match-string-no-properties 0)))
               (setq old delimiter)
               (while (and (setq this (re-search-forward delimiter orig t 1))
-                          (not ar-thing-inside-comments)
+                          (not ar-thing-inside-comment)
                           (save-match-data
                             ;; (ar-in-comment-p-atpt)
                             (or (progn (setq pps (syntax-ppss)) (nth 4 pps)) (nth 7 pps)))))
@@ -732,14 +744,14 @@ NO-CHECK: don't consider nesting"
   (let* ((orig (point))
     	 erg)
     ;; maybe not at end yet?
-    (setq erg (ar-char-delimiters-end char ar-thing-escaped ar-thing-inside-comments ar-scan-whole-buffer))
+    (setq erg (ar-char-delimiters-end char ar-thing-escaped ar-thing-inside-comment ar-scan-whole-buffer))
     (if (and erg (< orig (point)))
 	(point)
 
       (setq erg (ar--delimiters-forward-intern char escaped comment orig))
       (when erg
 	;; make sure the end of form is reached
-	(when (ar-char-delimiters-end char ar-thing-escaped ar-thing-inside-comments ar-scan-whole-buffer)
+	(when (ar-char-delimiters-end char ar-thing-escaped ar-thing-inside-comment ar-scan-whole-buffer)
 	  (setq erg (point))))
       (unless erg
 	(goto-char orig))
