@@ -1325,7 +1325,10 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
      (lambda ()(point) ))
 
 (put 'char 'end-op-at
-     (lambda ()(1+ (point))))
+     (lambda ()(unless (eobp) (goto-char (1+ (point))))))
+
+(put 'char 'forward-op-at
+     (lambda ()(unless (eobp) (goto-char (1+ (point))))))
 
 ;; Def-Or-Class
 (put 'def-or-class 'beginning-op-at
