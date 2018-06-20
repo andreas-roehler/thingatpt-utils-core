@@ -3111,8 +3111,8 @@ Inspired by stuff like `paredit-splice-sexp-killing-backward'; however, instead 
 If optional positions BEG-2TH END-2TH are given, works on them instead. "
   (let* ((bounds (ar-th-bounds thing-2th))
 	 (beg (or (ignore-errors (caar bounds))(car-safe bounds)))
-	 (end (or (ignore-errors (cadr (cadr bounds)))(ignore-errors (cdr (cadr bounds)))(cdr-safe bounds)))
-	 (orig beg)
+	 (end (copy-marker (or (ignore-errors (cadr (cadr bounds)))(ignore-errors (cdr (cadr bounds)))(cdr-safe bounds))))
+	 (orig (copy-marker beg))
          ar-scan-whole-buffer)
     (save-excursion
       (save-restriction
@@ -3121,9 +3121,9 @@ If optional positions BEG-2TH END-2TH are given, works on them instead. "
         (if (eq th-function 'ar-th-sort)
             (ar-th-sort thing-1th nil beg end nil nil nil)
           (while (and (not (eobp))
-		      (ar-th-forward thing-1th 1 iact t)
+		      (or (eq thing-1th 'char)(ar-th-forward thing-1th 1 iact t))
 		      (<= orig (point)))
-	    (setq orig (point))
+	    (setq orig (copy-marker (point)))
 	    (funcall th-function thing-1th nil iact ar-scan-whole-buffer)
 	    ;; forward might stop at the opener
 	    ;; ‘ar-scan-whole-buffer’ is let-bound to nil here
