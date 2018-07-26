@@ -291,8 +291,10 @@ Default is nil"
   :type 'boolean
   :group 'werkstatt)
 
-(defcustom thing-copy-region t
-  "If a found THING should be copied into the kill-ring. "
+(defcustom thing-copy-region nil
+  "If a found THING should be copied into the kill-ring.
+
+Default is nil"
   :type 'boolean
   :group 'werkstatt)
 
@@ -2731,6 +2733,10 @@ it would doublequote a word at point "
 
 ;; ar-insert-thingatpt-th-funktionen start
 
+(defun ar-toggle-thing-copy-region ()
+  (interactive) 
+  (setq thing-copy-region (not thing-copy-region)))
+
 ;;;###autoload
 (defun ar-th (thing &optional no-delimiters iact check)
   "Returns a buffer substring according to THING.
@@ -2763,7 +2769,7 @@ it would doublequote a word at point "
 	(when (and beg end)
 	  (setq erg
 		(buffer-substring-no-properties beg end))
-	  (when thing-copy-region
+	  (when iact
 	    (ar-th-mark thing nil beg end no-delimiters check))
 	  (when thing-copy-region (kill-new erg))
 	  erg))
