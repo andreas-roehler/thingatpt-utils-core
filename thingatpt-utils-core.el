@@ -3252,8 +3252,8 @@ searches backward with negative argument "
 	  (if (functionp (get thing 'forward-op-at))
 	      (ar-th-forward-function-call thing arg)
 	    (ar-th-forward-fallback arg after thing))
-	  (when (< orig (point)))
-	  (point))
+	  (when (< orig (point))
+            (point)))
       (if (functionp (get thing 'backward-op-at))
 	  (progn
 	    (or
