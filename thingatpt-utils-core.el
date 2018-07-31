@@ -1731,7 +1731,8 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
 		       ar-delimiter-zeichen-atpt))
 
 		    (ar-delimiter-string-atpt)
-		    (t (concat th-end-delimiter ar-delimiters-atpt opener closer erg)))))
+		    (t (concat th-end-delimiter ar-delimiters-atpt))))
+             opener closer)
 	 (or
 	  (setq erg (ar-delimited-end-from-openening begdel enddel))
 	  (unless (eobp)
