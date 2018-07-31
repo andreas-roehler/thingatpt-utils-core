@@ -1479,19 +1479,16 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
 ;; Comment
 (put 'comment 'beginning-op-at
      (lambda ()
-       (let* ((orig (point))
-              (nesting (not (or (string= "" comment-end)(eq 10 comment-end))))
+       (let* ((nesting (not (or (string= "" comment-end)(eq 10 comment-end))))
               (erg (when nesting
                      (if (looking-at comment-start)
                          (cons (match-beginning 0) (match-end 0))
-                       (beginning-of-form-base comment-start comment-end nil 'move 1 t))))
-              last)
+                       (beginning-of-form-base comment-start comment-end nil 'move 1 t)))))
          (unless erg
            (when (looking-at comment-start)
 	     (setq erg (cons (match-beginning 0) (match-end 0)))
 	     (skip-chars-backward " \t\r\n\f"))
-           (while (and (setq last (point))
-                       (setq erg (nth 8 (syntax-ppss)))
+           (while (and (setq erg (nth 8 (syntax-ppss)))
                        (goto-char erg)
                        (skip-chars-backward " \t\r\n\f")))
            (skip-chars-forward " \t\r\n\f")
