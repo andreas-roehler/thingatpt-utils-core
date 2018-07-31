@@ -1611,8 +1611,7 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
 (put 'delimited 'beginning-op-at
      (lambda ()
        (let ((begdel (concat th-beg-delimiter ar-delimiters-atpt))
-	     (pps (syntax-ppss))
-	     erg)
+	     (pps (syntax-ppss)))
          (cond ((nth 8 pps)
 		(or
 		 ;; don't go to start in string
@@ -1658,16 +1657,17 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
 	 (ar--delimited-beginning-finish begdel))))
 
 (defun ar--delimited-beginning-finish (begdel)
-  (if
-      (looking-at (concat "[" begdel "]"))
-      (progn
-	(ar-set-delimiter-zeichen)
-	(when (< 0 (setq erg (abs (skip-chars-backward (char-to-string ar-delimiter-zeichen-atpt)))))
-	  (setq ar-delimiter-string-atpt (buffer-substring-no-properties (point) (+ erg (point) 1))))
-	(cons (match-beginning 0) (match-end 0))
-	)
-    (setq ar-delimiter-zeichen-atpt nil)
-    (setq ar-delimiter-string-atpt nil)))
+  (let (erg)
+    (if
+	(looking-at (concat "[" begdel "]"))
+	(progn
+	  (ar-set-delimiter-zeichen)
+	  (when (< 0 (setq erg (abs (skip-chars-backward (char-to-string ar-delimiter-zeichen-atpt)))))
+	    (setq ar-delimiter-string-atpt (buffer-substring-no-properties (point) (+ erg (point) 1))))
+	  (cons (match-beginning 0) (match-end 0))
+	  )
+      (setq ar-delimiter-zeichen-atpt nil)
+      (setq ar-delimiter-string-atpt nil))))
 
 (defun ar-delimited-end-intern ()
   (if (< (- (match-end 0) (match-beginning 0)) 2)
