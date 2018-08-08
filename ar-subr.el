@@ -100,21 +100,19 @@ Optional argument LIMIT limit."
 ;; Comment
 (defun ar--skip-to-comment-or-comma ()
   "Return position if comment or semicolon found."
-  (let ((orig (point))
-	done)
-    (cond ((and done (< 0 (abs (skip-chars-forward "^#," (line-end-position))))
-		(member (char-after) (list ?# ?\,)))
-	   (when (eq ?\, (char-after))
-	     (skip-chars-forward "," (line-end-position))))
+  (let ((orig (point)))
+    (cond ;; ((and done (< 0 (abs (skip-chars-forward "^#," (line-end-position))))
+	  ;; 	(member (char-after) (list ?# ?\,)))
+	  ;;  (when (eq ?\, (char-after))
+	  ;;    (skip-chars-forward "," (line-end-position))))
 	  ((and (< 0 (abs (skip-chars-forward "^#," (line-end-position))))
 		(member (char-after) (list ?# ?\,)))
 	   (when (eq ?\, (char-after))
 	     (skip-chars-forward "," (line-end-position))))
-	  ((not done)
+	  (t
 	   (end-of-line)))
     (skip-chars-backward " \t" (line-beginning-position))
-    (and (< orig (point))(setq done t)
-	 done)))
+    (< orig (point))))
 
 (defun ar--skip-to-comma-backward (&optional limit)
   "Fetch the beginning of expression after a comma.
@@ -774,11 +772,13 @@ Optional argument REGEXP regexp."
     (save-excursion
       (goto-char beg)
       (ar-align-with-previous-line regexp)
-      (while (not (or done (eobp)))
-	(forward-line 1)
-	(ar-align-with-previous-line)
-	(when (<= end (line-end-position))
-	  (setq done t))))))
+      (while (not
+	      (or
+	       (eobp)
+	       (progn
+		 (forward-line 1)
+		 (ar-align-with-previous-line)
+		 (<= end (line-end-position)))))))))
 
 (defun ar--fetch-previous-indent (orig)
   "Report the preceding indent.
@@ -942,7 +942,7 @@ ELEM: element to replace by arg REPLACEMENT"
   "Push the current directory into Emacs load-path
 
 unless not already there"
-  (interactive) 
+  (interactive)
   (unless (member (substring default-directory 0 -1) load-path)
     (push (substring default-directory 0 -1) load-path)))
 

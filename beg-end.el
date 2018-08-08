@@ -263,7 +263,7 @@ If IN-STRING is non-nil, forms inside string match.
         (progn
           (forward-char 1)
           (while (and (setq pps (parse-partial-sexp (point-min) (point)))(nth 3 pps)(nth 8 pps))
-	    (goto-char (nth 8 pps)) 
+	    (goto-char (nth 8 pps))
             (forward-sexp)))
       (unless (save-match-data
                 (and condition (funcall condition)))
@@ -296,7 +296,7 @@ If IN-STRING is non-nil, forms inside string match.
          (nesting (or nesting 0))
          (orig (point))
          (permit-comment (or permit-comment ar-thing-inside-comment))
-         beg-pos-delimiter end-pos-delimiter erg done)
+         beg-pos-delimiter end-pos-delimiter erg)
     (when (looking-at begstr)
       (goto-char (match-end 0)))
     (when (and (< 1 (length endstr))(looking-at searchform))
@@ -310,7 +310,6 @@ If IN-STRING is non-nil, forms inside string match.
     (while
         (and
          (< -1 nesting) (not (eobp)))
-      (setq done t)
       (setq nesting (end-of-form-core begstr endstr regexp nesting permit-comment permit-string condition searchform bound noerror)))
     (if (ignore-errors (and (match-beginning 0) (match-end 0)))
 	(progn
@@ -543,15 +542,14 @@ NO-CHECK: don't consider nesting"
 
 (defun ar--delimiters-end-check-forms-intern (char orig escaped comment counter)
   (let ((this counter)
-	erg last done)
+	erg last)
     (cond ((and escaped comment)
 	   (while
 	       (ar--char-delimiters-forward char orig)
 	     (setq counter (1+ counter)))
 	   ;; try another one beyond limit set by orig
-	   (when (and (not done) (ar--char-delimiters-forward char))
-		 ;; don't raise counter, as it must remain uneven
-	     (setq done t))
+	   (ar--char-delimiters-forward char)
+	     ;; don't raise counter, as it must remain uneven
 	   (when (eq (char-after) char)
 	     (setq last (1+ (point)))))
 	  (escaped
@@ -598,11 +596,9 @@ NO-CHECK: don't consider nesting"
 	       (unless
 		   (or (ar-escaped) (ar-in-comment-p))
 		 (setq counter (1+ counter))))
-	     (while (and (not done) (ar--char-delimiters-forward char))
-	       (unless
-		   (or (ar-escaped) (ar-in-comment-p))
-		 ;; don't raise counter, as it must remain uneven
-		 (setq done t)))
+	     (while (and
+		     (ar--char-delimiters-forward char))
+	       (or (ar-escaped) (ar-in-comment-p)))
 	     (when (eq (char-after) char)
 	       (setq last (1+ (point))))))
     (when (eq 1 (% counter 2))
