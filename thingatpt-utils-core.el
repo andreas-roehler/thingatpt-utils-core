@@ -1737,8 +1737,7 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
 	  (setq erg (ar-delimited-end-from-openening begdel enddel))
 	  (unless (eobp)
 	    (forward-char 1)
-	    (skip-chars-forward " 	
-"))
+	    (skip-chars-forward " \t\n\f\r"))
 	  (cond
 	   ;; at an opener
 	   ((< (char-after) (ar--return-complement-char-maybe (char-after)))
@@ -3412,8 +3411,7 @@ it defaults to `<', otherwise it defaults to `string<'."
         (insert begstr)
         (goto-char end)
         (delim-slash-function arg)
-        (insert endstr)
-        (setq done t))
+        (insert endstr))
       (when (< (point) end)
         (ar-th-forward thing)
         (ar-th-delim-intern thing beg end beg-char end-char)))))
