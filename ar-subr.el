@@ -1,6 +1,8 @@
 ;;; ar-subr.el --- A reliable beginning-of-defun and other helper functions  -*- lexical-binding: t; -*-
 
-;; Author: Andreas Röhler <andreas.roehler@online.de>
+;; Author: Andreas Röhler <andreas.roehler@online.de>, unless indicated
+;; otherwise
+
 ;; Keywords: languages
 
 ;; This program is free software; you can redistribute it and/or modify
@@ -140,6 +142,11 @@ Optional argument LIMIT limit."
   :type 'regexp
   :group 'convenience)
 
+(defcustom ar-paired-openers (list ?‘ ?` ?< ?\( ?\[ ?{ ?\〈 ?\⦑ ?\⦓ ?\【 ?\⦗ ?\⸤ ?\「 ?\《 ?\⦕ ?\⸨ ?\⧚ ?\｛ ?\（ ?\［ ?\｟ ?\｢ ?\❰ ?\❮ ?\“ ?\‘ ?\❲ ?\⟨ ?\⟪ ?\⟮ ?\⟦ ?\⟬ ?\❴ ?\❪ ?\❨ ?\❬ ?\᚛ ?\〈 ?\⧼ ?\⟅ ?\⸦ ?\﹛ ?\﹙ ?\﹝ ?\⁅ ?\⦏ ?\⦍ ?\⦋ ?\₍ ?\⁽ ?\༼ ?\༺ ?\⸢ ?\〔 ?\『 ?\⦃ ?\〖 ?\⦅ ?\〚 ?\〘 ?\⧘ ?\⦉ ?\⦇)
+  "Specify the paired delimiter opening char."
+  :type '(repeat character)
+  :group 'sytactic-close)
+
 (unless (functionp 'empty-line-p)
   (defalias 'empty-line-p 'ar-empty-line-p))
 (defun ar-empty-line-p (&optional iact)
@@ -270,6 +277,32 @@ Optional argument START start."
     (forward-sexp)))
 
 ;; Navigate
+(defun ar-skip-blanks-and-comments (&optional arg pps orig)
+  "Go forward over empty lines and comments alike.
+With negative arg go backward. "
+  (interactive)
+  (let ((arg (or arg 1))
+	(pos (point))
+	(orig (or orig (point)))
+	(pps (or pps (parse-partial-sexp (point-min) (point)))))
+    (if (< 0 arg)
+        (progn
+          (skip-chars-forward " \t\r\n")
+          (when (or (and pps (nth 4 pps))(ar-in-comment-p))
+	    (end-of-line)
+	    (skip-chars-forward " \t\r\n\f"))
+          (when (empty-line-p)
+            (forward-line arg))
+          (when (> (point) pos)
+            (ar-skip-blanks-and-comments arg nil orig)))
+      (skip-chars-backward " \t\r\n")
+      (when (or (and pps (nth 4 pps))(ar-in-comment-p))
+        (goto-char (or (and pps (nth 4 pps))(ar-comment-beginning-position-atpt))))
+      (when (empty-line-p)
+        (forward-line arg))
+      (when (< (point) pos)
+        (ar-skip-blanks-and-comments-backward-lor arg pps)))
+    (< orig (point))))
 
 (defun ar-forward-sexp ()
   "Like ‘forward-sexp’, diffs below.
@@ -287,25 +320,13 @@ Otherwise return nil."
 	   (goto-char (nth 8 pps))
 	   (forward-sexp))
 	  ((or (nth 4 pps)(eq (car (syntax-after (point))) 11))
-	   (ar-skip-blanks-and-comments-lor nil pps))
+	   (when (ar-skip-blanks-and-comments nil pps)
+	     (ar-forward-sexp)))
 	  (t (or (progn (ignore-errors (forward-sexp))
 			(< orig (point)))
 		 (ignore-errors (up-list)))))
     (when (< orig (point)) (setq erg (point)))
-    ;; (when (interactive-p) (message "%s" erg))
     erg))
-
-;; (defun ar-forward-literal ()
-;;   "Go to end of string at point if any, if successful return position. "
-;;   (interactive)
-;;   (let ((orig (point))
-;; 	(start (ar-in-literal-p)))
-;;     (when start
-;;       (goto-char start)
-;;       (forward-sexp)
-;;       (and (< orig (point)) (setq erg (point))))
-;;     (when (and ar-verbose-p (interactive-p)) (message "%s" erg))
-;;     erg))
 
 (defun ar-backward-line ()
   "Go to indentation of current source-code line.
@@ -593,7 +614,8 @@ otherwise return complement char"
     (?' ?\")
     (?\" ?')
     (?‘ ?’)
-    (?` ?')
+    (?` ?´)
+    (?´ ?`)
     (?< ?>)
     (?> ?<)
     (?\( ?\))
@@ -768,17 +790,16 @@ Optional argument REGEXP regexp."
 
 (defun ar-align (beg end &optional regexp)
   (interactive "r*")
-  (let (done)
-    (save-excursion
-      (goto-char beg)
-      (ar-align-with-previous-line regexp)
-      (while (not
-	      (or
-	       (eobp)
-	       (progn
-		 (forward-line 1)
-		 (ar-align-with-previous-line)
-		 (<= end (line-end-position)))))))))
+  (save-excursion
+    (goto-char beg)
+    (ar-align-with-previous-line regexp)
+    (while (not
+	    (or
+	     (eobp)
+	     (progn
+	       (forward-line 1)
+	       (ar-align-with-previous-line)
+	       (<= end (line-end-position))))))))
 
 (defun ar--fetch-previous-indent (orig)
   "Report the preceding indent.
@@ -796,7 +817,7 @@ Argument ORIG start."
 Returns position if successful, nil otherwise
 Optional argument ARG times"
   (interactive "p")
-  (unless (eobp)
+  (unless (bobp)
     (forward-line -1)
     (beginning-of-line)
     (let* ((arg (or arg 1))
@@ -886,9 +907,9 @@ Optional argument ARG times."
 Returns position if successful, nil otherwise"
   (interactive)
   (let ((orig (point))
-        erg last)
+        erg)
     (unless (eobp)
-      (when (ar--forward-toplevel-intern orig pps)
+      (when (ar--forward-toplevel-intern orig (parse-partial-sexp (point-min) (point)))
 	(if (eobp)
 	    (newline)
 	  (forward-line 1)
@@ -945,6 +966,48 @@ unless not already there"
   (interactive)
   (unless (member (substring default-directory 0 -1) load-path)
     (push (substring default-directory 0 -1) load-path)))
+
+(defun ar-edit-in-comment ()
+  "Edit commented region as in major-mode."
+  (let* ((orig (point))
+	 (bounds (ar-bounds-of-comment-atpt))
+	 (beg (caar bounds))
+	 (end (cdar (cdr bounds)))
+	 (strg (buffer-substring beg end))
+	 (mode major-mode)
+	 ;; position from beginning of region
+	 (relpos (progn (goto-char orig) (- (point) beg))))
+    (delete-region beg end)
+    (insert (with-temp-buffer
+	      (switch-to-buffer (current-buffer))
+	      (insert strg)
+	      (funcall mode)
+	      (goto-char (point-min))
+	      (forward-char relpos)
+	      (save-excursion
+		(uncomment-region (point-min) (point-max)))
+	      (ar-raise-symbolic-expression)
+	      (comment-region (point-min) (point-max))
+	      (buffer-string)))))
+
+;; Basics lifted from paredit.el
+(defun ar-raise-symbolic-expression ()
+  "Raise the following S-expression in a tree, deleting its siblings. "  (interactive "*")
+  (save-excursion
+    (cond ((ar-in-string-p)
+           (goto-char (ar-in-string-p))
+	   (backward-prefix-chars)
+	   (ar-raise-symbolic-expression))
+          ((ar-in-comment-p)
+	   (ar-edit-in-comment))
+	  (t (let* ((bound (scan-sexps (point) 1))
+		    (expr
+      		     (buffer-substring (save-excursion (forward-sexp) (backward-sexp) (point)) bound)))
+	       ;; Move up to the list we're raising those S-expressions out of and
+	       ;; delete it.
+	       (backward-up-list)
+	       (delete-region (point) (scan-sexps (point) 1))
+	       (insert expr))))))
 
 (provide 'ar-subr)
 ;;; ar-subr.el ends here

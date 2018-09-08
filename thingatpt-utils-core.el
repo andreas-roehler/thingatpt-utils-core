@@ -1722,18 +1722,18 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
 (put 'delimited 'end-op-at
      (lambda ()
        (let ((orig (point))
-	     (begdel (concat th-beg-delimiter ar-delimiters-atpt))
+	     (begdel (or ar-delimiter-zeichen-atpt (and (looking-at (concat th-beg-delimiter ar-delimiters-atpt))(match-string-no-properties 0))))
 	     (enddel
 	      (cond (ar-delimiter-zeichen-atpt
 		     (if
-			 (member ar-delimiter-zeichen-atpt (list ?{ ?\[ ?\())
+			 (member ar-delimiter-zeichen-atpt ar-paired-openers)
 			 (ar--return-complement-char-maybe ar-delimiter-zeichen-atpt)
 		       ar-delimiter-zeichen-atpt))
-
 		    (ar-delimiter-string-atpt)
 		    (t (concat th-end-delimiter ar-delimiters-atpt))))
              opener closer erg)
 	 (or
+	  (setq erg (and begdel enddel (end-of-form-base (string begdel) (string enddel) nil 'move nil nil t)))
 	  (setq erg (ar-delimited-end-from-openening begdel enddel))
 	  (unless (eobp)
 	    (forward-char 1)
@@ -1765,7 +1765,6 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
 		 (cons (1- (point)) (point))
 	       (when (looking-back (concat "[" enddel "]") (line-beginning-position))
 		 (cons (match-beginning 0) (match-end 0))))))))
-
 
 (put 'delimited 'forward-op-at
      (lambda ()
