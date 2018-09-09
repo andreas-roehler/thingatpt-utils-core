@@ -78,12 +78,13 @@
   (should (bobp))))
 
 (ert-deftest ar-ert-forward-sexp-test-LGnrk9 ()
-    (ar-test-with-elisp-buffer-point-min
-";;;\\\;; (beg)
-(defun foo1 (&optional beg end)"
-	(goto-char (point-min)) 
-	(ar-forward-sexp)
-      (should (eq (char-before) ?\))))) 
+  (ar-test-with-elisp-buffer-point-min
+      ";;;\\\;; (beg)
+(defun foo1 (&optional beg end))"
+      (goto-char (point-min))
+    (forward-char 9)
+    (ar-forward-sexp)
+    (should (eq (char-before) ?\)))))
 
 (provide 'ar-core-tests-1)
 ;;; ar-core-tests-1.el ends here
