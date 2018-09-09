@@ -57,9 +57,9 @@
    :help " `ar-greaterangled-atpt'
    Return characters of [:greaterangled:] delimited form at point as string if any, nil otherwise. "]
 
-  ["leftrightsinglequoted at point"  ar-leftrightsinglequoted-atpt
-   :help " `ar-leftrightsinglequoted-atpt'
-   Return characters of [:leftrightsinglequoted:] delimited form at point as string if any, nil otherwise. "]
+  ["curvedsinglequoted at point"  ar-curvedsinglequoted-atpt
+   :help " `ar-curvedsinglequoted-atpt'
+   Return characters of [:curvedsinglequoted:] delimited form at point as string if any, nil otherwise. "]
 
   ["parentized at point"  ar-parentized-atpt
    :help " `ar-parentized-atpt'
@@ -380,8 +380,8 @@
    :help " `ar-copy-greaterangled-atpt'
    Copy GREATER-ANGLED at point if any, nil otherwise. "]
 
-  ["Copy LEFT-RIGHT-SINGLEQUOTED at point"  ar-copy-leftrightsinglequoted-atpt
-   :help " `ar-copy-leftrightsinglequoted-atpt'
+  ["Copy LEFT-RIGHT-SINGLEQUOTED at point"  ar-copy-curvedsinglequoted-atpt
+   :help " `ar-copy-curvedsinglequoted-atpt'
    Copy LEFT-RIGHT-SINGLEQUOTED at point if any, nil otherwise. "]
 
   ["Copy PARENTIZED at point"  ar-copy-parentized-atpt
@@ -640,8 +640,8 @@
    :help " `ar-delete-greaterangled-atpt'
    Delete GREATER-ANGLED at point if any, nil otherwise. "]
 
-  ["Delete LEFT-RIGHT-SINGLEQUOTED at point"  ar-delete-leftrightsinglequoted-atpt
-   :help " `ar-delete-leftrightsinglequoted-atpt'
+  ["Delete LEFT-RIGHT-SINGLEQUOTED at point"  ar-delete-curvedsinglequoted-atpt
+   :help " `ar-delete-curvedsinglequoted-atpt'
    Delete LEFT-RIGHT-SINGLEQUOTED at point if any, nil otherwise. "]
 
   ["Delete PARENTIZED at point"  ar-delete-parentized-atpt
@@ -897,8 +897,8 @@
    :help " `ar-bracket-greaterangled-atpt'
    Bracket GREATER-ANGLED at point if any, nil otherwise. "]
 
-  ["Bracket LEFT-RIGHT-SINGLEQUOTED at point"  ar-bracket-leftrightsinglequoted-atpt
-   :help " `ar-bracket-leftrightsinglequoted-atpt'
+  ["Bracket LEFT-RIGHT-SINGLEQUOTED at point"  ar-bracket-curvedsinglequoted-atpt
+   :help " `ar-bracket-curvedsinglequoted-atpt'
    Bracket LEFT-RIGHT-SINGLEQUOTED at point if any, nil otherwise. "]
 
   ["Bracket PARENTIZED at point"  ar-bracket-parentized-atpt
@@ -1154,8 +1154,8 @@
    :help " `ar-commatize-greaterangled-atpt'
    Commatize GREATER-ANGLED at point if any, nil otherwise. "]
 
-  ["Commatize LEFT-RIGHT-SINGLEQUOTED at point"  ar-commatize-leftrightsinglequoted-atpt
-   :help " `ar-commatize-leftrightsinglequoted-atpt'
+  ["Commatize LEFT-RIGHT-SINGLEQUOTED at point"  ar-commatize-curvedsinglequoted-atpt
+   :help " `ar-commatize-curvedsinglequoted-atpt'
    Commatize LEFT-RIGHT-SINGLEQUOTED at point if any, nil otherwise. "]
 
   ["Commatize PARENTIZED at point"  ar-commatize-parentized-atpt
@@ -1411,8 +1411,8 @@
    :help " `ar-hide-greaterangled-atpt'
    Hide GREATER-ANGLED at point if any, nil otherwise. "]
 
-  ["Hide LEFT-RIGHT-SINGLEQUOTED at point"  ar-hide-leftrightsinglequoted-atpt
-   :help " `ar-hide-leftrightsinglequoted-atpt'
+  ["Hide LEFT-RIGHT-SINGLEQUOTED at point"  ar-hide-curvedsinglequoted-atpt
+   :help " `ar-hide-curvedsinglequoted-atpt'
    Hide LEFT-RIGHT-SINGLEQUOTED at point if any, nil otherwise. "]
 
   ["Hide PARENTIZED at point"  ar-hide-parentized-atpt
@@ -1668,8 +1668,8 @@
    :help " `ar-hide-show-greaterangled-atpt'
    Hide-Show GREATER-ANGLED at point if any, nil otherwise. "]
 
-  ["Hide-Show LEFT-RIGHT-SINGLEQUOTED at point"  ar-hide-show-leftrightsinglequoted-atpt
-   :help " `ar-hide-show-leftrightsinglequoted-atpt'
+  ["Hide-Show LEFT-RIGHT-SINGLEQUOTED at point"  ar-hide-show-curvedsinglequoted-atpt
+   :help " `ar-hide-show-curvedsinglequoted-atpt'
    Hide-Show LEFT-RIGHT-SINGLEQUOTED at point if any, nil otherwise. "]
 
   ["Hide-Show PARENTIZED at point"  ar-hide-show-parentized-atpt
@@ -1925,8 +1925,8 @@
    :help " `ar-highlight-greaterangled-atpt'
    Highlight GREATER-ANGLED at point if any, nil otherwise. "]
 
-  ["Highlight LEFT-RIGHT-SINGLEQUOTED at point"  ar-highlight-leftrightsinglequoted-atpt
-   :help " `ar-highlight-leftrightsinglequoted-atpt'
+  ["Highlight LEFT-RIGHT-SINGLEQUOTED at point"  ar-highlight-curvedsinglequoted-atpt
+   :help " `ar-highlight-curvedsinglequoted-atpt'
    Highlight LEFT-RIGHT-SINGLEQUOTED at point if any, nil otherwise. "]
 
   ["Highlight PARENTIZED at point"  ar-highlight-parentized-atpt
@@ -2182,8 +2182,8 @@
    :help " `ar-hyphen-greaterangled-atpt'
    Hyphen GREATER-ANGLED at point if any, nil otherwise. "]
 
-  ["Hyphen LEFT-RIGHT-SINGLEQUOTED at point"  ar-hyphen-leftrightsinglequoted-atpt
-   :help " `ar-hyphen-leftrightsinglequoted-atpt'
+  ["Hyphen LEFT-RIGHT-SINGLEQUOTED at point"  ar-hyphen-curvedsinglequoted-atpt
+   :help " `ar-hyphen-curvedsinglequoted-atpt'
    Hyphen LEFT-RIGHT-SINGLEQUOTED at point if any, nil otherwise. "]
 
   ["Hyphen PARENTIZED at point"  ar-hyphen-parentized-atpt
@@ -2439,8 +2439,8 @@
    :help " `ar-kill-greaterangled-atpt'
    Kill GREATER-ANGLED at point if any, nil otherwise. "]
 
-  ["Kill LEFT-RIGHT-SINGLEQUOTED at point"  ar-kill-leftrightsinglequoted-atpt
-   :help " `ar-kill-leftrightsinglequoted-atpt'
+  ["Kill LEFT-RIGHT-SINGLEQUOTED at point"  ar-kill-curvedsinglequoted-atpt
+   :help " `ar-kill-curvedsinglequoted-atpt'
    Kill LEFT-RIGHT-SINGLEQUOTED at point if any, nil otherwise. "]
 
   ["Kill PARENTIZED at point"  ar-kill-parentized-atpt
@@ -2697,8 +2697,8 @@
    :help " `ar-mark-greaterangled-atpt'
    Mark GREATER-ANGLED at point if any, nil otherwise. "]
 
-  ["Mark LEFT-RIGHT-SINGLEQUOTED at point"  ar-mark-leftrightsinglequoted-atpt
-   :help " `ar-mark-leftrightsinglequoted-atpt'
+  ["Mark LEFT-RIGHT-SINGLEQUOTED at point"  ar-mark-curvedsinglequoted-atpt
+   :help " `ar-mark-curvedsinglequoted-atpt'
    Mark LEFT-RIGHT-SINGLEQUOTED at point if any, nil otherwise. "]
 
   ["Mark PARENTIZED at point"  ar-mark-parentized-atpt
@@ -2954,8 +2954,8 @@
    :help " `ar-parentize-greaterangled-atpt'
    Parentize GREATER-ANGLED at point if any, nil otherwise. "]
 
-  ["Parentize LEFT-RIGHT-SINGLEQUOTED at point"  ar-parentize-leftrightsinglequoted-atpt
-   :help " `ar-parentize-leftrightsinglequoted-atpt'
+  ["Parentize LEFT-RIGHT-SINGLEQUOTED at point"  ar-parentize-curvedsinglequoted-atpt
+   :help " `ar-parentize-curvedsinglequoted-atpt'
    Parentize LEFT-RIGHT-SINGLEQUOTED at point if any, nil otherwise. "]
 
   ["Parentize PARENTIZED at point"  ar-parentize-parentized-atpt
@@ -3211,8 +3211,8 @@
    :help " `ar-quote-greaterangled-atpt'
    Quote GREATER-ANGLED at point if any, nil otherwise. "]
 
-  ["Quote LEFT-RIGHT-SINGLEQUOTED at point"  ar-quote-leftrightsinglequoted-atpt
-   :help " `ar-quote-leftrightsinglequoted-atpt'
+  ["Quote LEFT-RIGHT-SINGLEQUOTED at point"  ar-quote-curvedsinglequoted-atpt
+   :help " `ar-quote-curvedsinglequoted-atpt'
    Quote LEFT-RIGHT-SINGLEQUOTED at point if any, nil otherwise. "]
 
   ["Quote PARENTIZED at point"  ar-quote-parentized-atpt
@@ -3468,8 +3468,8 @@
    :help " `ar-right-singlequote-greaterangled-atpt'
    Right-Singlequote GREATER-ANGLED at point if any, nil otherwise. "]
 
-  ["Right-Singlequote LEFT-RIGHT-SINGLEQUOTED at point"  ar-right-singlequote-leftrightsinglequoted-atpt
-   :help " `ar-right-singlequote-leftrightsinglequoted-atpt'
+  ["Right-Singlequote LEFT-RIGHT-SINGLEQUOTED at point"  ar-right-singlequote-curvedsinglequoted-atpt
+   :help " `ar-right-singlequote-curvedsinglequoted-atpt'
    Right-Singlequote LEFT-RIGHT-SINGLEQUOTED at point if any, nil otherwise. "]
 
   ["Right-Singlequote PARENTIZED at point"  ar-right-singlequote-parentized-atpt
@@ -3725,8 +3725,8 @@
    :help " `ar-separate-greaterangled-atpt'
    Separate GREATER-ANGLED at point if any, nil otherwise. "]
 
-  ["Separate LEFT-RIGHT-SINGLEQUOTED at point"  ar-separate-leftrightsinglequoted-atpt
-   :help " `ar-separate-leftrightsinglequoted-atpt'
+  ["Separate LEFT-RIGHT-SINGLEQUOTED at point"  ar-separate-curvedsinglequoted-atpt
+   :help " `ar-separate-curvedsinglequoted-atpt'
    Separate LEFT-RIGHT-SINGLEQUOTED at point if any, nil otherwise. "]
 
   ["Separate PARENTIZED at point"  ar-separate-parentized-atpt
@@ -3982,8 +3982,8 @@
    :help " `ar-show-greaterangled-atpt'
    Show GREATER-ANGLED at point if any, nil otherwise. "]
 
-  ["Show LEFT-RIGHT-SINGLEQUOTED at point"  ar-show-leftrightsinglequoted-atpt
-   :help " `ar-show-leftrightsinglequoted-atpt'
+  ["Show LEFT-RIGHT-SINGLEQUOTED at point"  ar-show-curvedsinglequoted-atpt
+   :help " `ar-show-curvedsinglequoted-atpt'
    Show LEFT-RIGHT-SINGLEQUOTED at point if any, nil otherwise. "]
 
   ["Show PARENTIZED at point"  ar-show-parentized-atpt
@@ -4239,8 +4239,8 @@
    :help " `ar-triplequotedq-greaterangled-atpt'
    Triplequote-Dq GREATER-ANGLED at point if any, nil otherwise. "]
 
-  ["Triplequote-Dq LEFT-RIGHT-SINGLEQUOTED at point"  ar-triplequotedq-leftrightsinglequoted-atpt
-   :help " `ar-triplequotedq-leftrightsinglequoted-atpt'
+  ["Triplequote-Dq LEFT-RIGHT-SINGLEQUOTED at point"  ar-triplequotedq-curvedsinglequoted-atpt
+   :help " `ar-triplequotedq-curvedsinglequoted-atpt'
    Triplequote-Dq LEFT-RIGHT-SINGLEQUOTED at point if any, nil otherwise. "]
 
   ["Triplequote-Dq PARENTIZED at point"  ar-triplequotedq-parentized-atpt
@@ -4496,8 +4496,8 @@
    :help " `ar-triplequotesq-greaterangled-atpt'
    Triplequote-Sq GREATER-ANGLED at point if any, nil otherwise. "]
 
-  ["Triplequote-Sq LEFT-RIGHT-SINGLEQUOTED at point"  ar-triplequotesq-leftrightsinglequoted-atpt
-   :help " `ar-triplequotesq-leftrightsinglequoted-atpt'
+  ["Triplequote-Sq LEFT-RIGHT-SINGLEQUOTED at point"  ar-triplequotesq-curvedsinglequoted-atpt
+   :help " `ar-triplequotesq-curvedsinglequoted-atpt'
    Triplequote-Sq LEFT-RIGHT-SINGLEQUOTED at point if any, nil otherwise. "]
 
   ["Triplequote-Sq PARENTIZED at point"  ar-triplequotesq-parentized-atpt
@@ -4753,8 +4753,8 @@
    :help " `ar-underscore-greaterangled-atpt'
    Underscore GREATER-ANGLED at point if any, nil otherwise. "]
 
-  ["Underscore LEFT-RIGHT-SINGLEQUOTED at point"  ar-underscore-leftrightsinglequoted-atpt
-   :help " `ar-underscore-leftrightsinglequoted-atpt'
+  ["Underscore LEFT-RIGHT-SINGLEQUOTED at point"  ar-underscore-curvedsinglequoted-atpt
+   :help " `ar-underscore-curvedsinglequoted-atpt'
    Underscore LEFT-RIGHT-SINGLEQUOTED at point if any, nil otherwise. "]
 
   ["Underscore PARENTIZED at point"  ar-underscore-parentized-atpt
@@ -5010,8 +5010,8 @@
    :help " `ar-whitespace-greaterangled-atpt'
    Whitespace GREATER-ANGLED at point if any, nil otherwise. "]
 
-  ["Whitespace LEFT-RIGHT-SINGLEQUOTED at point"  ar-whitespace-leftrightsinglequoted-atpt
-   :help " `ar-whitespace-leftrightsinglequoted-atpt'
+  ["Whitespace LEFT-RIGHT-SINGLEQUOTED at point"  ar-whitespace-curvedsinglequoted-atpt
+   :help " `ar-whitespace-curvedsinglequoted-atpt'
    Whitespace LEFT-RIGHT-SINGLEQUOTED at point if any, nil otherwise. "]
 
   ["Whitespace PARENTIZED at point"  ar-whitespace-parentized-atpt
@@ -5236,8 +5236,8 @@
    :help " `ar-forward-greaterangled-atpt'
    Forward GREATER-ANGLED at point if any, nil otherwise. "]
 
-  ["Forward LEFT-RIGHT-SINGLEQUOTED at point"  ar-forward-leftrightsinglequoted-atpt
-   :help " `ar-forward-leftrightsinglequoted-atpt'
+  ["Forward LEFT-RIGHT-SINGLEQUOTED at point"  ar-forward-curvedsinglequoted-atpt
+   :help " `ar-forward-curvedsinglequoted-atpt'
    Forward LEFT-RIGHT-SINGLEQUOTED at point if any, nil otherwise. "]
 
   ["Forward BACKSLASHED at point"  ar-forward-backslashed-atpt
@@ -5511,8 +5511,8 @@
    :help " `ar-backward-greaterangled-atpt'
    Backward GREATER-ANGLED at point if any, nil otherwise. "]
 
-  ["Backward LEFT-RIGHT-SINGLEQUOTED at point"  ar-backward-leftrightsinglequoted-atpt
-   :help " `ar-backward-leftrightsinglequoted-atpt'
+  ["Backward LEFT-RIGHT-SINGLEQUOTED at point"  ar-backward-curvedsinglequoted-atpt
+   :help " `ar-backward-curvedsinglequoted-atpt'
    Backward LEFT-RIGHT-SINGLEQUOTED at point if any, nil otherwise. "]
 
   ["Backward BACKSLASHED at point"  ar-backward-backslashed-atpt
@@ -5786,8 +5786,8 @@
    :help " `ar-end-of-greaterangled-atpt'
   End of GREATER-ANGLED at point if any, nil otherwise. "]
 
-  ["End of LEFT-RIGHT-SINGLEQUOTED at point"  ar-end-of-leftrightsinglequoted-atpt
-   :help " `ar-end-of-leftrightsinglequoted-atpt'
+  ["End of LEFT-RIGHT-SINGLEQUOTED at point"  ar-end-of-curvedsinglequoted-atpt
+   :help " `ar-end-of-curvedsinglequoted-atpt'
   End of LEFT-RIGHT-SINGLEQUOTED at point if any, nil otherwise. "]
 
   ["End of BACKSLASHED at point"  ar-end-of-backslashed-atpt
@@ -6061,8 +6061,8 @@
    :help " `ar-beginning-of-greaterangled-atpt'
   Beginning of GREATER-ANGLED at point if any, nil otherwise. "]
 
-  ["Beginning of LEFT-RIGHT-SINGLEQUOTED at point"  ar-beginning-of-leftrightsinglequoted-atpt
-   :help " `ar-beginning-of-leftrightsinglequoted-atpt'
+  ["Beginning of LEFT-RIGHT-SINGLEQUOTED at point"  ar-beginning-of-curvedsinglequoted-atpt
+   :help " `ar-beginning-of-curvedsinglequoted-atpt'
   Beginning of LEFT-RIGHT-SINGLEQUOTED at point if any, nil otherwise. "]
 
   ["Beginning of BACKSLASHED at point"  ar-beginning-of-backslashed-atpt
@@ -6338,8 +6338,8 @@
    :help " `ar-bounds-of-greaterangled-atpt'
    Bounds of GREATER-ANGLED at point if any, nil otherwise. "]
 
-  ["Bounds of LEFT-RIGHT-SINGLEQUOTED at point"  ar-bounds-of-leftrightsinglequoted-atpt
-   :help " `ar-bounds-of-leftrightsinglequoted-atpt'
+  ["Bounds of LEFT-RIGHT-SINGLEQUOTED at point"  ar-bounds-of-curvedsinglequoted-atpt
+   :help " `ar-bounds-of-curvedsinglequoted-atpt'
    Bounds of LEFT-RIGHT-SINGLEQUOTED at point if any, nil otherwise. "]
 
   ["Bounds of BACKSLASHED at point"  ar-bounds-of-backslashed-atpt
@@ -6612,8 +6612,8 @@
    :help " `ar-greaterangled-beginning-position-atpt'
    Beginning position of GREATER-ANGLED at point if any, nil otherwise. "]
 
-  ["Beginning position of LEFT-RIGHT-SINGLEQUOTED at point"  ar-leftrightsinglequoted-beginning-position-atpt
-   :help " `ar-leftrightsinglequoted-beginning-position-atpt'
+  ["Beginning position of LEFT-RIGHT-SINGLEQUOTED at point"  ar-curvedsinglequoted-beginning-position-atpt
+   :help " `ar-curvedsinglequoted-beginning-position-atpt'
    Beginning position of LEFT-RIGHT-SINGLEQUOTED at point if any, nil otherwise. "]
 
   ["Beginning position of BACKSLASHED at point"  ar-backslashed-beginning-position-atpt
@@ -6886,8 +6886,8 @@
    :help " `ar-greaterangled-end-position-atpt'
   End position of GREATER-ANGLED at point if any, nil otherwise. "]
 
-  ["End position of LEFT-RIGHT-SINGLEQUOTED at point"  ar-leftrightsinglequoted-end-position-atpt
-   :help " `ar-leftrightsinglequoted-end-position-atpt'
+  ["End position of LEFT-RIGHT-SINGLEQUOTED at point"  ar-curvedsinglequoted-end-position-atpt
+   :help " `ar-curvedsinglequoted-end-position-atpt'
   End position of LEFT-RIGHT-SINGLEQUOTED at point if any, nil otherwise. "]
 
   ["End position of BACKSLASHED at point"  ar-backslashed-end-position-atpt
@@ -7162,8 +7162,8 @@
    :help " `ar-length-of-greaterangled-atpt'
    Length of GREATER-ANGLED at point if any, nil otherwise. "]
 
-  ["Length of LEFT-RIGHT-SINGLEQUOTED at point"  ar-length-of-leftrightsinglequoted-atpt
-   :help " `ar-length-of-leftrightsinglequoted-atpt'
+  ["Length of LEFT-RIGHT-SINGLEQUOTED at point"  ar-length-of-curvedsinglequoted-atpt
+   :help " `ar-length-of-curvedsinglequoted-atpt'
    Length of LEFT-RIGHT-SINGLEQUOTED at point if any, nil otherwise. "]
 
   ["Length of BACKSLASHED at point"  ar-length-of-backslashed-atpt

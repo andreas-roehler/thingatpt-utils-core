@@ -80,7 +80,7 @@
 ;; ar-THING-hide-atpt
 ;; ar-THING-show-atpt
 ;; ar-THING-hide-show-atpt
-;; ar-THING-leftrightsinglequote-atpt
+;; ar-THING-curvedsinglequote-atpt
 ;; ar-THING-parentize-atpt
 ;; ar-THING-separate-atpt
 ;; ar-THING-singlequote-atpt
@@ -940,43 +940,43 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
 	 (forward-char 1)
 	 (ar-char-paren-delimiters-forward ?> ar-thing-escaped ar-thing-inside-comment 'greaterangled))))
 
-;; Leftrightsinglequoted
-(put 'leftrightsinglequoted 'beginning-op-at
+;; Curvedsinglequoted
+(put 'curvedsinglequoted 'beginning-op-at
      (lambda ()
        (if (ignore-errors (char-equal ?‘ (char-after)))
            (list (point) (1+ (point)))
 	 (beginning-of-form-base "‘" "’" nil 'move 0 nil nil 'ar-syntax ar-generic-match-p))))
 
-(put 'leftrightsinglequoted 'end-op-at
+(put 'curvedsinglequoted 'end-op-at
      (lambda ()
        (when (ignore-errors (char-equal ?‘ (char-after)))
          (forward-char 1))
        (end-of-form-base "‘" "’" nil 'move 0 nil nil 'ar-syntax ar-generic-match-p)))
 
-(put 'leftrightsinglequoted 'forward-op-at
+(put 'curvedsinglequoted 'forward-op-at
      (lambda ()
        (unless (eobp)
 	 (forward-char 1)
-	 (ar-char-paren-delimiters-forward ?‘ ar-thing-escaped ar-thing-inside-comment 'leftrightsinglequoted))))
+	 (ar-char-paren-delimiters-forward ?‘ ar-thing-escaped ar-thing-inside-comment 'curvedsinglequoted))))
 
-;; Leftrightdoublequoted
-(put 'leftrightdoublequoted 'beginning-op-at
+;; Curveddoublequoted
+(put 'curveddoublequoted 'beginning-op-at
      (lambda ()
        (if (ignore-errors (char-equal ?“ (char-after)))
            (list (point) (1+ (point)))
 	 (beginning-of-form-base "“" "”" nil 'move 0 nil nil 'ar-syntax ar-generic-match-p))))
 
-(put 'leftrightdoublequoted 'end-op-at
+(put 'curveddoublequoted 'end-op-at
      (lambda ()
        (when (ignore-errors (char-equal ?“ (char-after)))
          (forward-char 1))
        (end-of-form-base "“" "”" nil 'move 0 nil nil 'ar-syntax ar-generic-match-p)))
 
-(put 'leftrightdoublequoted 'forward-op-at
+(put 'curveddoublequoted 'forward-op-at
      (lambda ()
        (unless (eobp)
 	 (forward-char 1)
-	 (ar-char-paren-delimiters-forward ?“ ar-thing-escaped ar-thing-inside-comment 'leftrightdoublequoted))))
+	 (ar-char-paren-delimiters-forward ?“ ar-thing-escaped ar-thing-inside-comment 'curveddoublequoted))))
 
 ;; Parentized
 (put 'parentized 'beginning-op-at
@@ -3518,12 +3518,12 @@ it defaults to `<', otherwise it defaults to `string<'."
   (ar-th-delimit--intern thing ">" "<" arg iact check))
 
 ;;;###autoload
-(defun ar-th-leftrightsinglequote (thing &optional arg iact check)
+(defun ar-th-curvedsinglequote (thing &optional arg iact check)
   " "
   (ar-th-delimit--intern thing "‘" "’" arg iact check))
 
 ;;;###autoload
-(defun ar-th-leftrightdoublequote (thing &optional arg iact check)
+(defun ar-th-curveddoublequote (thing &optional arg iact check)
   " "
   (ar-th-delimit--intern thing "“" "”" arg iact check))
 
@@ -3830,7 +3830,7 @@ it defaults to `<', otherwise it defaults to `string<'."
    '(bracketed "[" "]")
    '(lesserangled "<" ">")
    '(greaterangled ">" "<")
-   '(leftrightsinglequoted "‘" "’")
+   '(curvedsinglequoted "‘" "’")
    '(parentized "(" ")")))
 
 (defvar ar-unpaired-delimited-raw
@@ -3854,8 +3854,8 @@ it defaults to `<', otherwise it defaults to `string<'."
        '(bracket 91 93)
        '(lesserangle 60 62)
        '(greaterangle 62 60)
-       '(leftrightsinglequote 8216 8217)
-       '(leftrightdoublequote 8220 8221)
+       '(curvedsinglequote 8216 8217)
+       '(curveddoublequote 8220 8221)
        '(parentize 40 41)
        ))
 
@@ -3865,8 +3865,8 @@ it defaults to `<', otherwise it defaults to `string<'."
        'bracket
        'lesserangle
        'greaterangle
-       'leftrightsinglequote
-       'leftrightdoublequote
+       'curvedsinglequote
+       'curveddoublequote
        'parentize
        ))
 
@@ -4133,8 +4133,8 @@ it defaults to `<', otherwise it defaults to `string<'."
        '(bracketed "[" "]")
        '(lesserangled "<" ">")
        '(greaterangled ">" "<")
-       '(leftrightsinglequoted "‘" "’")
-       '(leftrightdoublequoted "“" "”")
+       '(curvedsinglequoted "‘" "’")
+       '(curveddoublequoted "“" "”")
        '(parentized "(" ")")
        ))
 
@@ -4144,8 +4144,8 @@ it defaults to `<', otherwise it defaults to `string<'."
        'bracketed
        'lesserangled
        'greaterangled
-       'leftrightsinglequoted
-       'leftrightdoublequoted
+       'curvedsinglequoted
+       'curveddoublequoted
        'parentized
        ))
 

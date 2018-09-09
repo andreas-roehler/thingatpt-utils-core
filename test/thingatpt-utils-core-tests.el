@@ -85,12 +85,5 @@
 	(ar-forward-sexp)
       (should (eq (char-before) ?\))))) 
 
-;; doc.c
-(ert-deftest ar-curved-single-quotes-test ()
-    (ar-test-with-elisp-buffer
-  "‘like this’"
-  (forward-char -2)
-  (should (eq 11 (length (ar-delimited-atpt))))))
-
 (provide 'ar-core-tests-1)
 ;;; ar-core-tests-1.el ends here
