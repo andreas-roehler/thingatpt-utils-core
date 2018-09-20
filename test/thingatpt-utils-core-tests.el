@@ -86,5 +86,19 @@
     (ar-forward-sexp)
     (should (eq (char-before) ?\)))))
 
+(ert-deftest eua-abbrev-expand-test-3MLrzm ()
+  (emacs-ua-test-with-emacs-lisp-buffer
+   (define-global-abbrev "Ua" "unleashed abbreviations")
+   (expand-abbrev)
+   (should (eq (char-before) ?s))))
+
+(ert-deftest eua-abbrev-expand-test-yo0IEW ()
+  (emacs-ua-test
+    'fundamental-mode
+    t
+    (define-global-abbrev "ua" "Unleashed abbreviations")
+    (expand-abbrev)
+    (should (eq (char-before) ?s))))
+
 (provide 'ar-core-tests-1)
 ;;; ar-core-tests-1.el ends here

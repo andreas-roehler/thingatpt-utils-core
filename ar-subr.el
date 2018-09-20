@@ -507,7 +507,7 @@ Optional argument PPS result of ‘parse-partial-sexp’."
   (interactive "P")
   (let* ((outmost (or outmost (eq 4 (prefix-numeric-value outmost))))
 	 (pps (or pps (parse-partial-sexp (point-min) (point))))
-	 (liststart (nth 1 pps)))
+	 (liststart (or (and (bobp) (point))(nth 1 pps))))
     (cond
      ((and (not liststart)(looking-at ar-beginning-of-defun-re))
       (setq liststart (point)))
@@ -557,6 +557,29 @@ When `end-of-defun-function' is set, call it with optional ARG"
 	(setq erg (point))))
       (when (< orig (point))
 	erg))))
+
+(defalias 'defun-beginning-position 'function-beginning-position)
+(defun function-beginning-position ()
+  "Return the position where the current functions definition starts"
+  (interactive)
+  (save-excursion
+    (let* ((orig (point)))
+      (ar-beginning-of-defun)
+      (when (< (point) orig)
+        (when (interactive-p) (message "%s" (point)))
+        (point)
+        ))))
+
+(defalias 'defun-end-position 'function-end-position)
+(defun function-end-position ()
+  "Print the position where the current functions definition ends"
+  (interactive)
+  (save-excursion
+    (let ((orig (point)))
+      (ar-end-of-defun)
+      (when (< orig (point))
+        (when (interactive-p) (message "%s" (point)))
+        (point)))))
 
 (defun ar-count-lines (&optional beg end)
   "Count lines in accessible part of buffer.
