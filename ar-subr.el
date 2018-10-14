@@ -279,6 +279,8 @@ Optional argument START start."
 ;; Navigate
 (defun ar-skip-blanks-and-comments (&optional arg pps orig)
   "Go forward over empty lines and comments alike.
+
+Stop at first non-empty char.
 With negative arg go backward. "
   (interactive)
   (let ((arg (or arg 1))
@@ -294,15 +296,12 @@ With negative arg go backward. "
           (when (empty-line-p)
             (forward-line arg))
           (when (> (point) pos)
-            (ar-skip-blanks-and-comments arg nil orig)))
+            (ar-skip-blanks-and-comments arg nil orig))
+	  (< orig (point)))
       (skip-chars-backward " \t\r\n")
       (when (or (and pps (nth 4 pps))(ar-in-comment-p))
         (goto-char (or (and pps (nth 4 pps))(ar-comment-beginning-position-atpt))))
-      (when (empty-line-p)
-        (forward-line arg))
-      (when (< (point) pos)
-        (ar-skip-blanks-and-comments-backward-lor arg pps)))
-    (< orig (point))))
+      (> orig (point)))))
 
 (defun ar-forward-sexp ()
   "Like ‘forward-sexp’, diffs below.
@@ -896,8 +895,6 @@ Returns position if successful, nil otherwise
 Optional argument ARG times."
   (interactive "p")
   (unless (eobp)
-    (forward-line 1)
-    (beginning-of-line)
     (let* ((arg (or arg 1))
 	   (orig (point))
 	   (pps (parse-partial-sexp (point-min) (point)))
@@ -905,16 +902,26 @@ Optional argument ARG times."
 	   (limit (or (nth 8 pps) (point-min)))
 	   (comment-start (ar-fix-comment-start))
 	   erg this)
-      (unless (eobp)
-	(while (and
-		(prog1 (re-search-forward "^[^ \t\n\f\r]" nil 'move arg)
+      (ar-skip-blanks-and-comments)
+      (while
+	  (and
+	   (progn (end-of-line)
+		  (setq erg (re-search-forward "^[^ \t\n\f\r]" nil t arg))
+
 		  (beginning-of-line))
-		(or (ignore-errors (looking-at comment-start))(ignore-errors (looking-at comment-start-skip))
-		    (and (setq this (ignore-errors (nth 8 (parse-partial-sexp limit (point)))))
-			 (setq limit this))
-		    (member (char-after) toplevel-nostart-chars)) )
-	  (forward-line 1)
-	  (beginning-of-line)))
+	   (or
+	    (ignore-errors (prog1
+			       (looking-at comment-start)
+			     (forward-line 1)))
+	    (ignore-errors (prog1 (looking-at comment-start-skip)
+			     (forward-line 1)))
+	    (and (setq this (ignore-errors (nth 8 (parse-partial-sexp limit (point)))))
+		 (setq limit this)))))
+      (when erg
+	(beginning-of-line)
+	(skip-chars-backward " \t\r\n\f")
+	(forward-line 1) (beginning-of-line) )
+      ;; (unless (eobp) (forward-line 1) (beginning-of-line))
 
       ;; (if (and (ar--forward-toplevel-intern orig pps)
       ;; 	       (< orig (point)))
