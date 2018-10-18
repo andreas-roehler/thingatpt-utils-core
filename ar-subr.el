@@ -504,12 +504,15 @@ If no function found inside a list, go to list-start.
 Otherwise reach next list upward in buffer
 Optional argument PPS result of ‘parse-partial-sexp’."
   (interactive "P")
+  (unless (bobp) 
   (let* ((outmost (or outmost (eq 4 (prefix-numeric-value outmost))))
 	 (pps (or pps (parse-partial-sexp (point-min) (point))))
-	 (liststart (or (and (bobp) (point))(nth 1 pps))))
+	 (liststart (or (and (bobp) (point))(nth 1 pps)))
+	 (orig (point)))
     (cond
      ((and (not liststart)(looking-at ar-beginning-of-defun-re))
-      (setq liststart (point)))
+      (unless (bobp) (skip-chars-backward " \t\r\n\f")
+	      (ar-backward-defun)))
      (liststart
       (goto-char liststart)
       (while (and (not (looking-at ar-beginning-of-defun-re))(setq liststart (nth 1 (parse-partial-sexp (point-min) (point)))))
@@ -517,10 +520,10 @@ Optional argument PPS result of ‘parse-partial-sexp’."
       (and outmost (nth 1 (setq pps (parse-partial-sexp (point-min) (point)))) (ar-backward-defun outmost pps)))
      ((nth 4 pps) (ar-backward-comment)
       (ar-backward-defun outmost))
-     (t (when (or (eq ?\)(char-before)) (< 0 (abs (skip-chars-backward "^)"))))
-	  (forward-char -1)
-	  (ar-beginning-of-defun outmost))))
-    liststart))
+     ((or (eq ?\)(char-before)) (< 0 (abs (skip-chars-backward "^)"))))
+	  (unless (bobp) (forward-char -1))
+	  (ar-beginning-of-defun outmost)))
+    liststart)))
 
 (defalias 'ar-end-of-defun 'ar-forward-defun)
 (defun ar-forward-defun ()

@@ -25,41 +25,37 @@
 ;; tests are expected to run from directory test
 
 (ert-deftest ar-ert-raise-numbers-1 ()
-  (ar-test-with-elisp-buffer
+  (ar-test-with-elisp-buffer-point-min
       "#x75"
-    (forward-char -1)
     ;; (should (eq 118 (1+ (car (read-from-string (number-at-point))))
     (should (eq 118 (1+ (number-at-point))))))
 
 (ert-deftest ar-ert-raise-numbers-2 ()
-  (ar-test-with-elisp-buffer
+  (ar-test-with-elisp-buffer-point-min
       "#o165"
-    (forward-char -1)
     ;; (should (eq 118 (1+ (car (read-from-string (number-at-point))))
     (should (eq 118 (1+ (number-at-point))))))
 
 (ert-deftest ar-ert-raise-numbers-3 ()
-  (ar-test-with-elisp-buffer
+  (ar-test-with-elisp-buffer-point-min
       "117"
-    (forward-char -1)
     ;; (should (eq 118 (1+ (car (read-from-string (number-at-point))))
     (should (eq 118 (1+ (number-at-point))))))
 
 (ert-deftest ar-ert-symbol-atpt-1 ()
-  (ar-test-with-elisp-buffer
+  (ar-test-with-elisp-buffer-point-min
       "o\\\""
-    (forward-char -1)
-    (let ((erg (ar-th-bounds 'symbol)))
-    (should (eq 1 (car erg)))
-    (should (eq 4 (cdr erg))))))
+      (let ((erg (ar-th-bounds 'symbol)))
+	(should (eq 1 (car erg)))
+	(should (eq 4 (cdr erg))))))
 
 (ert-deftest ar-ert-symbol-atpt-2 ()
-  (ar-test-with-elisp-buffer
+  (ar-test-with-elisp-buffer-point-min
       "(defun w ()"
-    (search-backward "w")
+    (search-forward "w")
     (let ((erg (ar-th-bounds 'symbol)))
-    (should (eq 8 (car erg)))
-    (should (eq 9 (cdr erg))))))
+      (should (eq 8 (car erg)))
+      (should (eq 9 (cdr erg))))))
 
 (ert-deftest ar-ert-forward-defun-test ()
   (ar-test-with-elisp-buffer-point-min

@@ -23,28 +23,17 @@ ORT=${ORT:-1}
 
 echo "\$ORT: $ORT"
 
-if [ $ORT -eq 0 ]; then
+TESTDIR=test/
+export TESTDIR
 
-    WERKSTATT=$HOME/werkstatt/
-    DIR1=thingatpt-utils-core/
+FILE1=beg-end.el
+FILE2=ar-subr.el
+FILE3=thingatpt-utils-map.el
+FILE4=thingatpt-utils-core.el
 
-else
+TEST1=${TESTDIR}thingatpt-utils-core-setup-tests.el
+TEST2=${TESTDIR}thingatpt-utils-core-tests.el
 
-    WERKSTATT=""
-    DIR1=""
-
-fi
-
-TESTDIR1=${WERKSTATT}${DIR1}test/
-TESTDIR2=test/
-
-FILE1=${WERKSTATT}${DIR1}beg-end.el
-FILE2=${WERKSTATT}${DIR1}ar-subr.el
-FILE3=${WERKSTATT}${DIR1}thingatpt-utils-map.el
-FILE4=${WERKSTATT}${DIR1}thingatpt-utils-core.el
-
-TEST1=${TESTDIR1}thingatpt-utils-core-setup-tests.el
-TEST2=${TESTDIR1}thingatpt-utils-core-tests.el
 
 if [ -s emacs24 ]; then
     EMACS=emacs24
@@ -57,9 +46,6 @@ echo "\$EMACS: $EMACS"
 hier () {
     $EMACS -Q --batch \
 --eval "(message (emacs-version))" \
---eval "(add-to-list 'load-path (getenv \"WERKSTATT/\"))" \
---eval "(add-to-list 'load-path (getenv \"DIR1\"))" \
---eval "(add-to-list 'load-path (getenv \"TESTDIR1\"))" \
 -load $FILE1 \
 -load $FILE2 \
 -load $FILE3 \
@@ -73,9 +59,6 @@ hier () {
 entfernt () {
     $EMACS -Q --batch \
 --eval "(message (emacs-version))" \
---eval "(add-to-list 'load-path (getenv \"WERKSTATT/\"))" \
---eval "(add-to-list 'load-path (getenv \"DIR1\"))" \
---eval "(add-to-list 'load-path (getenv \"TESTDIR1\"))" \
 -load $FILE1 \
 -load $FILE2 \
 -load $FILE3 \
@@ -88,7 +71,7 @@ entfernt () {
 
 if [ $ORT -eq 0 ]; then
     hier
-    echo "Lade \$DIR6 und \$DIR7"
+    echo "Lade testumgebung \"$HOSTNAME\""
 else
     echo "entfernt"
     echo "Lade testumgebung \"ENTFERNT\""

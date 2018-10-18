@@ -47,7 +47,7 @@ BODY is code to be executed within the temp buffer.  Point is
        (insert ,contents)
        (when ar-switch-p
 	 (switch-to-buffer (current-buffer)))
-       (font-lock-fontify-buffer)
+       (font-lock-fontify-region (point-min) (point-max))
        ,@body)))
 
 (defmacro ar-test-with-temp-buffer-point-min (contents &rest body)
@@ -61,7 +61,7 @@ BODY is code to be executed within the temp buffer.  Point is
        (goto-char (point-min))
        (when ar-switch-p
 	 (switch-to-buffer (current-buffer)))
-       (font-lock-fontify-buffer)
+       (font-lock-fontify-region (point-min) (point-max))
        ,@body)))
 
 (defmacro ar-test (contents mode verbose &rest body)
@@ -75,7 +75,7 @@ BODY is code to be executed within the temp buffer "
        (funcall ,mode)
        (when ,verbose
 	 (switch-to-buffer (current-buffer))
-	 (font-lock-fontify-buffer))
+	 (font-lock-fontify-region (point-min) (point-max)))
        ,@body))
   (sit-for 0.1))
 
@@ -91,7 +91,7 @@ BODY is code to be executed within the temp buffer.  Point is
        (goto-char (point-min))
        (when ,verbose
 	 (switch-to-buffer (current-buffer))
-	 (font-lock-fontify-buffer))
+	 (font-lock-fontify-region (point-min) (point-max)))
        ,@body)))
 
 (defmacro ar-test-with-elisp-buffer (contents &rest body)
@@ -105,7 +105,7 @@ BODY is code to be executed within the temp buffer.  Point is
        (insert ,contents)
        (when ar-switch-p
 	 (switch-to-buffer (current-buffer)))
-       (font-lock-fontify-buffer)
+       (font-lock-fontify-region (point-min) (point-max))
        ,@body)))
 
 (defmacro ar-test-with-elisp-buffer-point-min (contents &rest body)
@@ -120,7 +120,7 @@ BODY is code to be executed within the temp buffer.  Point is
        (goto-char (point-min))
        (when ar-switch-p
 	 (switch-to-buffer (current-buffer)))
-       (font-lock-fontify-buffer)
+       (font-lock-fontify-region (point-min) (point-max))
        ,@body)))
 
 
@@ -230,7 +230,7 @@ BODY is code to be executed within the temp buffer.  Point is
        (goto-char (point-min))
        ;; (message "(current-buffer): %s" (current-buffer))
        (when py-debug-p (switch-to-buffer (current-buffer))
-	     (font-lock-fontify-buffer))
+	     (font-lock-fontify-region (point-min) (point-max)))
        ,@body)
      (sit-for 0.1)))
 
@@ -245,7 +245,7 @@ BODY is code to be executed within the temp buffer.  Point is
        (insert ,contents)
        (python-mode)
        (when py-debug-p (switch-to-buffer (current-buffer))
-	     (font-lock-fontify-buffer))
+	     (font-lock-fontify-region (point-min) (point-max)))
        ;; (message "ERT %s" (point))
        ,@body)
      (sit-for 0.1)))
@@ -261,7 +261,7 @@ BODY is code to be executed within the temp buffer.  Point is
        (insert ,contents)
        (when ar-switch-p
 	 (switch-to-buffer (current-buffer)))
-       (font-lock-fontify-buffer)
+       (font-lock-fontify-region (point-min) (point-max))
        ,@body)))
 
 (defmacro ar-test-with-shell-script-buffer-point-min (contents &rest body)
@@ -276,7 +276,7 @@ BODY is code to be executed within the temp buffer.  Point is
        (goto-char (point-min))
        (when ar-switch-p
 	 (switch-to-buffer (current-buffer)))
-       (font-lock-fontify-buffer)
+       (font-lock-fontify-region (point-min) (point-max))
        ,@body)))
 
 (defmacro py-test-with-temp-buffer-point-min (contents &rest body)
@@ -294,7 +294,7 @@ BODY is code to be executed within the temp buffer.  Point is
        (goto-char (point-min))
        ;; (message "(current-buffer): %s" (current-buffer))
        (when py-debug-p (switch-to-buffer (current-buffer))
-	     (font-lock-fontify-buffer))
+	     (font-lock-fontify-region (point-min) (point-max)))
        ,@body)
      (sit-for 0.1)))
 
@@ -309,7 +309,7 @@ BODY is code to be executed within the temp buffer.  Point is
        (insert ,contents)
        (python-mode)
        (when py-debug-p (switch-to-buffer (current-buffer))
-	     (font-lock-fontify-buffer))
+	     (font-lock-fontify-region (point-min) (point-max)))
        ;; (message "ERT %s" (point))
        ,@body)
      (sit-for 0.1)))
