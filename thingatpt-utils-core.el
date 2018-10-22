@@ -3134,10 +3134,13 @@ If optional positions BEG-2TH END-2TH are given, works on them instead. "
   (condition-case nil
       (let* ((bounds (ar-th-bounds thing no-delimiters iact check))
 	     (beg (or (ignore-errors (caar bounds)) (ignore-errors (car bounds))))
-	     (end (or (ignore-errors (cadr (cadr bounds)))(ignore-errors (cdr (cadr bounds)))(ignore-errors (cadr bounds))(ignore-errors (cadr (cadr bounds))))))
-	(if (eq thing 'comment)
-            (kill-region beg (1+ end))
-	  (kill-region beg end)))
+	     (end (and beg (or (ignore-errors (cadr (cadr bounds)))(ignore-errors (cdr (cadr bounds)))(ignore-errors (cadr bounds))(ignore-errors (cadr (cadr bounds)))))))
+	(and beg end
+	     (if (eq thing 'comment)
+		 (kill-region beg (1+ end))
+	       (progn
+		 (kill-region beg end)
+		 t))))
     (error nil)))
 
 (defun ar-th-delete (thing &optional no-delimiters iact check)
