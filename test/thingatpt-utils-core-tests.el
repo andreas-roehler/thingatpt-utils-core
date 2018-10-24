@@ -1,7 +1,7 @@
 ;; ar-core-tests-1.el --- Tests -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2013 Free Software Foundation, Inc.
-;; Copyright (C) 2014-2015 Andreas Röhler, <andreas.roehler@online.de>
+;; Copyright (C) 2014-2018 Andreas Röhler, <andreas.roehler@online.de>
 
 ;; GNU Emacs is free software: you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -21,6 +21,8 @@
 ;;; Code:
 
 ;; (require 'ert)
+
+(require 'ar-subr)
 
 ;; tests are expected to run from directory test
 
@@ -81,6 +83,18 @@
     (forward-char 9)
     (ar-forward-sexp)
     (should (eq (char-before) ?\)))))
+
+(ert-deftest ar-ert-backward-toplevel-test-WRXXPd ()
+  (ar-test-with-elisp-buffer
+      "(defun foo1 (&optional beg end)
+  \" \")
+
+(defun foo2 (&optional beg end)
+  \" \")"
+    (goto-char (point-max))
+    (beginning-of-line)
+    (ar-backward-toplevel)
+    (should (eq (point) 41))))
 
 (provide 'ar-core-tests-1)
 ;;; ar-core-tests-1.el ends here
