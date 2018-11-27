@@ -493,6 +493,40 @@ Optional argument RIGHT border."
    "\\)")
   "Regular expression matching beginning of defun.")
 
+(defun ar--backward-regexp (regexp &optional indent condition)
+  "Search backward next regexp not in string or comment.
+
+Return and move to match-beginning if successful"
+  (let (last)
+    (while (and
+	    (re-search-backward regexp nil 'move 1)
+	    (setq last (point))
+	    (or (nth 8 (parse-partial-sexp (point-min) (point)))
+		(and indent
+		     (not (funcall condition (current-indentation) indent))))))
+    (unless (bobp)
+      (back-to-indentation)
+      (point))))
+
+(defun ar-check-parens ()
+  "Like ‘check-parens’ but avoid error.
+
+Just return t if parentheses in the current buffer are balanced.
+Return nil if not."
+  (interactive)
+  (let (erg)
+      (setq erg (scan-sexps (point-min) (point-max)))))
+
+
+(defun ar-backward-defun-DWIM (&optional outmost pps)
+  "A fault-tolerant backward-function command.
+
+In case of invalid source-code at point, try some heuristics"
+  (interactive)
+  (if (ar-check-parens)
+      (ar-backward-defun outmost pps)
+    (ar--backward-regexp ar-beginning-of-defun-re)))
+
 (defalias 'ar-beginning-of-defun 'ar-backward-defun)
 (defun ar-backward-defun (&optional outmost pps)
   "Move to the beginning of a function definition.
@@ -909,21 +943,24 @@ Optional argument ARG times."
       (while
 	  (and
 	   (progn (end-of-line)
-		  (setq erg (re-search-forward "^[^ \t\n\f\r]" nil t arg))
-
-		  (beginning-of-line))
+		  (setq erg (re-search-forward "^[^ \t\n\f\r]" nil t arg)))
 	   (or
-	    (ignore-errors (prog1
+	    (progn
+	      (beginning-of-line)
+	      (nth 8 (parse-partial-sexp (point-min) (point))))
+	    (ignore-errors (when
 			       (looking-at comment-start)
-			     (forward-line 1)))
-	    (ignore-errors (prog1 (looking-at comment-start-skip)
-			     (forward-line 1)))
+			     (forward-line 1)
+			     t))
+	    (ignore-errors (when (looking-at comment-start-skip)
+			     (forward-line 1)
+			     t))
 	    (and (setq this (ignore-errors (nth 8 (parse-partial-sexp limit (point)))))
 		 (setq limit this)))))
       (when erg
 	(beginning-of-line)
 	(skip-chars-backward " \t\r\n\f")
-	(forward-line 1) (beginning-of-line) )
+	(forward-line 1) (beginning-of-line))
       ;; (unless (eobp) (forward-line 1) (beginning-of-line))
 
       ;; (if (and (ar--forward-toplevel-intern orig pps)
