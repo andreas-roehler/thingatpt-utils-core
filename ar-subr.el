@@ -943,7 +943,7 @@ Optional argument ARG times."
       (while
 	  (and
 	   (progn (end-of-line)
-		  (setq erg (re-search-forward "^[^ \t\n\f\r]" nil t arg)))
+		  (setq erg (re-search-forward "^[^ \t\n\f\r]" nil 'move arg)))
 	   (or
 	    (progn
 	      (beginning-of-line)
