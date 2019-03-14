@@ -8,3 +8,5 @@ test/interpol.rb
 test/docstring-starting-with-paren.el
 befehle.org
 alt-*
+test/ar-backward-defun-test-1977A4N.el
+test/ar-ert-forward-sexp-test-LGnrk9.el

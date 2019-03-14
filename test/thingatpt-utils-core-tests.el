@@ -54,6 +54,7 @@
 (ert-deftest ar-ert-symbol-atpt-2 ()
   (ar-test-with-elisp-buffer-point-min
       "(defun w ()"
+      (goto-char (point-min))
     (search-forward "w")
     (let ((erg (ar-th-bounds 'symbol)))
       (should (eq 8 (car erg)))
