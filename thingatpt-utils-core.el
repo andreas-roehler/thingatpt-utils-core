@@ -3624,6 +3624,11 @@ it defaults to `<', otherwise it defaults to `string<'."
   (ar-th-delimit--intern thing "-" "-" arg iact check))
 
 ;;;###autoload
+(defun ar-th-pipe (thing &optional arg iact check)
+  " "
+  (ar-th-delimit--intern thing "|" "|" arg iact check))
+
+;;;###autoload
 (defun ar-th-singlequote (thing &optional arg iact check)
   " "
   (ar-th-delimit--intern thing "'" "'" arg iact check))
@@ -3905,6 +3910,7 @@ it defaults to `<', otherwise it defaults to `string<'."
        '(escape "\\\\")
        '(hash "#")
        '(hyphen "-")
+       '(pipe "|")
        '(singlequote "'")
        '(slash "/")
        '(star "*")
@@ -3928,6 +3934,7 @@ it defaults to `<', otherwise it defaults to `string<'."
        'escape
        'hash
        'hyphen
+       'pipe
        'singlequote
        'slash
        'star
@@ -3954,6 +3961,7 @@ it defaults to `<', otherwise it defaults to `string<'."
        '(equalized 61)
        '(hashed 35)
        '(hyphened 45)
+       '(piped 124)
        '(singlequoted 39)
        '(slashed 47)
        '(stared 42)
@@ -3973,6 +3981,7 @@ it defaults to `<', otherwise it defaults to `string<'."
        'equalized
        'hashed
        'hyphened
+       'piped
        'singlequoted
        'slashed
        'stared
@@ -4163,6 +4172,7 @@ it defaults to `<', otherwise it defaults to `string<'."
        '(equalized "=")
        '(hashed "#")
        '(hyphened "-")
+       '(piped "-")
        '(singlequoted "'")
        '(slashed "/")
        '(stared "*")
@@ -4182,6 +4192,7 @@ it defaults to `<', otherwise it defaults to `string<'."
        'equalized
        'hashed
        'hyphened
+       'piped
        'singlequoted
        'slashed
        'stared
