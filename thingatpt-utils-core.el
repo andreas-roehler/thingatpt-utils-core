@@ -1800,7 +1800,7 @@ Otherwise assume being behind an opening delimiter or at a closing "
   :type 'boolean
   :group 'werkstatt)
 
-(defcustom ar-delimiters-atpt "\"'#\$/=?!:*+~§%&-_\;"
+(defcustom ar-delimiters-atpt "|\"'#\$/=?!:*+~§%&_\;-"
   "Specify the delimiter chars. "
   :type 'string
   :group 'werkstatt)
