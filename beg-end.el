@@ -286,7 +286,9 @@ Set 7th argument REGEXP t, if beg/end-strings are regular expressions.
 Optional arg CONDITION expects a function whose return value - `t' or a number - is checked for success, otherwise search continues.
 If IN-STRING is non-nil, forms inside string match.
 "
-  (let* ((searchform (cond ((string= begstr endstr)
+  (let* ((begstr (regexp-quote begstr))
+	 (endstr (regexp-quote endstr))
+	 (searchform (cond ((string= begstr endstr)
                             endstr)
                            ((and begstr endstr)
                             (progn
