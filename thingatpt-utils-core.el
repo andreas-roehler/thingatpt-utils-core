@@ -4215,6 +4215,7 @@ it defaults to `<', otherwise it defaults to `string<'."
        'comment
        'csv
        'date
+       'delimited
        'email
        'filename
        'filenamenondirectory
