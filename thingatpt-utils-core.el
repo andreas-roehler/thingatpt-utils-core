@@ -2568,14 +2568,17 @@ it would doublequote a word at point "
 
 Changes match-data"
   (save-excursion
-    (if (looking-at regexp)
-	(while
-	    (and (not (bobp))
-		 (or (progn (backward-char) (looking-at regexp))
-		     (forward-char 1))))
-      (while (not (or (bobp) (backward-char) (looking-at regexp))))
-      (unless (bobp) (ar-regexp-atpt regexp)))
-    (looking-at regexp)))
+    (let ((orig (point)))
+      (if (looking-at regexp)
+	  (while
+	      (and (not (bobp))
+		   (or (progn (backward-char) (looking-at regexp))
+		       (forward-char 1))))
+	(while (not (or (bobp) (backward-char) (looking-at regexp))))
+	(unless (bobp) (ar-regexp-atpt regexp)))
+      (and (<= (match-beginning 0) orig)
+	   (>= (match-end 0) orig)
+	   (looking-at regexp)))))
 
 ;; ML data-forms start
 
