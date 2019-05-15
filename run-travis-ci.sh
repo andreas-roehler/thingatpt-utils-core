@@ -31,7 +31,7 @@ FILE2=ar-subr.el
 FILE3=thingatpt-utils-map.el
 FILE4=thingatpt-utils-core.el
 
-TEST1=${TESTDIR}thingatpt-utils-core-setup-tests.el
+TEST1=${TESTDIR}ar-thing-at-point-utils-setup-tests.el
 TEST2=${TESTDIR}thingatpt-utils-core-tests.el
 
 

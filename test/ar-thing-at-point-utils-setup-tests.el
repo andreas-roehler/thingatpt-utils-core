@@ -279,6 +279,18 @@ BODY is code to be executed within the temp buffer.  Point is
        (font-lock-fontify-region (point-min) (point-max))
        ,@body)))
 
+(defmacro ar-test-with-insert-function-elisp (function &rest body)
+  "Create temp buffer in `emacs-lisp-mode' inserting CONTENTS.
+BODY is code to be executed within the temp buffer.  Point is
+ at the end of buffer."
+  `(with-temp-buffer
+     (let (hs-minor-mode thing-copy-region)
+       (emacs-lisp-mode)
+       ,function
+       (when ar-switch-p
+	 (switch-to-buffer (current-buffer)))
+       ,@body)))
+
 (defmacro py-test-with-temp-buffer-point-min (contents &rest body)
   "Create temp buffer in `python-mode' inserting CONTENTS.
 BODY is code to be executed within the temp buffer.  Point is
@@ -313,6 +325,7 @@ BODY is code to be executed within the temp buffer.  Point is
        ;; (message "ERT %s" (point))
        ,@body)
      (sit-for 0.1)))
+
 
 (provide 'ar-setup-subr-tests)
 ;; ar-setup-subr-tests.el ends here

@@ -2574,7 +2574,7 @@ Changes match-data"
 		 (or (progn (backward-char) (looking-at regexp))
 		     (forward-char 1))))
       (while (not (or (bobp) (backward-char) (looking-at regexp))))
-      (ar-regexp-atpt regexp))
+      (unless (bobp) (ar-regexp-atpt regexp)))
     (looking-at regexp)))
 
 ;; ML data-forms start
