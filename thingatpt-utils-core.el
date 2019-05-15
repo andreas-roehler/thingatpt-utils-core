@@ -2576,9 +2576,10 @@ Changes match-data"
 		       (forward-char 1))))
 	(while (not (or (bobp) (backward-char) (looking-at regexp))))
 	(unless (bobp) (ar-regexp-atpt regexp)))
-      (and (<= (match-beginning 0) orig)
-	   (>= (match-end 0) orig)
-	   (looking-at regexp)))))
+      (and
+       (looking-at regexp)
+       (<= (match-beginning 0) orig)
+       (>= (match-end 0) orig)))))
 
 ;; ML data-forms start
 
