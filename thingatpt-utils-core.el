@@ -1723,8 +1723,8 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
 		    (t (concat th-end-delimiter ar-delimiters-atpt))))
              opener closer erg)
 	 (or
-	  (setq erg (and begdel enddel (end-of-form-base (string begdel) (string enddel) nil 'move nil nil t)))
 	  (setq erg (ar-delimited-end-from-openening begdel enddel))
+	  (setq erg (and begdel enddel (member (char-after) (list ?\( ?\[ ?{)) (end-of-form-base (string begdel) (string enddel) nil 'move nil nil t)))
 	  (unless (eobp)
 	    (forward-char 1)
 	    (skip-chars-forward " \t\n\f\r"))
