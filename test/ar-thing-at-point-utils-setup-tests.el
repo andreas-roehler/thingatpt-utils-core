@@ -1,4 +1,4 @@
-;;; ar-setup-subr-tests.el --- Provide needed forms -*- lexical-binding: t; -*- 
+;;; ar-setup-subr-tests.el --- Provide needed forms -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2015-2016  Andreas Röhler
 
@@ -122,7 +122,6 @@ BODY is code to be executed within the temp buffer.  Point is
 	 (switch-to-buffer (current-buffer)))
        (font-lock-fontify-region (point-min) (point-max))
        ,@body)))
-
 
 (defvar py-debug-p nil
   "Avoid error")
@@ -326,6 +325,18 @@ BODY is code to be executed within the temp buffer.  Point is
        ,@body)
      (sit-for 0.1)))
 
+(defmacro ar-test-with-fundamental-buffer (contents &rest body)
+  "Create buffer in `fundamental-buffer' inserting CONTENTS.
+BODY is code to be executed within the temp buffer.  Point is
+ at the end of buffer."
+  (declare (indent 1) (debug t))
+  `(with-temp-buffer
+     ;; (and (featurep 'python) (unload-feature 'python))
+     (insert ,contents)
+     (fundamental-mode)
+     (when ar-switch-p
+       (switch-to-buffer (current-buffer)))
+     ,@body))
 
 (provide 'ar-setup-subr-tests)
 ;; ar-setup-subr-tests.el ends here

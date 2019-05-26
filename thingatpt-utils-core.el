@@ -1608,16 +1608,10 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
 		 ;; in comment
 		 (goto-char (nth 8 pps))))
 	       ((or (looking-at (concat "[" th-beg-delimiter "]"))(looking-at (concat "[" ar-delimiters-atpt "]"))))
-	       ;; this should be done by ar--delimited-beginning-finish
-	       ;; (if (< 1 (length (match-string-no-properties 0)))
-
-	       ;;     (setq ar-delimiter-string-atpt (match-string-no-properties 0))
-	       ;;   (setq ar-delimiter-zeichen-atpt (char-after)))
-
-	       ;; (cons (match-beginning 0) (match-end 0)))
 	       ((eq 5 (car (syntax-after (point))))
 		(forward-char 1)
-		(forward-list -1))
+		(forward-list -1)
+		(setq done t))
 	       ((eq (char-after) 93)
                 (beginning-of-form-base "[" "]" nil 'move nil nil t))
 	       ((eq (char-after) ?')
@@ -1675,13 +1669,16 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
   (let ((orig (point))
 	last)
     (cond
-     ((and (eq 4 (car (syntax-after (point))))(eq (char-after) 40))
+     ((eq 4 (car (syntax-after (point))))
+      ;; [[1,3,4,8]]
+      ;; (eq (char-after) 40)
       (forward-list 1)
       ;; forward-list doesn't set match-data
-      (when
-	  (looking-back ")" (line-beginning-position))
-	(forward-char -1)
-	(cons (match-beginning 0) (match-end 0))))
+      ;; (when
+      ;; (looking-back ")" (line-beginning-position))
+      (forward-char -1)
+      (cons (point) (1+ (point))))
+     ;; )
      ((eq 4 (car (syntax-after (point))))
       (when (looking-at "{")
 	(goto-char (match-end 0))
@@ -1694,7 +1691,7 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
 	   (setq last (point))
 	   (ar-escaped)))
       (when (and last (< orig last))
-	(goto-char last)(cons (point)(1+ (point)))))
+	(goto-char last) (cons (point) (1+ (point)))))
      ((looking-at (concat "[" begdel "]"))
       (goto-char (match-end 0))
       (re-search-forward (concat "[" enddel "]") nil t 1))
