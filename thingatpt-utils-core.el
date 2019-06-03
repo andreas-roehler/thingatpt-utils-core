@@ -1476,7 +1476,7 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
            (when (looking-at comment-start)
 	     (setq erg (cons (match-beginning 0) (match-end 0)))
 	     (skip-chars-backward " \t\r\n\f"))
-           (while (and (setq erg (nth 8 (syntax-ppss)))
+           (while (and (setq erg (nth 8 (parse-partial-sexp (point-min) (point))))
                        (goto-char erg)
                        (skip-chars-backward " \t\r\n\f")))
            (skip-chars-forward " \t\r\n\f")
@@ -1598,8 +1598,11 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
 ;; Delimited
 (put 'delimited 'beginning-op-at
      (lambda ()
+       (setq delimited-list-start nil)
+       (setq delimited-list-end nil)
        (let ((begdel (concat th-beg-delimiter ar-delimiters-atpt))
-	     (pps (syntax-ppss))
+	     (pps (parse-partial-sexp (point-min) (point)))
+	     (orig (point))
              done)
          (cond ((nth 8 pps)
 		(or
@@ -1630,14 +1633,24 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
 		(when (eq (char-before) ar-delimiter-zeichen-atpt)
 		  (forward-char -1)))
 	       ((nth 1 pps)
+		(setq delimited-list-start (nth 1 pps))
+		(save-excursion
+		  (goto-char (nth 1 pps))
+		  (forward-sexp)
+		  (setq delimited-list-end (point)))
 		;; brace etc. not covered by (nth 1 pps)
 		(skip-chars-backward (concat "^" begdel))
-                (if (eq (nth 1 pps) (1- (point)))
-		    (progn
-		      (setq done t)
-		      (goto-char (nth 1 pps)))
-		  (when (looking-back (concat "[" begdel "]") (line-beginning-position))
-		    (forward-char -1))))
+		;; if a delimiter is met between list-end and orig
+		(cond ((< orig (point))
+		       (backward-char)
+		       (setq delimited-list-end (char-after))
+		       (if
+			   (and (< 0 (abs (skip-chars-backward delimited-list-end (nth 1 pps))))
+				(eq (char-before) delimited-list-end)
+				(setq done t))))
+                      (t
+		       (goto-char (nth 1 pps))
+		       (setq done t))))
 	       (t (and (not (bobp))(re-search-backward (concat "[" begdel "]") nil 'move 1))))
 	 (ar--delimited-beginning-finish begdel done))))
 
@@ -1665,9 +1678,8 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
     (when (search-forward ar-delimiter-string-atpt nil t 1)
       (cons (match-beginning 0) (match-end 0)))))
 
-(defun ar-delimited-end-from-openening (begdel enddel)
-  (let ((orig (point))
-	last)
+(defun ar-delimited-end-from-openening (begdel enddel orig)
+  (let (last)
     (cond
      ((eq 4 (car (syntax-after (point))))
       ;; [[1,3,4,8]]
@@ -1678,7 +1690,7 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
       ;; (looking-back ")" (line-beginning-position))
       (forward-char -1)
       (cons (point) (1+ (point))))
-     ;; )
+     ;;)
      ((eq 4 (car (syntax-after (point))))
       (when (looking-at "{")
 	(goto-char (match-end 0))
@@ -1691,7 +1703,8 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
 	   (setq last (point))
 	   (ar-escaped)))
       (when (and last (< orig last))
-	(goto-char last) (cons (point) (1+ (point)))))
+	;; (goto-char last)
+	(cons (point) (1+ (point)))))
      ((looking-at (concat "[" begdel "]"))
       (goto-char (match-end 0))
       (re-search-forward (concat "[" enddel "]") nil t 1))
@@ -1709,6 +1722,7 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
 (put 'delimited 'end-op-at
      (lambda ()
        (let ((orig (point))
+	     pps
 	     (begdel (or ar-delimiter-zeichen-atpt (and (looking-at (concat th-beg-delimiter ar-delimiters-atpt))(match-string-no-properties 0))))
 	     (enddel
 	      (cond (ar-delimiter-zeichen-atpt
@@ -1720,7 +1734,7 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
 		    (t (concat th-end-delimiter ar-delimiters-atpt))))
              opener closer erg)
 	 (or
-	  (setq erg (ar-delimited-end-from-openening begdel enddel))
+	  (setq erg (ar-delimited-end-from-openening begdel enddel orig))
 	  (setq erg (and begdel enddel (member (char-after) (list ?\( ?\[ ?{)) (end-of-form-base (string begdel) (string enddel) nil 'move nil nil t)))
 	  (unless (eobp)
 	    (forward-char 1)
@@ -1743,10 +1757,14 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
 			(< 0 (abs (skip-chars-forward (concat "^" enddel))))
 		      (forward-char 1))
 		    (nth 8 (parse-partial-sexp orig (point))))))
-	   ((ar-delimited-end-from-openening begdel enddel))
+	   ((ar-delimited-end-from-openening begdel enddel orig))
 	   (t
 	    (re-search-forward (concat "[" enddel "]") nil t 1))))
 	 (setq ar-delimiter-zeichen-atpt nil)
+	 ;; paren might close before delimiter-char
+	 (and erg delimited-list-end (< delimited-list-end (car-safe erg)) (setq erg (cons (1- delimited-list-end) delimited-list-end)))
+	 (setq pps (parse-partial-sexp (point-min) (point)))
+	 (and (nth 1 pps) (setq ar-th-bounds-backfix (cons (nth 1 pps) (1+ (nth 1 pps)))))
 	 (or erg
 	     (if (eq 5 (car (syntax-after (1- (point)))))
 		 (cons (1- (point)) (point))
@@ -1787,7 +1805,7 @@ Otherwise assume being behind an opening delimiter or at a closing "
   :type 'boolean
   :group 'werkstatt)
 
-(defcustom ar-delimiters-atpt "|\"'#\$/=?!:*+~§%&_\;-"
+(defcustom ar-delimiters-atpt "|\"'#\$/=?!:*+~§%&_\;@-"
   "Specify the delimiter chars. "
   :type 'string
   :group 'werkstatt)
@@ -2253,7 +2271,7 @@ Otherwise assume being behind an opening delimiter or at a closing "
 		     (prog1
 			 (backward-paragraph)
 		       (skip-chars-forward " \t\r\n\f")))
-		    (nth 8 (syntax-ppss)))))
+		    (nth 8 (parse-partial-sexp (point-min) (point))))))
 	 (point))))
 
 (put 'sentence 'end-op-at
@@ -2315,7 +2333,7 @@ Otherwise assume being behind an opening delimiter or at a closing "
 		     (forward-line -1)
 		     (setq erg (point)))
 		   (and (< 0 (abs (skip-syntax-backward "w_.'\\")))(setq erg (point)))))
-	   (unless erg (when (looking-at "[^ ]")(setq erg (point)))     )
+	   (unless erg (when (looking-at "[^ ]")(setq erg (point))))
 	   erg))))
 
 (put 'symbol 'end-op-at
@@ -2328,6 +2346,19 @@ Otherwise assume being behind an opening delimiter or at a closing "
 		   (setq erg (point)))
 		 (and (< 0 (skip-syntax-forward "w_.'\\"))(setq erg (point)))))
 	 erg)))
+
+
+(put 'symbol 'forward-op-at
+     (lambda ()
+       (skip-syntax-forward "^_")
+       (and (< 0 (abs (skip-syntax-forward "_")))
+	    (point))))
+
+(put 'symbol 'backward-op-at
+     (lambda ()
+       (skip-syntax-backward "^_")
+       (and (< 0 (abs (skip-syntax-backward "_")))
+	    (point))))
 
 ;; Triplequoted
 (put 'triplequoted 'beginning-op-at
@@ -2796,6 +2827,10 @@ When called interactivly, store match in kill-ring. "
 	(push beg erg))
       erg)))
 
+
+(defvar ar-th-bounds-backfix nil
+  "starting delimiter pos might need correction from end")
+
 ;;;###autoload
 (defun ar-th-bounds (thing &optional no-delimiters iact check)
   "Determine the start and end buffer locations for the THING at point.
@@ -2812,6 +2847,7 @@ Returns two lists composed of positions of delimiters
 NO-CHECK assumes being at or behind a closing delimiter, doesn't check for nesting.
 
 "
+  (setq ar-th-bounds-backfix nil)
   (ignore-errors
     (if (eq thing 'region)
 	(ignore-errors (cons (region-beginning) (region-end)))
@@ -2825,6 +2861,10 @@ NO-CHECK assumes being at or behind a closing delimiter, doesn't check for nesti
 		   ;; (scan-whole-buffer check)
 		   (beg (funcall (get thing 'beginning-op-at)))
 		   (end (and beg (funcall (get thing 'end-op-at)))))
+	      (when ar-th-bounds-backfix 
+		(message "backfix: %s" ar-th-bounds-backfix)
+		(setq beg ar-th-bounds-backfix)
+		)
 	      (if (numberp beg)
 		  (ar--th-bounds-char-return beg end check orig no-delimiters)
 		(ar--th-bounds-list-return beg end iact check orig no-delimiters)))))))))
@@ -3203,28 +3243,6 @@ If optional positions BEG-2TH END-2TH are given, works on them instead. "
   (setq ap (caar bounds))
   (setq ep (or (ignore-errors (cdr (cadr bounds)))(cadr (cadr bounds)))))
 
-(defun ar-th-backward-fallback (arg thing)
-  (let (bounds ap ep last)
-    (while
-	(> 0 arg)
-      (setq arg (1+ arg))
-      (ar-th-set-bounds thing))
-    (when ap
-      (if iact
-	  (ar-th-interactive-backward-form ap ep)
-	(goto-char ap))
-      (point))))
-
-(defun ar-th-forward-fallback (arg after thing)
-  (let (bounds ap ep last)
-    (while (< 0 arg)
-      (setq arg (1- arg))
-      (ar-th-set-bounds thing)
-      (when ep
-	(if after (goto-char ep)(goto-char (1- ep)))
-	(setq last (point))))
-    last))
-
 (defun ar-th-forward-function-call (thing arg)
   (let (erg)
     (while (< 0 arg)
@@ -3248,9 +3266,7 @@ searches backward with negative argument "
 	(arg (or arg 1)))
     (if (< 0 arg)
 	(progn
-	  (if (functionp (get thing 'forward-op-at))
-	      (ar-th-forward-function-call thing arg)
-	    (ar-th-forward-fallback arg after thing))
+	  (ar-th-forward-function-call thing arg)
 	  (when (< orig (point))
             (point)))
       (if (functionp (get thing 'backward-op-at))
