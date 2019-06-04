@@ -1764,12 +1764,20 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
 	 ;; paren might close before delimiter-char
 	 (and erg delimited-list-end (< delimited-list-end (car-safe erg)) (setq erg (cons (1- delimited-list-end) delimited-list-end)))
 	 (setq pps (parse-partial-sexp (point-min) (point)))
-	 (and (nth 1 pps) (setq ar-th-bounds-backfix (cons (nth 1 pps) (1+ (nth 1 pps)))))
+	 (cond ((and (nth 1 pps) (not (nth 8 pps)))
+		(setq ar-th-bounds-backfix (cons (nth 1 pps) (1+ (nth 1 pps)))))
+	       ((and (nth 1 pps) (nth 8 pps))
+		(if (< (nth 1 pps) (nth 8 pps))
+		    (goto-char (nth 8 pps))
+		  (goto-char (nth 1 pps)))
+		(forward-sexp)
+		(setq erg (cons (1- (point)) (point)))))
 	 (or erg
 	     (if (eq 5 (car (syntax-after (1- (point)))))
 		 (cons (1- (point)) (point))
 	       (when (looking-back (concat "[" enddel "]") (line-beginning-position))
-		 (cons (match-beginning 0) (match-end 0))))))))
+		 (cons (match-beginning 0) (match-end 0)))))
+	 erg)))
 
 (put 'delimited 'forward-op-at
      (lambda ()
