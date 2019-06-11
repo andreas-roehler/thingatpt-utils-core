@@ -2614,22 +2614,6 @@ it would doublequote a word at point "
 	    (error "ar--transform-generic-delimited-atpt: Don't see end")))
       (error "ar--transform-generic-delimited-atpt: Don't see start"))))
 
-(defun ar-regexp-atpt (regexp &optional interactive)
-  "Return match of REGEXP at or before point, nil otherwise.
-
-When called interactivly, store match in kill-ring. "
-  (save-excursion
-    (let (done erg)
-      (while (and (not done) (looking-at regexp))
-	(setq erg (match-string-no-properties 0))
-	(if (looking-back regexp (line-beginning-position))
-	    (forward-char -1)
-	  (setq done t)))
-      (when interactive
-	(message "%s" erg)
-	(and erg (kill-new erg)))
-      erg)))
-
 
 ;; ML data-forms start
 
