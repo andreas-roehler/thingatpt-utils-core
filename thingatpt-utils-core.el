@@ -1391,6 +1391,18 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
        (forward-sexp)
        (cons  (1- (point)) (point))))
 
+(put 'string 'forward-op-at
+     (lambda ()
+       (when (< 0 (abs (skip-chars-forward "^\"")))
+	 (eq (char-after) 34)
+	 (forward-char 2))))
+
+(put 'string 'backward-op-at
+     (lambda ()
+       (when (and (< 0 (abs (skip-chars-backward "^\"")))
+		  (eq (char-before) 34))
+	 (backward-char 1))))
+
 ;; ;; Strings
 ;; (put 'string 'beginning-op-at
 ;;      (lambda ()
@@ -2617,6 +2629,7 @@ When called interactivly, store match in kill-ring. "
 	(message "%s" erg)
 	(and erg (kill-new erg)))
       erg)))
+
 
 ;; ML data-forms start
 
