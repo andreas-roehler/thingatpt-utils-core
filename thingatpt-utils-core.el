@@ -1371,25 +1371,48 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
        (ar-forward-statement)))
 
 ;; String
+(defcustom th-string-beg-delimiter "‘“'\""
+  "Specify the string start char."
+  :type 'string
+  :group 'werkstatt)
+
+(defcustom th-string-end-delimiter "”’'\""
+  "Specify the string end char."
+  :type 'string
+  :group 'werkstatt)
+
+;; String
 (put 'string 'beginning-op-at
      (lambda ()
        (save-restriction
-	 (widen)
-	 (if ar-use-parse-partial-sexp
-	     (let* ((pps (parse-partial-sexp (point-min) (point)))
-		    (pos8 (nth 8 pps)))
-	       (when (nth 3 pps)
-		 (goto-char pos8)))
-	   (when
-	       (re-search-backward "\\([^\\\\]\\)\\(\"\\)" nil 'move 1)
-	     (goto-char (match-beginning 2))))
-	 (when (or (eq 15 (car (syntax-after (point))))(eq 7 (car (syntax-after (point)))))
-	   (list (point) (save-excursion  (skip-chars-forward (char-to-string (char-after)))(point)))))))
+	 ;; (widen)
+	 (or (and ar-use-parse-partial-sexp
+		  (let* ((pps (parse-partial-sexp (point-min) (point)))
+			 (pos8 (nth 8 pps)))
+		    (when (nth 3 pps)
+		      (goto-char pos8))))
+	     (member (char-before) (mapcar 'identity th-string-beg-delimiter))
+	     ;; (re-search-backward (concat "[" th-string-beg-delimiter "]+") nil 'move 1)
+	     (and (< 0 (abs (skip-chars-backward (concat "^" (char-to-string 8222) th-string-beg-delimiter))))
+		  (prog1 (member (char-before) (mapcar 'identity th-string-beg-delimiter))
+		    (backward-char))
+		  )
+	     (when (or (eq 15 (car (syntax-after (point))))(eq 7 (car (syntax-after (point)))))
+	       (list (point) (save-excursion (skip-chars-forward (char-to-string (char-after)))(point)))))
+	 (cons (point) (1+ (point)))
+	 )))
 
 (put 'string 'end-op-at
      (lambda ()
-       (forward-sexp)
-       (cons  (1- (point)) (point))))
+       (let (erg)
+	 (if (member (char-after) (list ?' ?\"))
+	     (progn
+	       (forward-sexp)
+	       (cons (1- (point)) (point)))
+	   (skip-chars-forward (concat "^" (char-to-string (setq erg (reverse-char (char-after))))))
+	   (when (eq (char-after) erg)
+	     (forward-char 1)
+	     (cons (1- (point)) (point)))))))
 
 (put 'string 'forward-op-at
      (lambda ()
@@ -2889,9 +2912,7 @@ NO-CHECK assumes being at or behind a closing delimiter, doesn't check for nesti
 (defun ar-th-end (thing &optional arg iact check)
   (condition-case nil
       (let* ((bounds (ar-th-bounds thing arg check))
-	     (end (or (ignore-errors (cdr (cadr bounds)))(ignore-errors (cadr bounds)))))
-	;; (when iact
-	;; (message "   %s "  end))
+	     (end (or (ignore-errors (car (cdr (cadr bounds))))(ignore-errors (cdr (cadr bounds)))(ignore-errors (cadr bounds)))))
 	end)
     (error nil)))
 
@@ -2911,14 +2932,8 @@ NO-CHECK assumes being at or behind a closing delimiter, doesn't check for nesti
 (defun ar-th-gotoend (thing &optional arg iact check)
   "Goto char end, core function "
   (condition-case nil
-      (funcall (get thing 'end-op-at))
-    ;; (let* ((bounds (ar-th-bounds thing arg check))
-    ;; 	     (end (car (cadr bounds))))
-    ;; 	(when iact
-    ;; 	  (message "   %s " end))
-    ;; 	(if (eq thing 'paragraph)
-    ;; 	    (goto-char end)
-    ;; 	  (goto-char end)))
+      (and (ar-th-bounds thing)
+	   (funcall (get thing 'end-op-at)))
     (error nil)))
 
 ;;;###autoload
@@ -3053,7 +3068,7 @@ Inspired by stuff like `paredit-splice-sexp-killing-backward'; however, instead 
 	 inner-start inner-end)
     (when (eq (point) outer-start)(forward-char 1))
     (skip-syntax-forward "^(")
-    (setq inner-start (copy-marker (point)))
+    (setq inner-start (point-marker))
     (forward-sexp)
     (delete-region (point) outer-end)
     (backward-sexp)
@@ -3136,16 +3151,18 @@ Inspired by stuff like `paredit-splice-sexp-killing-backward'; however, instead 
 ;;;###autoload
 (defun ar-th-separate (thing &optional arg iact check)
   "Optional CHECK is ignored "
-  (let* ((bounds (ar-th-bounds thing arg iact check))
-         (beg (caar bounds))
-         (end (copy-marker (or (ignore-errors (cadr (cadr bounds)))(ignore-errors (cdr (cadr bounds)))))))
-    (when beg (goto-char beg)
-	  (when (not (looking-back "^[ \t\f\r]*" (line-beginning-position)))
-	    (newline ar-newlines-separate-before))
-	  (indent-according-to-mode)
-	  (goto-char end)
-	  (when (not (looking-at "[ \t\f\r]*$"))
-	    (newline)))))
+  (save-excursion
+    (let* ((bounds (ar-th-bounds thing arg iact check))
+	   (beg (caar bounds))
+	   (end (copy-marker (or (ignore-errors (cadr (cadr bounds)))(ignore-errors (cdr (cadr bounds)))))))
+      (when beg (goto-char beg)
+	    (when (not (looking-back "^[ \t\f\r]*" (line-beginning-position)))
+	      (newline ar-newlines-separate-before))
+	    (indent-according-to-mode)
+	    (goto-char end)
+	    (when (not (looking-at "[ \t\f\r]*$"))
+	      (newline 1)
+	      (indent-according-to-mode))))))
 
 ;;;###autoload
 (defun ar-thing-in-thing (thing-1th thing-2th th-function &optional iact beg-2th end-2th)
@@ -3155,24 +3172,31 @@ If optional positions BEG-2TH END-2TH are given, works on them instead. "
 	 (beg (or (ignore-errors (caar bounds))(car-safe bounds)))
 	 (end (copy-marker (or (ignore-errors (cadr (cadr bounds)))(ignore-errors (cdr (cadr bounds)))(cdr-safe bounds))))
 	 (orig (copy-marker beg))
-         ar-scan-whole-buffer)
+         ar-scan-whole-buffer
+	 (last 1))
     (save-excursion
       (save-restriction
         (narrow-to-region beg end)
         (goto-char beg)
         (if (eq th-function 'ar-th-sort)
             (ar-th-sort thing-1th nil beg end nil nil nil)
-          (while (and (not (eobp))
-		      (or (eq thing-1th 'char)(ar-th-forward thing-1th 1 iact t))
+          (while (and (prog1 (not (eobp))
+			;; (narrow-to-region last (point-max))
+			(narrow-to-region (max last (point)) (point-max)))
+		      (or (eq thing-1th 'char)
+			  (and (not (eq last (point))) (ar-th-end thing-1th) (and (funcall th-function thing-1th nil iact ar-scan-whole-buffer) (setq last (point))))
+			  (ar-th-gotoend thing-1th 1 iact t)
+			  (ar-th-forward thing-1th 1 iact t))
 		      (<= orig (point)))
-	    (setq orig (copy-marker (point)))
-	    (funcall th-function thing-1th nil iact ar-scan-whole-buffer)
+	    (setq orig (point-marker))
+	    (unless (or (not (ar-th-end thing-1th)) (and (eq last (point)) (eq thing-1th 'char)))
+	      (setq last (copy-marker (ar-th-end thing-1th)))
+	      (funcall th-function thing-1th nil iact ar-scan-whole-buffer))
 	    ;; forward might stop at the opener
 	    ;; ‘ar-scan-whole-buffer’ is let-bound to nil here
 	    (unless (eobp)
 	      (when (member thing-1th ar-unpaired-delimited-passiv)
 		(forward-char 1)))
-
 	    (when (< (point) orig)(goto-char orig))))))))
 
 ;;;###autoload
@@ -3301,7 +3325,7 @@ searches backward with negative argument "
 	     (end-of-form-base startstring endstring)
 	     (when (looking-back endstring (line-beginning-position))
 	       (replace-match "")
-	       (setq thisend (copy-marker (point)))
+	       (setq thisend (point-marker))
 	       (delete-region (car begstringpos) (cadr begstringpos))
 	       (list thisbeg thisend))))
     (widen)))
@@ -3317,7 +3341,7 @@ searches backward with negative argument "
 (defun ar-th-transpose (thing &optional no-delimiters iact check)
   "Returns position, when called from a program
  end of transposed section. "
-  (let* ((pos (copy-marker (point)))
+  (let* ((pos (point-marker))
          (first (ar-th-bounds thing no-delimiters iact check))
          (pos1 (if (ignore-errors (<= (car first) pos))
                    first
@@ -3436,10 +3460,7 @@ it defaults to `<', otherwise it defaults to `string<'."
         (insert begstr)
         (goto-char end)
         (delim-slash-function arg)
-        (insert endstr))
-      (when (< (point) end)
-        (ar-th-forward thing)
-        (ar-th-delim-intern thing beg end beg-char end-char)))))
+        (insert endstr)))))
 
 (defun ar-th-delim (thing &optional arg beg-char end-char iact beg end)
   "Process begin and end of region according to value of
@@ -3457,7 +3478,8 @@ it defaults to `<', otherwise it defaults to `string<'."
       (when (and beg end)
 	;; narrowing avoids scanning the whole buffer
 	(narrow-to-region beg end)
-	(ar-th-delim-intern thing beg end beg-char end-char)))))
+	(ar-th-delim-intern thing beg end beg-char end-char)
+	t))))
 
 (defun ar-th-base-copy-or (kind arg &optional check)
   "Internally used by ‘ar-parentize-or-copy-atpt’ and the like."

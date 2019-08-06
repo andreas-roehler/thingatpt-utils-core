@@ -361,22 +361,22 @@ Optional second arg --a number, nil or `t'-- if interactively called. "
         (count 0)
         tell beglist)
     (save-excursion
-      (save-restriction
-        (widen)
-        (goto-char (point-min))
-        (let* ((delimiter (when
-                              (looking-at regexp)
-                            (setq count (1+ count))
-                            (match-string-no-properties 0)))
-               (delimiter-p (stringp delimiter)))
-          (if delimiter-p
-              (progn
-                (setq delimiter (concat "\\([^\\]\\)" (replace-regexp-in-string "\"" "\\\\\""  delimiter)))
-                (setq beglist (list (match-beginning 0) (match-end 0)))
-                (goto-char (match-end 0))
-                (ar-in-delimiter-intern count orig beglist delimiter-p delimiter))
-            (setq regxep (concat "[^\\]" regexp))
-            (ar-in-delimiter-intern count orig beglist nil regexp)))))))
+      ;; (save-restriction
+      ;; (widen)
+      (goto-char (point-min))
+      (let* ((delimiter (when
+			    (looking-at regexp)
+			  (setq count (1+ count))
+			  (match-string-no-properties 0)))
+	     (delimiter-p (stringp delimiter)))
+	(if delimiter-p
+	    (progn
+	      (setq delimiter (concat "\\([^\\]\\)" (replace-regexp-in-string "\"" "\\\\\""  delimiter)))
+	      (setq beglist (list (match-beginning 0) (match-end 0)))
+	      (goto-char (match-end 0))
+	      (ar-in-delimiter-intern count orig beglist delimiter-p delimiter))
+	  (setq regxep (concat "[^\\]" regexp))
+	  (ar-in-delimiter-intern count orig beglist nil regexp))))))
 
 (defun ar-in-delimiter-intern (count orig beglist &optional first old)
   (let (done name this pps)

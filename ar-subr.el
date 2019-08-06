@@ -983,7 +983,7 @@ Returns position if successful, nil otherwise"
     (unless (eobp)
       (when (ar--forward-toplevel-intern orig (parse-partial-sexp (point-min) (point)))
 	(if (eobp)
-	    (newline)
+	    (newline 1)
 	  (forward-line 1)
 	  (beginning-of-line)))
       (when (< orig (point))
