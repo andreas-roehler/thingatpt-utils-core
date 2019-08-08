@@ -256,11 +256,16 @@ Otherwise return nil."
   (interactive)
   (let* ((pps (parse-partial-sexp (point-min) (point)))
 	 (erg (and (nth 3 pps) (nth 8 pps)))
-	 (la (unless (or erg (eobp)) (when (eq (char-syntax (char-after)) 34)
-			   (point)))))
-    (setq erg (or erg la))
-    (when (interactive-p) (message "%s" erg))
-    erg))
+	 (orig (point))
+	 (la (unless (or erg (eobp))
+	       (and (eq (char-syntax (char-after)) 34)
+		    ;; look for closing char
+		    (save-excursion
+		      (forward-char 1)
+		      (nth 3 (parse-partial-sexp (point-min) (point))))
+		    (point)))))
+    (when (interactive-p) (message "%s" (or erg la)))
+    (or erg la)))
 
 (defun ar-in-string-p-fast ()
   "Return delimiting character if inside, nil otherwise."
