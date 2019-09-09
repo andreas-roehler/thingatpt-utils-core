@@ -649,7 +649,7 @@ Optional argument END end."
 	  (unless (member (current-column) ilist)
 	    (cons (current-column) ilist)))))))
 
-(defun reverse-char (&optional char)
+(defun ar-reverse-char (&optional char)
   "Reverse reciproke chars as \"[\" to \"]\".
 
 Change doublequotes into singlequotes et vice versa
@@ -675,6 +675,8 @@ otherwise return complement char"
 (defun ar--return-complement-char-maybe (char)
   "Reverse reciproke CHARs as \"[\" to \"]\"."
   (pcase char
+    (?+ ?-)
+    (?- ?+)
     (92 47)
     (47 92)
     (?' ?\")
