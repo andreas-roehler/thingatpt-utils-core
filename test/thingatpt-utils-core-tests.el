@@ -26,18 +26,6 @@
 
 ;; tests are expected to run from directory test
 
-(ert-deftest ar-ert-raise-numbers-1 ()
-  (ar-test-with-elisp-buffer-point-min
-      "#x75"
-    ;; (should (eq 118 (1+ (car (read-from-string (number-at-point))))
-    (should (eq 118 (1+ (number-at-point))))))
-
-(ert-deftest ar-ert-raise-numbers-2 ()
-  (ar-test-with-elisp-buffer-point-min
-      "#o165"
-    ;; (should (eq 118 (1+ (car (read-from-string (number-at-point))))
-    (should (eq 118 (1+ (number-at-point))))))
-
 (ert-deftest ar-ert-raise-numbers-3 ()
   (ar-test-with-elisp-buffer-point-min
       "117"

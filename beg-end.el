@@ -63,6 +63,11 @@ If off, results are only reliable when called from inside a delimited form, resp
   :type 'boolean
   :group 'werkstatt)
 
+(defun ar-toggle-scan-whole-buffer ()
+  (interactive)
+  (setq ar-scan-whole-buffer (not ar-scan-whole-buffer))
+  (when (interactive-p) (message "ar-scan-whole-buffer: %s" ar-scan-whole-buffer)))
+
 (defun ar-toggle-thing-inside-comment ()
   "If thing-at-point forms should match inside comments.
 
@@ -353,32 +358,7 @@ Key per default is \"%\" as with elisp's `match-paren'. "
            (match-paren arg))
           (t (beginning-of-form-base begstr endstr bound noerror count permit-comment)))))
 
-(defun ar-in-delimiter-base (regexp &optional condition guess-delimiter)
-  "REGEXP expected of an unary delimiter, for example
-\"\\\\\\\"\\\\\\\"\\\\\\\"\\\\|'''\\\\|\\\\\\\"\\\\|'\" indicating string delimiters in Python.
-Optional second arg --a number, nil or `t'-- if interactively called. "
-  (let ((orig (point))
-        (count 0)
-        tell beglist)
-    (save-excursion
-      ;; (save-restriction
-      ;; (widen)
-      (goto-char (point-min))
-      (let* ((delimiter (when
-			    (looking-at regexp)
-			  (setq count (1+ count))
-			  (match-string-no-properties 0)))
-	     (delimiter-p (stringp delimiter)))
-	(if delimiter-p
-	    (progn
-	      (setq delimiter (concat "\\([^\\]\\)" (replace-regexp-in-string "\"" "\\\\\""  delimiter)))
-	      (setq beglist (list (match-beginning 0) (match-end 0)))
-	      (goto-char (match-end 0))
-	      (ar-in-delimiter-intern count orig beglist delimiter-p delimiter))
-	  (setq regxep (concat "[^\\]" regexp))
-	  (ar-in-delimiter-intern count orig beglist nil regexp))))))
-
-(defun ar-in-delimiter-intern (count orig beglist &optional first old)
+(defun ar-in-delimiter-intern (count orig beglist &optional first regexp)
   (let (done name this pps)
     (while (and (not done)(< (point) orig))
       (while (and (re-search-forward regexp orig t 1)
@@ -419,6 +399,32 @@ Optional second arg --a number, nil or `t'-- if interactively called. "
     (setq erg (and (< 0 count)(eq 1 (% count 2))))
     (when (and (< 0 count) erg)
       beglist)))
+
+(defun ar-in-delimiter-base (regexp &optional condition guess-delimiter)
+  "REGEXP expected of an unary delimiter, for example
+\"\\\\\\\"\\\\\\\"\\\\\\\"\\\\|'''\\\\|\\\\\\\"\\\\|'\" indicating string delimiters in Python.
+Optional second arg --a number, nil or `t'-- if interactively called. "
+  (let ((orig (point))
+        (count 0)
+        tell beglist)
+    (save-excursion
+      ;; (save-restriction
+      ;; (widen)
+      (goto-char (point-min))
+      (let* ((delimiter (when
+			    (looking-at regexp)
+			  (setq count (1+ count))
+			  (match-string-no-properties 0)))
+	     (delimiter-p (stringp delimiter)))
+	(if delimiter-p
+	    (progn
+	      (setq delimiter (concat "\\([^\\]\\)" (replace-regexp-in-string "\"" "\\\\\""  delimiter)))
+	      (setq beglist (list (match-beginning 0) (match-end 0)))
+	      (goto-char (match-end 0))
+	      (ar-in-delimiter-intern count orig beglist delimiter-p delimiter))
+	  (setq regxep (concat "[^\\]" regexp))
+	  (ar-in-delimiter-intern count orig beglist nil regexp))))))
+
 
 (defun ar--char-delimiters-beginning-whitespaced-form (char)
   (cond ((eq (char-after) ?\ )
@@ -775,6 +781,64 @@ when provided, go to the end of FORM"
 	(setq erg
 	      (end-of-form-base (regexp-quote (char-to-string char)) (regexp-quote (char-to-string (ar--return-complement-char-maybe char))) nil 'move 0 nil t 'ar-syntax t))
 	erg))))
+
+
+(defun ar-in-unary-delimited-p (char)
+  "Stop and return position if CHAR is delimiting at point
+
+Or if at opening delimiter"
+  (let ((orig (point))
+	(counter 0)
+	erg last)
+    (goto-char (point-min))
+    (while (and (search-forward (char-to-string char) orig t)
+		(not (ar-escaped))
+		(setq last (point)))
+      (setq counter (1+ counter)))
+    ;; (setq erg
+    (or (and (eq 1 (% counter 2))
+	     (1- last))
+	(and (eq (char-after) char)(point))
+	(goto-char orig))))
+
+;; (or erg (and (eq (char-after) char)(point)))))
+
+(defalias 'ar-beginning-of-unary-delimited-atpt 'ar-in-unary-delimited-p)
+
+;; (defun ar-beginning-of-unary-delimited-atpt (char)
+;;   "Go to beginning of unary-delimited form at point."
+;;   (interactive)
+;;   (let ((erg (ar-in-unary-delimited-p char)))
+;;     (when (numberp erg) (goto-char erg) erg)))
+
+(defun ar-end-of-unary-delimited-atpt (char &optional start)
+  "Go to end of unary-delimited form at point.
+
+Whith optional argument START assume being at beginning"
+  (interactive)
+  (let (last erg)
+    (unless start
+      (when (setq erg (ar-in-unary-delimited-p char))
+	(when (eq (point) erg)(forward-char 1))
+	(while (and (search-forward (char-to-string char) nil t)
+		    (setq last (point))
+		    (ar-escaped)))))
+    (when last (backward-char) (cons (point) last))))
+
+(defun ar-forward-unary-delimited-atpt (char)
+  "Go to end of unary-delimited form at point."
+  (interactive)
+  (if (ar-in-unary-delimited-p char)
+      (ar-end-of-unary-delimited-atpt char)
+    (while (and (search-forward (char-to-string char) nil t)
+		(ar-escaped)))
+    (when (ar-in-unary-delimited-p char)
+      (ar-end-of-unary-delimited-atpt char t))))
+
+;; (and (numberp (ar-in-unary-delimited-p char))
+;;      (while (and (search-forward (char-to-string char) nil t)
+;; 		   (ar-escaped)))
+;;      (eq (char-before) char)))
 
 (provide 'beg-end)
 
