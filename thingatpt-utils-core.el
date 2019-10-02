@@ -1008,6 +1008,8 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
        (let ((beg
 	      (if ar-scan-whole-buffer
 		  (ar-beginning-of-unary-delimited-atpt ?\\)
+                ;; expects being behind opening delimiter
+                ;; if opening delimiter should match, set ar-scan-whole-buffer to ‘t’
                 (ar-char-delimiters-beginning ?\\ ar-thing-escaped ar-thing-inside-comment ar-scan-whole-buffer))))
 	 (when beg
 	   (cons beg (1+ beg))))))
@@ -1034,6 +1036,8 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
        (let ((beg
 	      (if ar-scan-whole-buffer
 		  (ar-beginning-of-unary-delimited-atpt ?`)
+                ;; expects being behind opening delimiter
+                ;; if opening delimiter should match, set ar-scan-whole-buffer to ‘t’
                 (ar-char-delimiters-beginning ?` ar-thing-escaped ar-thing-inside-comment ar-scan-whole-buffer))))
 	 (when beg
 	   (cons beg (1+ beg))))))
@@ -1060,6 +1064,8 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
        (let ((beg
 	      (if ar-scan-whole-buffer
 		  (ar-beginning-of-unary-delimited-atpt ?:)
+                ;; expects being behind opening delimiter
+                ;; if opening delimiter should match, set ar-scan-whole-buffer to ‘t’
                 (ar-char-delimiters-beginning ?: ar-thing-escaped ar-thing-inside-comment ar-scan-whole-buffer))))
 	 (when beg
 	   (cons beg (1+ beg))))))
@@ -1086,6 +1092,8 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
        (let ((beg
 	      (if ar-scan-whole-buffer
 		  (ar-beginning-of-unary-delimited-atpt ?$)
+                ;; expects being behind opening delimiter
+                ;; if opening delimiter should match, set ar-scan-whole-buffer to ‘t’
                 (ar-char-delimiters-beginning ?$ ar-thing-escaped ar-thing-inside-comment ar-scan-whole-buffer))))
 	 (when beg
 	   (cons beg (1+ beg))))))
@@ -1112,6 +1120,8 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
        (let ((beg
 	      (if ar-scan-whole-buffer
 		  (ar-beginning-of-unary-delimited-atpt ?\")
+                ;; expects being behind opening delimiter
+                ;; if opening delimiter should match, set ar-scan-whole-buffer to ‘t’
                 (ar-char-delimiters-beginning ?\" ar-thing-escaped ar-thing-inside-comment ar-scan-whole-buffer))))
 	 (when beg
 	   (cons beg (1+ beg))))))
@@ -1138,6 +1148,8 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
        (let ((beg
 	      (if ar-scan-whole-buffer
 		  (ar-beginning-of-unary-delimited-atpt ?=)
+                ;; expects being behind opening delimiter
+                ;; if opening delimiter should match, set ar-scan-whole-buffer to ‘t’
                 (ar-char-delimiters-beginning ?= ar-thing-escaped ar-thing-inside-comment ar-scan-whole-buffer))))
 	 (when beg
 	   (cons beg (1+ beg))))))
@@ -1164,6 +1176,8 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
        (let ((beg
 	      (if ar-scan-whole-buffer
 		  (ar-beginning-of-unary-delimited-atpt ?-)
+                ;; expects being behind opening delimiter
+                ;; if opening delimiter should match, set ar-scan-whole-buffer to ‘t’
                 (ar-char-delimiters-beginning ?- ar-thing-escaped ar-thing-inside-comment ar-scan-whole-buffer))))
 	 (when beg
 	   (cons beg (1+ beg))))))
@@ -1190,6 +1204,8 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
        (let ((beg
 	      (if ar-scan-whole-buffer
 		  (ar-beginning-of-unary-delimited-atpt ?')
+                ;; expects being behind opening delimiter
+                ;; if opening delimiter should match, set ar-scan-whole-buffer to ‘t’
                 (ar-char-delimiters-beginning ?' ar-thing-escaped ar-thing-inside-comment ar-scan-whole-buffer))))
 	 (when beg
 	   (cons beg (1+ beg))))))
@@ -1216,6 +1232,8 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
        (let ((beg
 	      (if ar-scan-whole-buffer
 		  (ar-beginning-of-unary-delimited-atpt ?/)
+                ;; expects being behind opening delimiter
+                ;; if opening delimiter should match, set ar-scan-whole-buffer to ‘t’
                 (ar-char-delimiters-beginning ?/ ar-thing-escaped ar-thing-inside-comment ar-scan-whole-buffer))))
 	 (when beg
 	   (cons beg (1+ beg))))))
@@ -1242,6 +1260,8 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
        (let ((beg
 	      (if ar-scan-whole-buffer
 		  (ar-beginning-of-unary-delimited-atpt ?*)
+                ;; expects being behind opening delimiter
+                ;; if opening delimiter should match, set ar-scan-whole-buffer to ‘t’
                 (ar-char-delimiters-beginning ?* ar-thing-escaped ar-thing-inside-comment ar-scan-whole-buffer))))
 	 (when beg
 	   (cons beg (1+ beg))))))
@@ -1268,6 +1288,8 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
        (let ((beg
 	      (if ar-scan-whole-buffer
 		  (ar-beginning-of-unary-delimited-atpt ?_)
+                ;; expects being behind opening delimiter
+                ;; if opening delimiter should match, set ar-scan-whole-buffer to ‘t’
                 (ar-char-delimiters-beginning ?_ ar-thing-escaped ar-thing-inside-comment ar-scan-whole-buffer))))
 	 (when beg
 	   (cons beg (1+ beg))))))
@@ -1294,6 +1316,8 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
        (let ((beg
 	      (if ar-scan-whole-buffer
 		  (ar-beginning-of-unary-delimited-atpt ? )
+                ;; expects being behind opening delimiter
+                ;; if opening delimiter should match, set ar-scan-whole-buffer to ‘t’
                 (ar-char-delimiters-beginning ?  ar-thing-escaped ar-thing-inside-comment ar-scan-whole-buffer))))
 	 (when beg
 	   (cons beg (1+ beg))))))
@@ -2965,9 +2989,12 @@ NO-CHECK assumes being at or behind a closing delimiter, doesn't check for nesti
 (defun ar-th-gotoend (thing &optional arg iact check)
   "Goto char end, core function "
   (condition-case nil
-      (and (ar-th-bounds thing)
-	   (funcall (get thing 'end-op-at)))
-    (error nil)))
+      (let* ((bounds (ar-th-bounds thing))
+	     (end (or (ignore-errors (car (cdr (cadr bounds))))(ignore-errors (cdr (cadr bounds)))(ignore-errors (cadr bounds)))))
+	(goto-char end)
+	(forward-char -1)
+	(cons (point) (1+ (point))))
+    (error (concat (format "%s: " thing) "ar-th-gotoend failed"))))
 
 (defun ar-th-length (thing &optional arg iact check)
   (ignore-errors
@@ -3210,27 +3237,28 @@ If optional positions BEG-2TH END-2TH are given, works on them instead. "
 	 (beg (or
 	       (ignore-errors (car (cdr (car-safe bounds))))
 	       (ignore-errors (caar bounds))
-	       (ignore-errors (car bounds))))
+               (car-safe bounds)))
 	 ;; take the inner pos of a delimiter
 	 (end (copy-marker (or (ignore-errors (car (car (cdr bounds))))(ignore-errors (car (cdr (cadr bounds))))(ignore-errors (cdr (cadr bounds)))(cdr-safe bounds))))
 	 (orig (copy-marker beg))
          ;; ar-scan-whole-buffer
 	 (last 1)
-	 inner-end)
+	 inner-end done)
     (save-excursion
       (save-restriction
         (narrow-to-region beg end)
         (goto-char beg)
         (if (eq th-function 'ar-th-sort)
             (ar-th-sort thing-1th nil beg end nil nil nil)
+	  (when (numberp inner-end) (goto-char inner-end))
 	  (while
 	      (and
-	       (prog1 (or (< last (point))(setq inner-end (ar-th-forward thing-1th 1 iact t)))
-		 (when (numberp inner-end) (goto-char inner-end))
+	       (prog1 (or (not done) (< last (point)))
+		 (setq last (point))
 		 (funcall th-function thing-1th nil iact ar-scan-whole-buffer))
-	       (setq last (point))
-	       (not (eobp))
-	       (setq inner-end (ar-th-forward thing-1th 1 iact t)))))))))
+	       (setq done t)
+	       (not (eobp)))
+	    (unless (eq 'char thing-1th) (setq inner-end (ar-th-forward thing-1th 1 iact t)))))))))
 
 (defun ar-th-kill (thing &optional no-delimiters iact check)
   " "
