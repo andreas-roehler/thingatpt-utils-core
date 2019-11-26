@@ -1870,7 +1870,7 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
                 (forward-sexp)
                 (setq erg (cons (1- (point)) (point)))))
          (or erg
-	     (setq erg
+	     (setq erg 
 		   (if (eq 5 (car (syntax-after (1- (point)))))
 		       (cons (1- (point)) (point))
 		     (when (looking-back (concat "[" enddel "]") (line-beginning-position))
@@ -2051,7 +2051,7 @@ Otherwise assume being behind an opening delimiter or at a closing "
      (lambda ()
        (when (eq 4 (car (syntax-after (point))))
          (forward-sexp)
-         (forward-char -1)
+         (forward-char -1) 
          (cons (point)(1+ (point))))))
 
 ;; Markup
@@ -2228,7 +2228,7 @@ Otherwise assume being behind an opening delimiter or at a closing "
 
 (put 'number 'backward-op-at
      (lambda ()
-       (unless (bobp)
+       (unless (bobp) 
          (let ((case-fold-search t)
 	       erg)
 	   (cond ((and (looking-back "#?x?[0-9a-f]+" (line-beginning-position))
@@ -2553,7 +2553,7 @@ Otherwise assume being behind an opening delimiter or at a closing "
 	   (goto-char (match-end 0))
 	   (while (and (search-forward triplequotedsq nil 'move 1)
 		       (ar-in-delimiter-base triplequotedsq)))
-	   (when (looking-back triplequotedsq (line-beginning-position))
+	   (when (looking-back triplequotedsq (line-beginning-position)) 
 	     (list (match-beginning 0) (match-end 0)))))))
 
 (put 'triplequotedsq 'forward-op-at
@@ -2587,7 +2587,7 @@ Otherwise assume being behind an opening delimiter or at a closing "
 ;; Word
 (put 'word 'beginning-op-at
      (lambda () (when (looking-at "\\w")
-		  (unless (or (looking-back "\\W" (line-beginning-position))(bolp))
+		  (unless (or (looking-back "\\W" (line-beginning-position))(bolp)) 
 		    (forward-word -1))
 		  (point))))
 
@@ -2657,7 +2657,7 @@ it would doublequote a word at point "
     (goto-char (cdr erg))
     (delete-char -1)
     (goto-char (car erg))
-    (delete-char 1)))
+    (delete-char 1))) 
 
 (defun ar-trim-region-atpt ()
   (interactive "*")
@@ -2665,7 +2665,7 @@ it would doublequote a word at point "
     (goto-char (cdr erg))
     (delete-char -1)
     (goto-char (car erg))
-    (delete-char 1)))
+    (delete-char 1))) 
 
 (defun ar--transform-generic-delimited-atpt (replacement)
   (interactive "*")
@@ -2710,7 +2710,7 @@ it would doublequote a word at point "
 (put 'beginendquoted 'end-op-at
      (lambda ()
        (when (ignore-errors (looking-at "\\begin{quote}"))
-	 (goto-char (match-end 0))
+	 (goto-char (match-end 0)) 
 	 (end-of-form-base "\\begin{quote}" "\\end{quote}" nil (quote move) 1 nil nil nil))))
 
 
@@ -2724,7 +2724,7 @@ it would doublequote a word at point "
 (put 'blok 'end-op-at
      (lambda ()
        (when (ignore-errors (looking-at "{% "))
-	 (goto-char (match-end 0))
+	 (goto-char (match-end 0)) 
 	 (end-of-form-base "{% " " %}" nil (quote move) 1 nil t nil))))
 
 
@@ -2738,7 +2738,7 @@ it would doublequote a word at point "
 (put 'doublebackslashed 'end-op-at
      (lambda ()
        (when (ignore-errors (looking-at "\\\\"))
-	 (goto-char (match-end 0))
+	 (goto-char (match-end 0)) 
 	 (end-of-form-base "\\\\" "\\\\" nil (quote move) 1 nil nil (quote ar-escaped)))))
 
 
@@ -2752,7 +2752,7 @@ it would doublequote a word at point "
 (put 'doublebackticked 'end-op-at
      (lambda ()
        (when (ignore-errors (looking-at "``"))
-	 (goto-char (match-end 0))
+	 (goto-char (match-end 0)) 
 	 (end-of-form-base "``" "``" nil (quote move) 1 nil nil (quote ar-escaped)))))
 
 
@@ -2766,7 +2766,7 @@ it would doublequote a word at point "
 (put 'doubleslashed 'end-op-at
      (lambda ()
        (when (ignore-errors (looking-at "//"))
-	 (goto-char (match-end 0))
+	 (goto-char (match-end 0)) 
 	 (end-of-form-base "//" "//" nil (quote move) 1 nil nil (quote ar-escaped)))))
 
 
@@ -2780,7 +2780,7 @@ it would doublequote a word at point "
 (put 'doublebackslashedparen 'end-op-at
      (lambda ()
        (when (ignore-errors (looking-at "\\\\\\\\("))
-	 (goto-char (match-end 0))
+	 (goto-char (match-end 0)) 
 	 (end-of-form-base "\\\\\\\\(" "\\\\\\\\)" nil (quote move) 1 nil nil (quote ar-escaped)))))
 
 
@@ -2794,7 +2794,7 @@ it would doublequote a word at point "
 (put 'tabledatap 'end-op-at
      (lambda ()
        (when (ignore-errors (looking-at "<td[^>]*>"))
-	 (goto-char (match-end 0))
+	 (goto-char (match-end 0)) 
 	 (end-of-form-base "<td[^>]*>" "</td>" nil (quote move) 1 nil nil nil))))
 
 
@@ -2808,7 +2808,7 @@ it would doublequote a word at point "
 (put 'backslashedparen 'end-op-at
      (lambda ()
        (when (ignore-errors (looking-at "\\\\("))
-	 (goto-char (match-end 0))
+	 (goto-char (match-end 0)) 
 	 (end-of-form-base "\\\\(" "\\\\)" nil (quote move) 1 nil nil (quote ar-escaped)))))
 
 
@@ -2822,7 +2822,7 @@ it would doublequote a word at point "
 (put 'slashedparen 'end-op-at
      (lambda ()
        (when (ignore-errors (looking-at "////////("))
-	 (goto-char (match-end 0))
+	 (goto-char (match-end 0)) 
 	 (end-of-form-base "////////(" "////////)" nil (quote move) 1 nil nil (quote ar-escaped)))))
 
 
@@ -2836,7 +2836,7 @@ it would doublequote a word at point "
 (put 'xslstylesheetp 'end-op-at
      (lambda ()
        (when (ignore-errors (looking-at "<xsl:stylesheet[^<]+>.*$"))
-	 (goto-char (match-end 0))
+	 (goto-char (match-end 0)) 
 	 (end-of-form-base "<xsl:stylesheet[^<]+>.*$" "</xsl:stylesheet>" nil (quote move) 1 nil nil nil))))
 
 
@@ -2845,7 +2845,7 @@ it would doublequote a word at point "
 ;; ar-insert-thingatpt-th-funktionen start
 
 (defun ar-toggle-thing-copy-region ()
-  (interactive)
+  (interactive) 
   (setq thing-copy-region (not thing-copy-region)))
 
 (defun ar-th (thing &optional no-delimiters iact check)
@@ -3074,7 +3074,7 @@ If boundaries of thing are know, use `ar-th-trim-base' directly. "
 
 (defun ar-th-trim-base (beg end left right)
   "Trim buffer-substring resp. to args starting-point, end-point, left-trim, right-trim. "
-  (save-excursion
+  (save-excursion 
     (let ((beg (copy-marker beg))
 	  (end (copy-marker end))
 	  (old-end end))
@@ -3789,7 +3789,7 @@ it defaults to `<', otherwise it defaults to `string<'."
 	 (erg (logand (car (syntax-after pos)) 65535)))
     (when arg (message "%s" erg)) erg))
 
-(defun syntax-class-bfpt (&optional arg)
+(defun syntax-class-bfpt (&optional arg) 
   "Return the syntax class part of the syntax at point. "
   (interactive "p")
   (let ((erg (logand (car (syntax-after (1- (point)))) 65535)))
@@ -3864,12 +3864,112 @@ it defaults to `<', otherwise it defaults to `string<'."
       (message "%s" erg)
       erg)))
 
-(defun syntax-bfpt (&optional arg)
+(defun syntax-bfpt (&optional arg) 
   (interactive "p")
   (let ((stax (syntax-after (1- (point)))))
     (when arg
       (message (format "%s" stax)))
     stax))
+
+
+(defun ar-beginning-of-indent ()
+  "Go to the beginning of a section of equal indent."
+  (interactive)
+  (let ((indent (current-indentation))
+	(last (line-beginning-position)))
+    (while (and (not (bobp))
+		(progn (forward-line -1)
+		       (= indent (current-indentation)))
+		(not (empty-line-p))
+		(setq last (line-beginning-position))))
+    (goto-char last)
+    last))
+
+(defun ar--travel-this-indent-backward (&optional indent)
+  "Travel current INDENT backward.
+
+With optional INDENT travel bigger or equal indentation"
+  (let ((indent (or indent (current-indentation)))
+	(last (line-beginning-position)))
+    (while (and (not (bobp))
+		(progn (forward-line -1)
+		       (= indent (current-indentation)))
+		(not (empty-line-p))
+		(setq last (line-beginning-position))))
+    (goto-char last)
+    last))
+
+(defun ar-backward-indent ()
+  "Go to the beginning of a section of equal indent.
+
+If already at the beginning or before a indent, go to next indent upwards
+Returns final position when called from inside section, nil otherwise"
+  (interactive)
+  (unless (bobp)
+    (let (erg)
+      (setq erg (ar--travel-this-indent-backward))
+      (when erg (goto-char erg))
+      erg)))
+
+(defun ar-end-of-indent ()
+  "Go to the end of a section of equal indentation."
+  (interactive)
+  (let ((last (line-end-position))
+	(indent (current-indentation)))
+    (while (and (not (eobp)) (progn (forward-line 1) (and (not (empty-line-p)) (= indent (current-indentation))))(setq last (line-end-position))))
+    (goto-char last)
+    (point)))
+
+(defun ar--travel-this-indent-forward (indent)
+  "Internal use.
+
+Travel this INDENT forward"
+  (let (last)
+    (while (and (progn (forward-line 1)
+		       (eq indent (current-indentation)))
+		(not (empty-line-p))
+		(setq last (line-end-position))))
+    (when last (goto-char last))
+    last))
+
+(defun ar-forward-indent ()
+  "Go to the end of a section of equal indentation.
+
+If already at the end, go down to next indent in buffer
+Returns final position when called from inside section, nil otherwise"
+  (interactive)
+  (let (done
+	(last (point))
+	(orig (point))
+	(indent (current-indentation)))
+    (while (and (not (eobp)) (not done) (progn (forward-line 1) (back-to-indentation) (or (empty-line-p) (and (<= indent (current-indentation))(< last (point))(setq last (point)))(setq done t))))
+      (and (< indent (current-indentation))(setq done t)))
+    (if (and last (< orig last))
+	(progn (goto-char last)
+	       (end-of-line)
+	       (skip-chars-backward " \t\r\n\f"))
+      (skip-chars-forward " \t\r\n\f")
+      (end-of-line)
+      (skip-chars-backward " \t\r\n\f"))
+    (and (< orig (point))(point))))
+
+(defun ar-sort-indent ()
+  (interactive)
+  (save-excursion
+    (let ((beg (ar-beginning-of-indent))
+	  (end (ar-end-of-indent)))
+      (when (and beg end)
+	(save-restriction
+	  (narrow-to-region beg end)
+	  (sort-lines nil beg end))))))
+
+(defun ar-mark-indent ()
+  (interactive)
+  (let ((beg (ar-beginning-of-indent))
+	(end (ar-end-of-indent)))
+    (push-mark)
+    (goto-char beg)
+    (exchange-point-and-mark)))
 
 (defvar ar-paired-delimited-passiv-raw
   (list
