@@ -1702,12 +1702,12 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
              (pps (parse-partial-sexp (point-min) (point)))
              (orig (point))
              done)
-         (cond ((nth 8 pps)
-                (or
-                 ;; don't go to start in string
-                 (ignore-errors (goto-char (and (nth 3 pps) (nth 8 pps))))
-                 ;; in comment
-                 (goto-char (nth 8 pps))))
+         (cond ((or (nth 8 pps)(nth 1 pps))
+		(setq delimited-list-start (or (nth 8 pps)(nth 1 pps)))
+		(save-excursion (setq delimited-list-end (progn (goto-char (or (nth 8 pps)(nth 1 pps))) (progn (ignore-errors (forward-sexp)) (and (< orig (point)) (point))))))
+                (skip-chars-backward (concat "^" begdel) delimited-list-start)
+		(backward-char)
+		(setq done t))
                ((or (looking-at (concat "[" th-beg-delimiter "]"))(looking-at (concat "[" ar-delimiters-atpt "]"))))
                ((eq 5 (car (syntax-after (point))))
                 (forward-char 1)
@@ -1732,22 +1732,12 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
                   (forward-char -1)))
                ((nth 1 pps)
                 (setq delimited-list-start (nth 1 pps))
-                (save-excursion
-                  (goto-char (nth 1 pps))
-                  (forward-sexp)
-                  (setq delimited-list-end (point)))
                 ;; brace etc. not covered by (nth 1 pps)
-                (skip-chars-backward (concat "^" begdel))
-                ;; if a delimiter is met between list-end and orig
-                (cond ((< orig (point))
-                       (backward-char)
-                       (setq delimited-list-end (char-after))
-                       (and (< 0 (abs (skip-chars-backward delimited-list-end (nth 1 pps))))
-			    (eq (char-before) delimited-list-end)
-			    (setq done t)))
-                      (t
-                       (goto-char (nth 1 pps))
-                       (setq done t))))
+                (skip-chars-backward (concat "^" begdel) delimited-list-start)
+		(when (looking-back begdel (line-beginning-position) t)
+		  (goto-char (match-beginning 0)))
+		;; (backward-char)
+		(setq done t))
                (t (and (not (bobp))(re-search-backward (concat "[" begdel "]") nil 'move 1))))
          (ar--delimited-beginning-finish begdel done))))
 
@@ -1795,13 +1785,25 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
      ((eq (char-after) ar-delimiter-zeichen-atpt)
       (forward-char 1)
       (while
-          (and
-           (< 0 (abs (skip-chars-forward (concat "^" (char-to-string ar-delimiter-zeichen-atpt)))))
-           (setq last (point))
-           (ar-escaped)))
-      (when (and last (< orig last))
-        ;; (goto-char last)
-        (cons (point) (1+ (point)))))
+          (and (not (eobp))
+	       (< 0 (abs (skip-chars-forward
+			  ;; (concat "^" (char-to-string enddel))
+			  (concat "^" (char-to-string (ar--return-complement-char-maybe ar-delimiter-zeichen-atpt)))
+			  delimited-list-end)))
+	       (ar-escaped))
+	(forward-char 1))
+      (cond ((looking-back (char-to-string enddel) (line-beginning-position))
+	     (cons (1- (point)) (point)))
+	    ((eq (char-after) enddel)
+	     (cons (point) (1+ (point))))
+	    ;; maybe behind a limiting (list
+	    ((looking-back (concat "["  th-end-delimiter "]") (line-beginning-position))
+	     ;; needs to repeat
+	     ;; a wrong match as of "&" in (&optional beg end)
+	     (backward-sexp)
+	     (forward-char 1)
+	     ;; restard from lower pos
+	     (ar-th 'delimited))))
      ((looking-at (concat "[" begdel "]"))
       (goto-char (match-end 0))
       (re-search-forward (concat "[" enddel "]") nil t 1))
@@ -1831,7 +1833,7 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
                     (t (concat th-end-delimiter ar-delimiters-atpt))))
              opener closer erg)
          (or
-          (setq erg (ar-delimited-end-from-openening begdel enddel orig))
+          (setq erg (save-excursion (ar-delimited-end-from-openening begdel enddel orig)))
           (setq erg (and begdel enddel (member (char-after) (list ?\( ?\[ ?{)) (end-of-form-base (string begdel) (string enddel) nil 'move nil nil t)))
           (unless (eobp)
             (forward-char 1)
@@ -1855,26 +1857,18 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
                       (forward-char 1))
                     (nth 8 (parse-partial-sexp orig (point))))))
            ((ar-delimited-end-from-openening begdel enddel orig))
+	   ((re-search-forward (concat "[" enddel "]") (line-end-position) t 1)
+	    (setq delimited-list-end (point)))
            (t
-            (re-search-forward (concat "[" enddel "]") nil t 1))))
+	    (and delimited-list-start (goto-char delimited-list-start)
+		 (skip-chars-backward (concat "^" begdel) delimited-list-start)
+		 (or (looking-back (concat "[" th-beg-delimiter "]") delimited-list-start) (looking-back (concat "[" ar-delimiters-atpt "]") delimited-list-start))
+		 ;; repeat call with different delimiter detected before failing old
+		 (ar-delimiters-atpt)))))
+
          (setq ar-delimiter-zeichen-atpt nil)
          ;; paren might close before delimiter-char
-         (and erg delimited-list-end (< delimited-list-end (car-safe erg)) (setq erg (cons (1- delimited-list-end) delimited-list-end)))
-         (setq pps (parse-partial-sexp (point-min) (point)))
-         (cond ((and (nth 1 pps) (not (nth 8 pps)))
-                (setq ar-th-bounds-backfix (cons (nth 1 pps) (1+ (nth 1 pps)))))
-               ((and (nth 1 pps) (nth 8 pps))
-                (if (< (nth 1 pps) (nth 8 pps))
-                    (goto-char (nth 8 pps))
-                  (goto-char (nth 1 pps)))
-                (forward-sexp)
-                (setq erg (cons (1- (point)) (point)))))
-         (or erg
-	     (setq erg 
-		   (if (eq 5 (car (syntax-after (1- (point)))))
-		       (cons (1- (point)) (point))
-		     (when (looking-back (concat "[" enddel "]") (line-beginning-position))
-		       (cons (match-beginning 0) (match-end 0))))))
+         (and erg delimited-list-end (ignore-errors (< delimited-list-end (car-safe erg))) (setq erg (cons (1- delimited-list-end) delimited-list-end)))
 	 erg)))
 
 (put 'delimited 'forward-op-at
