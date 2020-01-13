@@ -1693,183 +1693,73 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
 
 (defvar delimited-list-start nil)
 (defvar delimited-list-end nil)
+(defvar delimited-start-pos nil)
+(defvar delimited-end-pos nil)
 ;; Delimited
+(defun delimited-atpt-intern ()
+  (let ((orig (point))
+	start-char)
+    (save-excursion
+      (if
+	  (looking-at (concat "[" th-beg-delimiter "]"))
+	  (and (setq delimited-start-pos (point))
+	       ;; delimited-list-end
+	       (progn (forward-sexp) (< orig (point) )(setq delimited-end-pos (1- (point)))))
+	(and (looking-at (concat "[" ar-delimiters-atpt "]"))
+	     (progn
+	       (setq start-char (char-after))
+	       (setq delimited-start-pos (point))
+	       (forward-char 1)
+	       (< 0 (abs (skip-chars-forward (concat "^" ar-delimiters-atpt) delimited-list-end))))
+	     (and (looking-at (char-to-string (ar--return-complement-char-maybe start-char))) (setq delimited-end-pos (point))))))
+    (or (and delimited-start-pos delimited-end-pos (cons delimited-start-pos delimited-end-pos))
+	(setq delimited-start-pos nil))))
+
 (put 'delimited 'beginning-op-at
      (lambda ()
-       (setq delimited-list-start nil)
-       (setq delimited-list-end nil)
+       (setq delimited-end-pos nil)
        (let ((begdel (concat th-beg-delimiter ar-delimiters-atpt))
              (pps (parse-partial-sexp (point-min) (point)))
              (orig (point))
-             done)
-         (cond ((or (nth 8 pps)(nth 1 pps))
-		(setq delimited-list-start (or (nth 8 pps)(nth 1 pps)))
-		(save-excursion (setq delimited-list-end (progn (goto-char (or (nth 8 pps)(nth 1 pps))) (progn (ignore-errors (forward-sexp)) (and (< orig (point)) (point))))))
-                (skip-chars-backward (concat "^" begdel) delimited-list-start)
-		(backward-char)
-		(setq done t))
-               ((or (looking-at (concat "[" th-beg-delimiter "]"))(looking-at (concat "[" ar-delimiters-atpt "]"))))
-               ((eq 5 (car (syntax-after (point))))
-                (forward-char 1)
-                (forward-list -1)
-                (setq done t))
-               ((eq (char-after) 93)
-                (beginning-of-form-base "[" "]" nil 'move nil nil t))
-               ((eq (char-after) ?')
-                (beginning-of-form-base "[`']" "'" nil 'move nil nil t))
-               ((eq (char-after) ?})
-                (beginning-of-form-base "{" "}" nil 'move nil nil t))
-               ((eq (char-after) 41)
-                (beginning-of-form-base "(" ")" nil 'move nil nil t))
-               ((looking-at (concat "[" begdel "][
-]"))
-                (progn
-                  (ar-set-delimiter-zeichen)
-                  (when (eq (char-after) ar-delimiter-zeichen-atpt)
-                    (forward-char -1))
-                  (skip-chars-backward (concat "^" (char-to-string ar-delimiter-zeichen-atpt))))
-                (when (eq (char-before) ar-delimiter-zeichen-atpt)
-                  (forward-char -1)))
-               ((nth 1 pps)
-                (setq delimited-list-start (nth 1 pps))
-                ;; brace etc. not covered by (nth 1 pps)
-                (skip-chars-backward (concat "^" begdel) delimited-list-start)
-		(when (looking-back begdel (line-beginning-position) t)
-		  (goto-char (match-beginning 0)))
-		;; (backward-char)
-		(setq done t))
-               (t (and (not (bobp))(re-search-backward (concat "[" begdel "]") nil 'move 1))))
-         (ar--delimited-beginning-finish begdel done))))
-
-(defun ar--delimited-beginning-finish (begdel done)
-  (let (erg)
-    (if
-        (looking-at (concat "[" begdel "]"))
-        (progn
-          (ar-set-delimiter-zeichen)
-          (unless done (when (< 0 (setq erg (abs (skip-chars-backward (char-to-string ar-delimiter-zeichen-atpt)))))
-			 (setq ar-delimiter-string-atpt (buffer-substring-no-properties (point) (+ erg (point) 1)))))
-          (cons (match-beginning 0) (match-end 0)))
-      (setq ar-delimiter-zeichen-atpt nil)
-      (setq ar-delimiter-string-atpt nil))))
-
-(defun ar-delimited-end-intern ()
-  (if (< (- (match-end 0) (match-beginning 0)) 2)
-      (progn
-        (while
-            (and
-             (search-forward (char-to-string (ar--return-complement-char-maybe (char-before))) nil t 1)
-             (ar-escaped)
-             (nth 8 (parse-partial-sexp (line-beginning-position) (point)))))
-        (cons (match-beginning 0) (match-end 0)))
-    (when (search-forward ar-delimiter-string-atpt nil t 1)
-      (cons (match-beginning 0) (match-end 0)))))
-
-(defun ar-delimited-end-from-openening (begdel enddel orig)
-  (let (last)
-    (cond
-     ((eq 4 (car (syntax-after (point))))
-      ;; [[1,3,4,8]]
-      ;; (eq (char-after) 40)
-      (forward-list 1)
-      ;; forward-list doesn't set match-data
-      ;; (when
-      ;; (looking-back ")" (line-beginning-position))
-      (forward-char -1)
-      (cons (point) (1+ (point))))
-     ;;)
-     ((eq 4 (car (syntax-after (point))))
-      (when (looking-at "{")
-        (goto-char (match-end 0))
-        (end-of-form-base "{" "}" nil 'move nil nil t)))
-     ((eq (char-after) ar-delimiter-zeichen-atpt)
-      (forward-char 1)
-      (while
-          (and (not (eobp))
-	       (< 0 (abs (skip-chars-forward
-			  ;; (concat "^" (char-to-string enddel))
-			  (concat "^" (char-to-string (ar--return-complement-char-maybe ar-delimiter-zeichen-atpt)))
-			  delimited-list-end)))
-	       (ar-escaped))
-	(forward-char 1))
-      (cond ((looking-back (char-to-string enddel) (line-beginning-position))
-	     (cons (1- (point)) (point)))
-	    ((eq (char-after) enddel)
-	     (cons (point) (1+ (point))))
-	    ;; maybe behind a limiting (list
-	    ((looking-back (concat "["  th-end-delimiter "]") (line-beginning-position))
-	     ;; needs to repeat
-	     ;; a wrong match as of "&" in (&optional beg end)
-	     (backward-sexp)
-	     (forward-char 1)
-	     ;; restard from lower pos
-	     (ar-th 'delimited))))
-     ((looking-at (concat "[" begdel "]"))
-      (goto-char (match-end 0))
-      (re-search-forward (concat "[" enddel "]") nil t 1))
-     ((looking-at (concat "[" ar-delimiters-atpt "]"))
-      (ar-set-delimiter-zeichen)
-      (forward-char 1)
-      (if
-          (eq 92 ar-delimiter-zeichen-atpt)
-          (search-forward (prin1-to-string 92))
-        (while (and (search-forward (char-to-string ar-delimiter-zeichen-atpt))
-                    (ar-escaped)))))
-     (ar-delimiter-zeichen-atpt (forward-char 1)
-                                (search-forward (char-to-string ar-delimiter-zeichen-atpt) nil nil 1)))))
+             done erg opener closer
+	     delimited-list-start
+	     delimited-list-end
+	     delimited-start-pos)
+	 (setq delimited-list-start (or (nth 8 pps) (nth 1 pps)))
+	 (setq delimited-list-end
+	       (and delimited-list-start
+		    (save-excursion
+		      (progn (goto-char (or (nth 8 pps) (nth 1 pps)))
+			     (setq opener (char-after))
+			     (progn
+			       (ignore-errors (forward-sexp))
+			       (and
+				(< orig (point))
+				(looking-back (char-to-string (ar--return-complement-char-maybe opener)) delimited-list-start)
+				(point)))))))
+	 (save-restriction
+	   (and delimited-list-start delimited-list-end (narrow-to-region delimited-list-start delimited-list-end))
+	   (while (not (and delimited-start-pos delimited-end-pos))
+	     (cond
+	      ((looking-at (concat "[" begdel "]"))
+	       (setq erg (delimited-atpt-intern))
+	       (if (and (car-safe erg) (cdr-safe erg))
+		   (setq delimited-start-pos (car-safe erg)
+			 delimited-end-pos (cdr-safe erg))
+		 (unless (bobp) (backward-char))))
+	      ((looking-back (concat "[" begdel "]") (line-beginning-position))
+	       (goto-char (match-beginning 0))
+	       (setq erg (delimited-atpt-intern))
+	       (and (car-safe erg) (setq delimited-start-pos (car-safe erg)))
+	       (and (cdr-safe erg) (setq delimited-end-pos (cdr-safe erg))))
+	      (t (unless (or (bobp)
+			     (< 0 (abs (skip-chars-backward (concat "^" begdel) delimited-list-start))))
+		   (backward-char))))))
+	 (cons delimited-start-pos (1+ delimited-start-pos)))))
 
 (put 'delimited 'end-op-at
      (lambda ()
-       (let ((orig (point))
-             pps
-             (begdel (or ar-delimiter-zeichen-atpt (and (looking-at (concat th-beg-delimiter ar-delimiters-atpt))(match-string-no-properties 0))))
-             (enddel
-              (cond (ar-delimiter-zeichen-atpt
-                     (if
-                         (member ar-delimiter-zeichen-atpt ar-paired-openers)
-                         (ar--return-complement-char-maybe ar-delimiter-zeichen-atpt)
-                       ar-delimiter-zeichen-atpt))
-                    (ar-delimiter-string-atpt)
-                    (t (concat th-end-delimiter ar-delimiters-atpt))))
-             opener closer erg)
-         (or
-          (setq erg (save-excursion (ar-delimited-end-from-openening begdel enddel orig)))
-          (setq erg (and begdel enddel (member (char-after) (list ?\( ?\[ ?{)) (end-of-form-base (string begdel) (string enddel) nil 'move nil nil t)))
-          (unless (eobp)
-            (forward-char 1)
-            (skip-chars-forward " \t\n\f\r"))
-          (cond
-           ;; at an opener
-           ((< (char-after) (ar--return-complement-char-maybe (char-after)))
-            (progn
-              (setq opener (char-after))
-              (setq closer (ar--return-complement-char-maybe (char-after)))
-              ;; (setq opener (ar--return-complement-char-maybe (char-after)))
-              ;; (setq closer (char-after))
-              (unless (eq opener closer)
-                (end-of-form-base (char-to-string opener) (char-to-string closer) nil 'move 0 nil nil 'ar-syntax t))))
-           ((ignore-errors (looking-at (regexp-quote ar-delimiter-string-atpt)))
-            (ar-delimited-end-intern))
-           ((and enddel (ignore-errors (characterp enddel)) (setq enddel (char-to-string enddel)))
-            (while (and
-                    (prog1
-                        (< 0 (abs (skip-chars-forward (concat "^" enddel))))
-                      (forward-char 1))
-                    (nth 8 (parse-partial-sexp orig (point))))))
-           ((ar-delimited-end-from-openening begdel enddel orig))
-	   ((re-search-forward (concat "[" enddel "]") (line-end-position) t 1)
-	    (setq delimited-list-end (point)))
-           (t
-	    (and delimited-list-start (goto-char delimited-list-start)
-		 (skip-chars-backward (concat "^" begdel) delimited-list-start)
-		 (or (looking-back (concat "[" th-beg-delimiter "]") delimited-list-start) (looking-back (concat "[" ar-delimiters-atpt "]") delimited-list-start))
-		 ;; repeat call with different delimiter detected before failing old
-		 (ar-delimiters-atpt)))))
-
-         (setq ar-delimiter-zeichen-atpt nil)
-         ;; paren might close before delimiter-char
-         (and erg delimited-list-end (ignore-errors (< delimited-list-end (car-safe erg))) (setq erg (cons (1- delimited-list-end) delimited-list-end)))
-	 erg)))
+       (cons delimited-end-pos (1+ delimited-end-pos))))
 
 (put 'delimited 'forward-op-at
      (lambda ()
