@@ -1712,9 +1712,10 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
 	  (setq start-char (char-after))
 	  (setq delimited-start-pos-intern (point))
 	  (forward-char 1)
-	  (skip-chars-forward (concat "^" ar-delimiters-atpt) delimited-list-end)
-	  (and (looking-at (char-to-string (ar--return-complement-char-maybe start-char)))
-	       (setq delimited-end-pos-intern (point))))))
+	  (while (< 0 (abs (skip-chars-forward (concat "^" ar-delimiters-atpt th-end-delimiter) delimited-list-end)))
+	    (and (looking-at (concat "[" th-end-delimiter ar-delimiters-atpt "]"))
+		 (setq delimited-end-pos-intern (point))
+		 (setq delimited-start-pos-intern (search-backward (char-to-string (ar--return-complement-char-maybe (char-after))) nil t)))))))
     (and delimited-start-pos-intern delimited-end-pos-intern (cons delimited-start-pos-intern delimited-end-pos-intern))))
 
 (put 'delimited 'beginning-op-at
