@@ -1715,7 +1715,7 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
 	  (while (< 0 (abs (skip-chars-forward (concat "^" ar-delimiters-atpt th-end-delimiter) delimited-list-end)))
 	    (and (looking-at (concat "[" th-end-delimiter ar-delimiters-atpt "]"))
 		 (setq delimited-end-pos-intern (point))
-		 (setq delimited-start-pos-intern (search-backward (char-to-string (ar--return-complement-char-maybe (char-after))) nil t)))))))
+		 (setq delimited-start-pos-intern (search-backward (char-to-string (ar--return-complement-char-maybe (char-after (point)))) nil t)))))))
     (and delimited-start-pos-intern delimited-end-pos-intern (cons delimited-start-pos-intern delimited-end-pos-intern))))
 
 (put 'delimited 'beginning-op-at
@@ -1725,6 +1725,7 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
 	      (begdel (concat th-beg-delimiter ar-delimiters-atpt))
               (pps (parse-partial-sexp (point-min) (point)))
 	      (delimited-list-start (or (nth 8 pps) (nth 1 pps)))
+	      (counter 0)
 	      opener
 	      (delimited-list-end
 	       (and delimited-list-start
@@ -1740,7 +1741,7 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
 	      erg delimited-start-pos)
 	 (save-restriction
 	   (and delimited-list-start delimited-list-end (narrow-to-region delimited-list-start delimited-list-end))
-	   (while (not (and delimited-start-pos delimited-end-pos))
+	   (while (not (or (and delimited-start-pos delimited-end-pos) (and (< 1 counter) (bopb))))
 	     (cond
 	      ((looking-at (concat "[" begdel "]"))
 	       (setq erg (delimited-atpt-intern delimited-list-end))
@@ -1753,11 +1754,11 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
 	       (setq erg (delimited-atpt-intern delimited-list-end))
 	       (and (car-safe erg) (setq delimited-start-pos (car-safe erg)))
 	       (and (cdr-safe erg) (setq delimited-end-pos (cdr-safe erg))))
-	      (t (unless (or (bobp)
+	      (t (setq counter (1+ counter))
+		 (unless (or (bobp)
 			     (< 0 (abs (skip-chars-backward (concat "^" begdel) delimited-list-start))))
 		   (backward-char))))))
 	 (cons delimited-start-pos (1+ delimited-start-pos)))))
-
 (put 'delimited 'end-op-at
      (lambda ()
        (cons delimited-end-pos (1+ delimited-end-pos))))
