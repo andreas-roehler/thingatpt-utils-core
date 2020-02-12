@@ -1712,7 +1712,9 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
 	  (setq start-char (char-after))
 	  (setq delimited-start-pos-intern (point))
 	  (forward-char 1)
-	  (while (< 0 (abs (skip-chars-forward (concat "^" ar-delimiters-atpt th-end-delimiter) delimited-list-end)))
+	  (while 
+	      (< 0 (abs (skip-chars-forward (concat "^" (concat (char-to-string start-char) (char-to-string (ar--return-complement-char-maybe start-char)))) delimited-list-end)))
+	    (not (and delimited-start-pos-intern delimited-end-pos-intern))
 	    (and (looking-at (concat "[" th-end-delimiter ar-delimiters-atpt "]"))
 		 (setq delimited-end-pos-intern (point))
 		 (setq delimited-start-pos-intern (search-backward (char-to-string (ar--return-complement-char-maybe (char-after (point)))) nil t)))))))
@@ -1741,7 +1743,7 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
 	      erg delimited-start-pos)
 	 (save-restriction
 	   (and delimited-list-start delimited-list-end (narrow-to-region delimited-list-start delimited-list-end))
-	   (while (not (or (and delimited-start-pos delimited-end-pos) (and (< 1 counter) (bopb))))
+	   (while (not (or (and delimited-start-pos delimited-end-pos) (and (< 99 counter) (bopb))))
 	     (cond
 	      ((looking-at (concat "[" begdel "]"))
 	       (setq erg (delimited-atpt-intern delimited-list-end))
@@ -1759,6 +1761,7 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
 			     (< 0 (abs (skip-chars-backward (concat "^" begdel) delimited-list-start))))
 		   (backward-char))))))
 	 (cons delimited-start-pos (1+ delimited-start-pos)))))
+
 (put 'delimited 'end-op-at
      (lambda ()
        (cons delimited-end-pos (1+ delimited-end-pos))))
