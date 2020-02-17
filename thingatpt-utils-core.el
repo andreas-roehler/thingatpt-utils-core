@@ -1707,12 +1707,16 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
 		 (skip-chars-forward (concat "^" (char-to-string (ar--return-complement-char-maybe start-char))) delimited-list-end)
 		 (and (looking-at (char-to-string (ar--return-complement-char-maybe start-char))) (setq delimited-end-pos-intern (point))))
 		(t (and (setq delimited-start-pos-intern (point))
-			(progn (forward-sexp) (< orig (point)))(setq delimited-end-pos-intern (1- (point))))))
+			(setq start-char (char-after))
+			(progn (forward-sexp) (< orig (point)))
+			(if (member start-char (list ?<))
+			    (setq delimited-end-pos-intern (point))
+			  (setq delimited-end-pos-intern (1- (point)))))))
 	(when (looking-at (concat "[" ar-delimiters-atpt "]"))
 	  (setq start-char (char-after))
 	  (setq delimited-start-pos-intern (point))
 	  (forward-char 1)
-	  (while 
+	  (while
 	      (< 0 (abs (skip-chars-forward (concat "^" (concat (char-to-string start-char) (char-to-string (ar--return-complement-char-maybe start-char)))) delimited-list-end)))
 	    (not (and delimited-start-pos-intern delimited-end-pos-intern))
 	    (and (looking-at (concat "[" th-end-delimiter ar-delimiters-atpt "]"))
