@@ -3683,13 +3683,13 @@ it defaults to `<', otherwise it defaults to `string<'."
   (interactive "p")
   (let* ((pos (or pos (point)))
          (erg (logand (car (syntax-after pos)) 65535)))
-    (when arg (message "%s" erg)) erg))
+    (when erg (message "%s" erg)) erg))
 
 (defun syntax-class-bfpt (&optional arg) 
   "Return the syntax class part of the syntax at point. "
   (interactive "p")
   (let ((erg (logand (car (syntax-after (1- (point)))) 65535)))
-    (when arg (message "%s" erg)) erg))
+    (when erg (message "%s" erg)) erg))
 
 (defun ar-syntax-atpt (&optional arg docu pos)
   (interactive "p")
