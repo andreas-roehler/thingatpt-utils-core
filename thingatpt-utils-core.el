@@ -1693,8 +1693,8 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
 
 (defvar delimited-end-pos nil)
 ;; Delimited
-(defun delimited-atpt-intern (delimited-list-end)
-  (let ((orig (point))
+(defun delimited-atpt-intern (delimited-list-end orig)
+  (let (;; (orig (point))
 	start-char delimited-start-pos-intern delimited-end-pos-intern)
     (save-excursion
       (if
@@ -1750,14 +1750,14 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
 	   (while (not (or (and delimited-start-pos delimited-end-pos) (and (< 99 counter) (bopb))))
 	     (cond
 	      ((looking-at (concat "[" begdel "]"))
-	       (setq erg (delimited-atpt-intern delimited-list-end))
+	       (setq erg (delimited-atpt-intern delimited-list-end orig))
 	       (if (and (car-safe erg) (cdr-safe erg))
 		   (setq delimited-start-pos (car-safe erg)
 			 delimited-end-pos (cdr-safe erg))
 		 (unless (bobp) (backward-char))))
 	      ((looking-back (concat "[" begdel "]") (line-beginning-position))
 	       (goto-char (match-beginning 0))
-	       (setq erg (delimited-atpt-intern delimited-list-end))
+	       (setq erg (delimited-atpt-intern delimited-list-end orig))
 	       (and (car-safe erg) (setq delimited-start-pos (car-safe erg)))
 	       (and (cdr-safe erg) (setq delimited-end-pos (cdr-safe erg))))
 	      (t (setq counter (1+ counter))
