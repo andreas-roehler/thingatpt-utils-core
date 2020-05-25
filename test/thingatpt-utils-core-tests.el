@@ -164,5 +164,13 @@
       (beginning-of-defun))
     (should (looking-at "(defun foo2"))))
 
+(ert-deftest ar-delimited2doublequoted-test-1977A4N ()
+  (with-temp-buffer
+    "'<3'"
+    (emacs-lisp-mode)
+    (switch-to-buffer (current-buffer))
+    (goto-char (point-max))
+    ))
+
 (provide 'ar-core-tests-1)
 ;;; ar-core-tests-1.el ends here

@@ -1,6 +1,6 @@
 ;;; thingatpt-utils-core.el --- th-at-point edit functions -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2010-2019 Andreas Röhler, unless
+;; Copyright (C) 2010-2020 Andreas Röhler, unless
 ;; indicated otherwise
 
 ;; Author: Andreas Röhler <andreas.roehler@easy-emacs.de>, unless
@@ -1757,9 +1757,7 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
 		 (unless (bobp) (backward-char))))
 	      ((looking-back (concat "[" begdel "]") (line-beginning-position))
 	       (goto-char (match-beginning 0))
-	       (setq erg (delimited-atpt-intern delimited-list-end orig))
-	       (and (car-safe erg) (setq delimited-start-pos (car-safe erg)))
-	       (and (cdr-safe erg) (setq delimited-end-pos (cdr-safe erg))))
+	       (setq erg (delimited-atpt-intern delimited-list-end orig)))
 	      (t (setq counter (1+ counter))
 		 (unless (or (bobp)
 			     (< 0 (abs (skip-chars-backward (concat "^" begdel) delimited-list-start))))
