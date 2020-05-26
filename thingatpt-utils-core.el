@@ -1753,6 +1753,15 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
 	      erg delimited-start-pos)
 	 (save-restriction
 	   (and delimited-list-start delimited-list-end (narrow-to-region delimited-list-start delimited-list-end))
+	   ;; when started from list-end, list is the delimited
+	   (save-excursion
+	     (and
+	      delimited-list-end
+	      (progn (goto-char delimited-list-end)
+		     (eq orig (1- (point))))
+	      (looking-back (char-to-string (ar--return-complement-char-maybe opener)) delimited-list-start)
+	      (setq delimited-start-pos delimited-list-start
+		    delimited-end-pos (1- delimited-list-end))))
 	   (while (not (or (and delimited-start-pos delimited-end-pos) (and (< 99 counter) (bopb))))
 	     (cond
 	      ((looking-at (concat "[" begdel "]"))
