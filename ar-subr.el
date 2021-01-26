@@ -877,7 +877,7 @@ Argument ORIG start."
     (current-indentation)))
 
 (defun ar-backward-toplevel (&optional arg)
-  "Go to end of a toplevel form.
+  "Go to beginning of a toplevel form.
 
 Returns position if successful, nil otherwise
 Optional argument ARG times"
@@ -897,7 +897,7 @@ Optional argument ARG times"
 	      (prog1 (re-search-backward "^[^ \t\n\f\r]" nil 'move arg)
 		(beginning-of-line))
 	      (or (ignore-errors (looking-at comment-start))(ignore-errors (looking-at comment-start-skip))
-		  (and (setq this (ignore-errors (nth 8 (parse-partial-sexp limit (point)))))
+		  (and (setq this (save-excursion (ignore-errors (nth 8 (parse-partial-sexp limit (point))))))
 		       (setq limit this))
 		  (member (char-after) toplevel-nostart-chars)))
 	(forward-line -1)
