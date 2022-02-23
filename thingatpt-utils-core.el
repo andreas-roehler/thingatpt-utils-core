@@ -1431,12 +1431,12 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
        (ar-forward-statement)))
 
 ;; String
-(defcustom th-string-beg-delimiter "‘“'\""
+(defcustom th-string-beg-delimiter "»‘“'\""
   "Specify the string start char."
   :type 'string
   :group 'werkstatt)
 
-(defcustom th-string-end-delimiter "”’'\""
+(defcustom th-string-end-delimiter "«”’'\""
   "Specify the string end char."
   :type 'string
   :group 'werkstatt)
@@ -1820,12 +1820,12 @@ Otherwise assume being behind an opening delimiter or at a closing "
   :type 'string
   :group 'werkstatt)
 
-(defcustom th-beg-delimiter "‘“{<>[("
+(defcustom th-beg-delimiter "»‘“{<>[("
   "Specify the delimiter char."
   :type 'string
   :group 'werkstatt)
 
-(defcustom th-end-delimiter "]}<>”)’"
+(defcustom th-end-delimiter "«]}<>”)’"
   "Specify the delimiter char."
   :type 'string
   :group 'werkstatt)
