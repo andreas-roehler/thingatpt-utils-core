@@ -3894,7 +3894,7 @@ Returns final position when called from inside section, nil otherwise"
    '(backticked "`")
    '(coloned ":")
    '(dollared "$")
-   '(doublequoted "\\\"")
+   '(doublequoted "\"")
    '(equalized "=")
    '(hyphened "-")
    '(singlequoted "'")
