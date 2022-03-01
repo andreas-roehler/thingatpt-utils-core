@@ -1,6 +1,6 @@
 ;;; thingatpt-utils-core.el --- th-at-point edit functions -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2010-2020 Andreas Röhler, unless
+;; Copyright (C) 2010-2022 Andreas Röhler, unless
 ;; indicated otherwise
 
 ;; Author: Andreas Röhler <andreas.roehler@easy-emacs.de>, unless
@@ -2753,7 +2753,7 @@ it would doublequote a word at point "
 ;; ar-insert-thingatpt-th-funktionen start
 
 (defun ar-toggle-thing-copy-region ()
-  (interactive) 
+  (interactive)
   (setq thing-copy-region (not thing-copy-region)))
 
 (defun ar-th (thing &optional no-delimiters iact check)
@@ -2982,7 +2982,7 @@ If boundaries of thing are know, use `ar-th-trim-base' directly. "
 
 (defun ar-th-trim-base (beg end left right)
   "Trim buffer-substring resp. to args starting-point, end-point, left-trim, right-trim. "
-  (save-excursion 
+  (save-excursion
     (let ((beg (copy-marker beg))
 	  (end (copy-marker end))
 	  (old-end end))
@@ -3894,7 +3894,7 @@ Returns final position when called from inside section, nil otherwise"
    '(backticked "`")
    '(coloned ":")
    '(dollared "$")
-   '(doublequoted "\"")
+   '(doublequoted "\\\"")
    '(equalized "=")
    '(hyphened "-")
    '(singlequoted "'")
