@@ -3919,13 +3919,28 @@ Returns final position when called from inside section, nil otherwise"
 
 (defun ar--transform-insert-opening-delimiter-according-to-type (new-delimiter)
   "If a cons, insert car. "
-  (insert (car new-delimiter)))
+  (if (string-match "\"" (car new-delimiter))
+      (insert "\"")
+    (insert (car new-delimiter))))
 
 (defun ar--transform-return-closing-delimiter-according-to-type (new-delimiter)
   "Return closing delimiter. "
-  (if (< 1 (length new-delimiter))
-      (cadr new-delimiter)
-    (car new-delimiter)))
+  (let ((erg (if (< 1 (length new-delimiter))
+		 (cadr new-delimiter)
+	       (car new-delimiter))))
+    (if (string-match "\"" erg)
+	"\""
+      erg)))
+
+;; (defun ar--transform-insert-opening-delimiter-according-to-type (new-delimiter)
+;;   "If a cons, insert car. "
+;;   (insert (car new-delimiter)))
+
+;; (defun ar--transform-return-closing-delimiter-according-to-type (new-delimiter)
+;;   "Return closing delimiter. "
+;;   (if (< 1 (length new-delimiter))
+;;       (cadr new-delimiter)
+;;     (car new-delimiter)))
 
 (defun ar--transform-delimited-intern (from to)
   "Expects string. "
