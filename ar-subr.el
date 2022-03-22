@@ -28,6 +28,21 @@
 
 (defvar ar-verbose-p nil)
 
+(defun ar-toggle-verbose-p ()
+  "Toggle `ar-verbose-p'. "
+  (interactive)
+  (setq ar-verbose-p (not ar-verbose-p))
+  (message "ar-verbose-p: %s"  ar-verbose-p))
+
+(defvar ar-debug-p nil
+  "Switch into test-buffer.")
+
+(defun ar-toggle-debug-p ()
+  "Toggle `ar-debug-p'. "
+  (interactive)
+  (setq ar-debug-p (not ar-debug-p))
+  (message "ar-debug-p: %s"  ar-debug-p))
+
 (defvar ar-line-move-forward t)
 
 (defvar ar-max-specpdl-size max-specpdl-size

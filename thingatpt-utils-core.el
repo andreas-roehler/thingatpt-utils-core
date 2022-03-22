@@ -1825,7 +1825,7 @@ Otherwise assume being behind an opening delimiter or at a closing "
   :type 'string
   :group 'werkstatt)
 
-(defcustom th-end-delimiter "«]}<>”)’"
+(defcustom th-end-delimiter "]}<>”)’«"
   "Specify the delimiter char."
   :type 'string
   :group 'werkstatt)
