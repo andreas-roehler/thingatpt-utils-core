@@ -2314,24 +2314,24 @@ Otherwise assume being behind an opening delimiter or at a closing "
 ;; Sh-struct
 (eval-after-load 'sh-werk
   (put 'shstruct 'beginning-op-at
-       'sh-beginning-of-form))
+       'shw-beginning-of-form))
 
 (eval-after-load 'sh-werk
   (put 'shstruct 'end-op-at
        (lambda ()
-	 (when (looking-at ar-beginning-shstruct-atpt)
-	   (sh-end-of-form)
+	 (when (looking-at shw-beginning-sh-struct-atpt)
+	   (shw-end-of-form)
 	   (forward-char 1) (point)))))
 
 (eval-after-load 'sh-werk
   (put 'shstruct 'forward-op-at
        (lambda ()
-	 (re-search-forward ar-beginning-shstruct-atpt nil 'move 1))))
+	 (re-search-forward shw-beginning-sh-struct-atpt nil 'move 1))))
 
 (eval-after-load 'sh-werk
   (put 'shstruct 'backward-op-at
        (lambda ()
-	 (re-search-backward ar-end-shstruct-atpt nil 'move 1))))
+	 (re-search-backward shw-end-sh-struct-atpt nil 'move 1))))
 
 ;; Symbol
 (put 'symbol 'beginning-op-at
