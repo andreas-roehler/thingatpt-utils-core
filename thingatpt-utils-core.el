@@ -1693,41 +1693,49 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
 
 (defvar delimited-end-pos nil)
 ;; Delimited
-(defun delimited-atpt-intern (delimited-list-end orig)
-  (let (start-char delimited-start-pos-intern delimited-end-pos-intern)
-    (save-excursion
-      (if
-	  (looking-at (concat "[" th-beg-delimiter "]"))
-	  (cond ((member (char-after) (list ?‘ ?> ?<))
-		 ;; https://lists.gnu.org/archive/html/bug-gnu-emacs/2020-01/msg00549.html
-		 (setq start-char (char-after))
-		 (setq delimited-start-pos-intern (point))
-		 (forward-char 1)
-		 (skip-chars-forward (concat "^" (char-to-string (ar--return-complement-char-maybe start-char))) delimited-list-end)
-		 (and (looking-at (char-to-string (ar--return-complement-char-maybe start-char))) (setq delimited-end-pos-intern (point))))
-		(t (and (setq delimited-start-pos-intern (point))
-			(setq start-char (char-after))
-			(progn (forward-sexp) (< orig (point)))
-			(cond  ((and (member start-char (list ?<))
-				     (eq (char-after) (ar--return-complement-char-maybe start-char)))
-				(setq delimited-end-pos-intern (point)))
-			       ((and (member start-char (list ?<))
-				     (not (eq (char-after) (ar--return-complement-char-maybe start-char))))
-				;; do nothing
-				)
-			       (t (setq delimited-end-pos-intern (1- (point)))))
-			)))
-	(when (looking-at (concat "[" ar-delimiters-atpt "]"))
-	  (setq start-char (char-after))
-	  (setq delimited-start-pos-intern (point))
-	  (forward-char 1)
-	  (while
-	      (< 0 (abs (skip-chars-forward (concat "^" (concat (char-to-string start-char) (char-to-string (ar--return-complement-char-maybe start-char)))) delimited-list-end)))
-	    (not (and delimited-start-pos-intern delimited-end-pos-intern))
-	    (and (looking-at (concat "[" th-end-delimiter ar-delimiters-atpt "]"))
-		 (setq delimited-end-pos-intern (point))
-		 (setq delimited-start-pos-intern (search-backward (char-to-string (ar--return-complement-char-maybe (char-after (point)))) nil t)))))))
-    (and delimited-start-pos-intern delimited-end-pos-intern (cons delimited-start-pos-intern delimited-end-pos-intern))))
+(defun delimited-atpt-intern (delimited-list-end orig begdel)
+  (save-excursion
+    (let ((start-char (char-after))
+	  delimited-start-pos-intern delimited-end-pos-intern end-char)
+      (cond ((member (car (syntax-after (point))) (list 5 7 8 15))
+	     (if (< (point) orig)
+		 (and (setq delimited-start-pos-intern (point))
+		      (setq start-char (char-after))
+		      (progn (forward-sexp) (<= orig (point)))
+		      (cond ((and (member start-char (list ?<))
+				  (eq (char-after) (ar--return-complement-char-maybe start-char)))
+			     (setq delimited-end-pos-intern (point)))
+			    ((and (member start-char (list ?<))
+				  (not (eq (char-after) (ar--return-complement-char-maybe start-char)))))
+			    (t (setq delimited-end-pos-intern (point)))))
+	       ;; at the end
+	       (and (setq delimitedt-end-pos-intern (point))
+		    (setq end-char (char-after))
+		    (progn (backward-sexp) (< (point) orig))
+		    (cond ((and (member end-char (list ?<))
+				(eq (char-after) (ar--return-complement-char-maybe end-char)))
+			   (setq delimited-end-pos-intern (point)))
+			  ((and (member end-char (list ?<))
+				(not (eq (char-after) (ar--return-complement-char-maybe end-char)))))
+			  (t (setq delimited-end-pos-intern (point)))))))
+	    ((member (car (syntax-after (point))) (list 4 7 8 15))
+	     (and (setq delimited-start-pos-intern (point))
+		  (setq start-char (char-after))
+		  (progn (forward-sexp) (<= orig (point)))
+		  (cond ((and (member start-char (list ?<))
+			      (eq (char-after) (ar--return-complement-char-maybe start-char)))
+			 (setq delimited-end-pos-intern (point)))
+			((and (member start-char (list ?<))
+			      (not (eq (char-after) (ar--return-complement-char-maybe start-char)))))
+			(t (setq delimited-end-pos-intern (point))))))
+	    ((looking-at (concat "[" begdel "]"))
+	     ;; (member (char-after) (list ?‘ ?> ?<))
+	     ;; https://lists.gnu.org/archive/html/bug-gnu-emacs/2020-01/msg00549.html
+	     (setq delimited-start-pos-intern (point))
+	     (forward-char 1)
+	     (skip-chars-forward (concat "^" (char-to-string (ar--return-complement-char-maybe start-char))) delimited-list-end)
+	     (and (eq (char-after) (ar--return-complement-char-maybe start-char))(<= orig (point))(setq delimited-end-pos-intern (point)))))
+      (and delimited-start-pos-intern delimited-end-pos-intern (cons delimited-start-pos-intern delimited-end-pos-intern)))))
 
 (put 'delimited 'beginning-op-at
      (lambda ()
@@ -1763,15 +1771,24 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
 		    delimited-end-pos (1- delimited-list-end))))
 	   (while (not (or (and delimited-start-pos delimited-end-pos) (and (< 99 counter) (bopb))))
 	     (cond
+	      ((member (char-after) ar-closing-chars)
+	       (setq delimited-end-pos (point))
+	       (when (< 0 (abs (skip-chars-backward (concat "^" (char-to-string (ar--return-complement-char-maybe (char-after)))))))
+		 (unless (bobp) (setq delimited-start-pos (1- (point))))))
+	      ((and delimited-end-pos (< delimited-end-pos orig))
+	       (goto-char delimited-start-pos)
+	       (unless (bobp) (forward-char -1)))
 	      ((looking-at (concat "[" begdel "]"))
-	       (setq erg (delimited-atpt-intern delimited-list-end orig))
+	       (setq erg (delimited-atpt-intern delimited-list-end orig begdel))
 	       (if (and (car-safe erg) (cdr-safe erg))
 		   (setq delimited-start-pos (car-safe erg)
 			 delimited-end-pos (cdr-safe erg))
-		 (unless (bobp) (backward-char))))
-	      ((looking-back (concat "[" begdel "]") (line-beginning-position))
+		 (unless (bobp) (backward-char)))
+	       (setq counter (1+ counter)))
+	      ((looking-back (concat "[" begdel "].*") (line-beginning-position))
 	       (goto-char (match-beginning 0))
-	       (setq erg (delimited-atpt-intern delimited-list-end orig)))
+	       (setq erg (delimited-atpt-intern delimited-list-end orig begdel))
+	       (setq counter (1+ counter)))
 	      (t (setq counter (1+ counter))
 		 (unless (or (bobp)
 			     (< 0 (abs (skip-chars-backward (concat "^" begdel) delimited-list-start))))
@@ -2618,7 +2635,7 @@ it would doublequote a word at point "
 (put 'beginendquoted 'end-op-at
      (lambda ()
        (when (ignore-errors (looking-at "\\begin{quote}"))
-         (goto-char (match-end 0)) 
+         (goto-char (match-end 0))
          (end-of-form-base "\\begin{quote}" "\\end{quote}" nil 'move 1 nil nil nil))))
 
 
@@ -2632,7 +2649,7 @@ it would doublequote a word at point "
 (put 'blok 'end-op-at
      (lambda ()
        (when (ignore-errors (looking-at "{% "))
-         (goto-char (match-end 0)) 
+         (goto-char (match-end 0))
          (end-of-form-base "{% " " %}" nil 'move 1 nil t nil))))
 
 
@@ -2646,7 +2663,7 @@ it would doublequote a word at point "
 (put 'doublebackslashed 'end-op-at
      (lambda ()
        (when (ignore-errors (looking-at "\\\\"))
-         (goto-char (match-end 0)) 
+         (goto-char (match-end 0))
          (end-of-form-base "\\\\" "\\\\" nil 'move 1 nil nil 'ar-escaped))))
 
 
@@ -2660,7 +2677,7 @@ it would doublequote a word at point "
 (put 'doublebackticked 'end-op-at
      (lambda ()
        (when (ignore-errors (looking-at "``"))
-         (goto-char (match-end 0)) 
+         (goto-char (match-end 0))
          (end-of-form-base "``" "``" nil 'move 1 nil nil 'ar-escaped))))
 
 
@@ -2674,7 +2691,7 @@ it would doublequote a word at point "
 (put 'doubleslashed 'end-op-at
      (lambda ()
        (when (ignore-errors (looking-at "//"))
-         (goto-char (match-end 0)) 
+         (goto-char (match-end 0))
          (end-of-form-base "//" "//" nil 'move 1 nil nil 'ar-escaped))))
 
 
@@ -2688,7 +2705,7 @@ it would doublequote a word at point "
 (put 'doublebackslashedparen 'end-op-at
      (lambda ()
        (when (ignore-errors (looking-at "\\\\\\\\("))
-         (goto-char (match-end 0)) 
+         (goto-char (match-end 0))
          (end-of-form-base "\\\\\\\\(" "\\\\\\\\)" nil 'move 1 nil nil 'ar-escaped))))
 
 
@@ -2702,7 +2719,7 @@ it would doublequote a word at point "
 (put 'tabledatap 'end-op-at
      (lambda ()
        (when (ignore-errors (looking-at "<td[^>]*>"))
-         (goto-char (match-end 0)) 
+         (goto-char (match-end 0))
          (end-of-form-base "<td[^>]*>" "</td>" nil 'move 1 nil nil nil))))
 
 
@@ -2716,7 +2733,7 @@ it would doublequote a word at point "
 (put 'backslashedparen 'end-op-at
      (lambda ()
        (when (ignore-errors (looking-at "\\\\("))
-         (goto-char (match-end 0)) 
+         (goto-char (match-end 0))
          (end-of-form-base "\\\\(" "\\\\)" nil 'move 1 nil nil 'ar-escaped))))
 
 
@@ -2730,7 +2747,7 @@ it would doublequote a word at point "
 (put 'slashedparen 'end-op-at
      (lambda ()
        (when (ignore-errors (looking-at "////////("))
-         (goto-char (match-end 0)) 
+         (goto-char (match-end 0))
          (end-of-form-base "////////(" "////////)" nil 'move 1 nil nil 'ar-escaped))))
 
 
@@ -2744,7 +2761,7 @@ it would doublequote a word at point "
 (put 'xslstylesheetp 'end-op-at
      (lambda ()
        (when (ignore-errors (looking-at "<xsl:stylesheet[^<]+>.*$"))
-         (goto-char (match-end 0)) 
+         (goto-char (match-end 0))
          (end-of-form-base "<xsl:stylesheet[^<]+>.*$" "</xsl:stylesheet>" nil 'move 1 nil nil nil))))
 
 
@@ -3697,7 +3714,7 @@ it defaults to `<', otherwise it defaults to `string<'."
          (erg (logand (car (syntax-after pos)) 65535)))
     (when erg (message "%s" erg)) erg))
 
-(defun syntax-class-bfpt (&optional arg) 
+(defun syntax-class-bfpt (&optional arg)
   "Return the syntax class part of the syntax at point. "
   (interactive "p")
   (let ((erg (logand (car (syntax-after (1- (point)))) 65535)))
@@ -3772,7 +3789,7 @@ it defaults to `<', otherwise it defaults to `string<'."
       (message "%s" erg)
       erg)))
 
-(defun syntax-bfpt (&optional arg) 
+(defun syntax-bfpt (&optional arg)
   (interactive "p")
   (let ((stax (syntax-after (1- (point)))))
     (when arg
