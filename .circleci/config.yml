@@ -26,8 +26,8 @@ jobs:
             --eval "(message (getenv \"PWD\"))" \
             --eval "(load (expand-file-name \"beg-end.el\"))" \
             --eval "(load (expand-file-name \"ar-subr.el\"))" \
-            --eval "(load \"thingatpt-utils-map.el\"))" \
-            --eval "(load \"thingatpt-utils-core.el\"))" \
+            --eval "(load (expand-file-name \"thingatpt-utils-map.el\"))" \
+            --eval "(load (expand-file-name \"thingatpt-utils-core.el\"))" \
             --eval "(load \"test/ar-thing-at-point-utils-setup-tests.el\"))" \
             --eval "(load \"test/thingatpt-utils-core-tests.el\"))" \
             --eval "(setq ar-switch-p nil)" \
