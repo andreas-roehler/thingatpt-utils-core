@@ -25,11 +25,11 @@ jobs:
             --eval "(message (emacs-version))" \
             --eval "(message (getenv \"PWD\"))" \
             --eval "(load (expand-file-name \"beg-end.el\"))" \
-            --eval "(load \"/root/ar-subr.el\"))" \
-            --eval "(load \"/root/thingatpt-utils-map.el\"))" \
-            --eval "(load \"/root/thingatpt-utils-core.el\"))" \
-            --eval "(load \"/root/test/ar-thing-at-point-utils-setup-tests.el\"))" \
-            --eval "(load \"/root/test/thingatpt-utils-core-tests.el\"))" \
+            --eval "(load \"ar-subr.el\"))" \
+            --eval "(load \"thingatpt-utils-map.el\"))" \
+            --eval "(load \"thingatpt-utils-core.el\"))" \
+            --eval "(load \"test/ar-thing-at-point-utils-setup-tests.el\"))" \
+            --eval "(load \"test/thingatpt-utils-core-tests.el\"))" \
             --eval "(setq ar-switch-p nil)" \
             --eval "(setq python-indent-offset 4)" \
             --eval "(setq python-indent-guess-indent-offset nil)" \
