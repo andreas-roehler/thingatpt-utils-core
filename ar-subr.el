@@ -205,7 +205,7 @@ Optional argument IACT saying interactively called."
 (defun ar-forward-comment (&optional pos char)
   "Go to end of (next) commented section following point.
 
-Optional args position and ‘comment-start’ character
+Optional args position and `comment-start' character
 Travel empty lines
 Optional argument POS orig.
 Optional argument CHAR comment start."
@@ -324,7 +324,7 @@ With negative arg go backward. "
       (> orig (point)))))
 
 (defun ar-forward-sexp ()
-  "Like ‘forward-sexp’, diffs below.
+  "Like `forward-sexp', diffs below.
 
 From inside string go to end-of-string.
 From inside comment, go to end-of-comment.
@@ -529,7 +529,7 @@ Return and move to match-beginning if successful"
       (point))))
 
 (defun ar-check-parens ()
-  "Like ‘check-parens’ but avoid error.
+  "Like `check-parens' but avoid error.
 
 Just return t if parentheses in the current buffer are balanced.
 Return nil if not."
@@ -556,7 +556,7 @@ When `beginning-of-defun-function' is set, call with optional ARG
 
 If no function found inside a list, go to list-start.
 Otherwise reach next list upward in buffer
-Optional argument PPS result of ‘parse-partial-sexp’."
+Optional argument PPS result of `parse-partial-sexp'."
   (interactive "P")
   (unless (bobp)
   (let* ((outmost (or outmost (eq 4 (prefix-numeric-value outmost))))
@@ -819,7 +819,7 @@ otherwise return complement char"
     (?\⦈ ?\⦇)
     (_ char)))
 
-(defvar ar-closing-chars (list ?’  ?´  ?`  ?\]  ?}  ?\〉  ?\⦒  ?\⦔  ?\】  ?\⦘  ?\⸥  ?\」  ?\》  ?\⦖  ?\⸩  ?\⧛  ?\｝  ?\）  ?\］  ?\｠  ?\｣  ?\❱  ?\❯  ?\”  ?\❳  ?\⟩  ?\⟫  ?\⟯  ?\⟧  ?\⟭  ?\❵  ?\❫  ?\❩  ?\❭  ?\᚜  ?\〉  ?\⧽  ?\⟆  ?\⸧  ?\﹜  ?\﹚  ?\﹞  ?\⁆  ?\⦎  ?\⦐  ?\⦌  ?\₎  ?\⁾  ?\༽  ?\༻  ?\⸣  ?\〕  ?\』  ?\⦄  ?\〗  ?\⦆  ?\〛  ?\〙  ?\⧙  ?\⦊  ?\⦈  )
+(defvar ar-closing-chars (list ?’  ?´  ?\]  ?}  ?\〉  ?\⦒  ?\⦔  ?\】  ?\⦘  ?\⸥  ?\」  ?\》  ?\⦖  ?\⸩  ?\⧛  ?\｝  ?\）  ?\］  ?\｠  ?\｣  ?\❱  ?\❯  ?\”  ?\❳  ?\⟩  ?\⟫  ?\⟯  ?\⟧  ?\⟭  ?\❵  ?\❫  ?\❩  ?\❭  ?\᚜  ?\〉  ?\⧽  ?\⟆  ?\⸧  ?\﹜  ?\﹚  ?\﹞  ?\⁆  ?\⦎  ?\⦐  ?\⦌  ?\₎  ?\⁾  ?\༽  ?\༻  ?\⸣  ?\〕  ?\』  ?\⦄  ?\〗  ?\⦆  ?\〛  ?\〙  ?\⧙  ?\⦊  ?\⦈  )
   "List of closing delimiters.")
 
 
@@ -1015,7 +1015,7 @@ Returns position if successful, nil otherwise"
     erg))
 
 (defun ar-reverse-at-point (&optional beg end)
-  "Replace a string or region at point by result of ‘reverse’.
+  "Replace a string or region at point by result of `reverse'.
 
 Works at any string detected at position, unless
 optional BEG as start and

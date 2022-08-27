@@ -1,4 +1,7 @@
-Thingatpt-utils-core [![Build Status](https://travis-ci.org/andreas-roehler/thingatpt-utils-core.svg?branch=master)](https://travis-ci.org/andreas-roehler/thingatpt-utils-core)
+# thingatpt-utils core
+
+[![CircleCI thingatpt-utils-core](https://circleci.com/gh/andreas-roehler/thingatpt-utils-core.svg?style=svg)](https://app.circleci.com/pipelines/gh/andreas-roehler/thingatpt-utils-core)
+
 ===
 
 # Return, mover over or manipulate a THING. 

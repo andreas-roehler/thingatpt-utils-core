@@ -1,0 +1,44 @@
+version: 2.1
+
+aktion:
+  echo "Gebe Umgebung aus" 
+  ls -lart
+
+jobs:
+  thingatpt-utils-core:
+    docker:
+      # - image: ubuntu-2004:202010-01
+      - image: silex/emacs:27.2
+    working_directory: ~/thingatpt-utils-core
+    steps:
+      - run: apt update && apt install -y git ssh emacs
+      - checkout
+      - run:
+          name: Umgebung
+          command:
+            echo "Gebe Umgebung aus"; ls -lart
+
+      - run:
+          name: ERT tests
+          command: |
+            emacs -Q --batch \
+            --eval "(message (emacs-version))" \
+            --eval "(message (getenv \"PWD\"))" \
+            --eval "(load \"/root/beg-end.el\"))" \
+            --eval "(load \"/root/ar-subr.el\"))" \
+            --eval "(load \"/root/thingatpt-utils-map.el\"))" \
+            --eval "(load \"/root/thingatpt-utils-core.el\"))" \
+            --eval "(load \"/root/test/ar-thing-at-point-utils-setup-tests.el\"))" \
+            --eval "(load \"/root/test/thingatpt-utils-core-tests.el\"))" \
+            --eval "(setq ar-switch-p nil)" \
+            --eval "(setq python-indent-offset 4)" \
+            --eval "(setq python-indent-guess-indent-offset nil)" \
+            --eval "(setq python-indent-guess-indent-offset-verbose nil)" \
+            --eval "(sit-for 1)" \
+            -f ert-run-tests-batch-and-exit
+
+
+workflows:
+  thingatpt-utils-core-workflow:
+    jobs:
+      - thingatpt-utils-core  

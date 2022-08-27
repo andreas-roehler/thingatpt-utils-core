@@ -164,5 +164,6 @@
       (beginning-of-defun))
     (should (looking-at "(defun foo2"))))
 
+
 (provide 'ar-core-tests-1)
 ;;; ar-core-tests-1.el ends here
