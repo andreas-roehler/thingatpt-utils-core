@@ -24,7 +24,7 @@ jobs:
             emacs -Q --batch \
             --eval "(message (emacs-version))" \
             --eval "(message (getenv \"PWD\"))" \
-            --eval "(load \"/root/beg-end.el\"))" \
+            --eval "(load (expand-file-name \"beg-end.el\"))" \
             --eval "(load \"/root/ar-subr.el\"))" \
             --eval "(load \"/root/thingatpt-utils-map.el\"))" \
             --eval "(load \"/root/thingatpt-utils-core.el\"))" \
