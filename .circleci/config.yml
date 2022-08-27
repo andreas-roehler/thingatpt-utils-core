@@ -25,7 +25,7 @@ jobs:
             --eval "(message (emacs-version))" \
             --eval "(message (getenv \"PWD\"))" \
             --eval "(load (expand-file-name \"beg-end.el\"))" \
-            --eval "(load \"ar-subr.el\")" \
+            --eval "(load (expand-file-name \"ar-subr.el\"))" \
             --eval "(load \"thingatpt-utils-map.el\"))" \
             --eval "(load \"thingatpt-utils-core.el\"))" \
             --eval "(load \"test/ar-thing-at-point-utils-setup-tests.el\"))" \
