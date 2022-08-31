@@ -3547,7 +3547,8 @@ it defaults to `<', otherwise it defaults to `string<'."
   (let* ((bounds (ar-th-bounds thing nil iact check))
          (beg (or (ignore-errors (caar bounds))(car-safe bounds)))
 	 (end (or (ignore-errors (cdr (cadr bounds)))(ignore-errors (cadr (cadr bounds)))(cdr-safe bounds))))
-    (ar-th-delim thing arg string1 string2 iact beg end)))
+    (when (and beg end)
+      (ar-th-delim thing arg string1 string2 iact beg end))))
 
 ;; ar-insert-delimit-forms-intern ar-paired-delimit-aktiv-raw: start
 
