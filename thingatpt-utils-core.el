@@ -1742,7 +1742,7 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
 		  (setq start-char (char-after))
 		  (progn (forward-sexp) (<= orig (point)))
 		  (cond ((and (member start-char (list ?<))
-			      (eq (char-after) (ar--return-complement-char-maybe start-char)))
+			      (eq (char-before) (ar--return-complement-char-maybe start-char)))
 			 (setq delimited-end-pos-intern (point)))
 			((and (member start-char (list ?<))
 			      (not (eq (char-after) (ar--return-complement-char-maybe start-char)))))
