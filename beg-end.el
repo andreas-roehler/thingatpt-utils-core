@@ -119,7 +119,7 @@ Reads strings as arguments from minibuffer.
 (defun end-of-form (&optional iact bound noerror count permit-comment)
   "Goto opening of a programming structure in this level.
 Reads strings as arguments from minibuffer.
-Set comment to `t' if forms inside comments should match - also for processing comments itself.
+Set comment to ‘t’ if forms inside comments should match - also for processing comments itself.
  Don't use this from a program, use `end-of-form-base' instead. "
   (interactive "p")
   (let ((begstr (read-from-minibuffer "Insert start: "))
@@ -211,7 +211,7 @@ Set comment to `t' if forms inside comments should match - also for processing c
 Bound limits search.
 If NOERROR is non-nil, no error message is raised if not successful.
 NESTING, a number, enables match of nested forms.
-Set IN-COMMENT to `t' if forms inside comments should match - also for processing comments itself.
+Set IN-COMMENT to ‘t’ if forms inside comments should match - also for processing comments itself.
 Set 7th argument REGEXP t, if beg/end-str are regular expressions.
 CONDITION takes a function as argument perfoming the match.
 If IN-STRING is non-nil, forms inside string match.
@@ -285,10 +285,10 @@ If IN-STRING is non-nil, forms inside string match.
 (defun end-of-form-base (begstr endstr &optional bound noerror nesting permit-comment regexp condition permit-string)
   "Goto closing of a programming structure in this level.
 As it stops one char after form, go one char back onto the last char of form.
-Set comment to `t' if forms inside comments should match - also for processing comments itself.
+Set comment to ‘t’ if forms inside comments should match - also for processing comments itself.
 If SHOW, display nesting and point in message buffer.
 Set 7th argument REGEXP t, if beg/end-strings are regular expressions.
-Optional arg CONDITION expects a function whose return value - `t' or a number - is checked for success, otherwise search continues.
+Optional arg CONDITION expects a function whose return value - ‘t’ or a number - is checked for success, otherwise search continues.
 If IN-STRING is non-nil, forms inside string match.
 "
   (let* ((begstr (regexp-quote begstr))
@@ -403,7 +403,7 @@ Key per default is \"%\" as with elisp's `match-paren'. "
 (defun ar-in-delimiter-base (regexp &optional condition guess-delimiter)
   "REGEXP expected of an unary delimiter, for example
 \"\\\\\\\"\\\\\\\"\\\\\\\"\\\\|'''\\\\|\\\\\\\"\\\\|'\" indicating string delimiters in Python.
-Optional second arg --a number, nil or `t'-- if interactively called. "
+Optional second arg --a number, nil or ‘t’-- if interactively called. "
   (let ((orig (point))
         (count 0)
         tell beglist)

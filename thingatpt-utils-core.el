@@ -29,11 +29,11 @@
 ;; Delivers a set of functions to return, mover over or
 ;; manipulate a given THING. THING may be a well known
 ;; form as word, paragraph, but also a char class as
-;; `alnum' or a new defined thing.
+;; ‘alnum’ or a new defined thing.
 
-;; For example `ar-alnum-atpt' will return all
+;; For example ‘ar-alnum-atpt’ will return all
 ;; alpha-numerical chars below and around cursor as a
-;; string. `ar-bounds-of-alnum-atpt' returns the
+;; string. ‘ar-bounds-of-alnum-atpt’ returns the
 ;; borders of that string as a list and so on.
 
 ;; Presently for a given THING the following is
@@ -92,7 +92,7 @@
 
 ;; To see what's implemented, consult contents of
 ;; variables at the end of this file as
-;; `ar-paired-delimit-aktiv', `ar-paired-delimited-passiv', etc.
+;; ‘ar-paired-delimit-aktiv’, ‘ar-paired-delimited-passiv’, etc.
 
 ;; Call one of the test-functions `C-u ar-th-delimtest'
 ;; with come chars in scratch-buffer
@@ -110,32 +110,32 @@
 ;; around it call ar-parentize-word-atpt, etc.
 
 ;; Move-functions of this package differ from common
-;; behaviour in such, as `ar-forward-word-atpt' stops
+;; behaviour in such, as ‘ar-forward-word-atpt’ stops
 ;; not after THING, but on the last char of
 ;; THING. That's in order to enable a call of
 ;; thing-at-point functions at the end
 ;; position. Otherwise, when cursor stops after word
-;; (THING) as does `forward-word', `ar-word-atpt' would return
+;; (THING) as does ‘forward-word’, ‘ar-word-atpt’ would return
 ;; nil.
 
-;; To see other features, maybe try `ar-separate-list-atpt'
-;; or `ar-comment-list-atpt' while point is inside a
+;; To see other features, maybe try ‘ar-separate-list-atpt’
+;; or ‘ar-comment-list-atpt’ while point is inside a
 ;; list. Try it again with an abstract char-class as
-;; [:alnum:], i.e. try `ar-comment-alnum-atpt',
-;; `ar-brace-alnum-atpt' etc.
+;; [:alnum:], i.e. try ‘ar-comment-alnum-atpt’,
+;; ‘ar-brace-alnum-atpt’ etc.
 
 ;; This utility comes with test-functions which return
 ;; the possible results of most functions (exception
 ;; are the kill-fns). Call th-test, th-mv-test
 ;; or th-delimtest over text. That-delimtest
 ;; changes but restores the buffer. Customize the speed
-;; of execution via `ar-th-test-delay'
+;; of execution via ‘ar-th-test-delay’
 
 ;; Diffs to basics of required thingatpt.el:
-;; `bounds-of-thing-at-point' is replaced by a new
-;; `ar-th-bounds', which now first searches
+;; ‘bounds-of-thing-at-point’ is replaced by a new
+;; ‘ar-th-bounds’, which now first searches
 ;; backward. As a consequence several
-;; `beginning-op-at' and `end-op-at' constructs had
+;; ‘beginning-op-at’ and ‘end-op-at’ constructs had
 ;; to be rewritten.
 
 ;; Behavior in general is not validating; i.e. if you
@@ -163,10 +163,10 @@
 
 ;; Remove comments and put the cursor somewhere into the first
 ;; string:
-;; `ar-doublequoted-atpt' will return it, copied into the kill-ring,
+;; ‘ar-doublequoted-atpt’ will return it, copied into the kill-ring,
 ;; enabling yanking it and a lot of further actions.
 
-;; `ar-doublequoted-atpt' here is to
+;; ‘ar-doublequoted-atpt’ here is to
 ;; (global-set-key [(super \")] 'ar-doublequoted-atpt)
 
 ;; alike a range of similar commands exist:
@@ -267,7 +267,7 @@
 (defcustom sort-fold-case nil
   "Whether alphabetic case affects the sort order
 
-Used by `ar-sort-numbers-subr'"
+Used by ‘ar-sort-numbers-subr’"
 
   :type 'boolean
   :group 'werkstatt)
@@ -315,7 +315,7 @@ Default is nil"
     "Rexexp to specify the character class
 Follows word-syntax. Use something like
    \"[a-zA-ZäöüßÄÖÜ0-9]\" maybe instead.
-`unibyte' and `multibyte' class is unused i.e. set to \".\""
+‘unibyte’ and ‘multibyte’ class is unused i.e. set to \".\""
     :type 'regexp
     :group 'werkstatt))
 
@@ -323,7 +323,7 @@ Follows word-syntax. Use something like
   (defcustom alpha "[a-zA-ZäöüßÄÖÜ]"
     "Rexexp to specify the character class
 Change it, if you want to pick strings differently.
-XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
+XEmacs-users: ‘unibyte’ and ‘multibyte’ class is unused i.e. set to \".\""
     :type 'regexp
     :group 'werkstatt))
 
@@ -331,7 +331,7 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
   (defcustom ascii "[\000-\177]"
     "Rexexp to specify the character class
 Change it, if you want to pick strings differently.
-XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
+XEmacs-users: ‘unibyte’ and ‘multibyte’ class is unused i.e. set to \".\""
     :type 'regexp
     :group 'werkstatt))
 
@@ -339,7 +339,7 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
   (defcustom blank "[ \t]"
     "Rexexp to specify the character class
 Change it, if you want to pick strings differently.
-XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
+XEmacs-users: ‘unibyte’ and ‘multibyte’ class is unused i.e. set to \".\""
     :type 'regexp
     :group 'werkstatt))
 
@@ -347,7 +347,7 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
   (defcustom cntrl "[\000-\006]\016-\037]"
     "Rexexp to specify the character class
 Change it, if you want to pick strings differently.
-XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
+XEmacs-users: ‘unibyte’ and ‘multibyte’ class is unused i.e. set to \".\""
     :type 'regexp
     :group 'werkstatt))
 
@@ -355,7 +355,7 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
   (defcustom digit "[0-9]"
     "Rexexp to specify the character class
 Change it, if you want to pick strings differently.
-XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
+XEmacs-users: ‘unibyte’ and ‘multibyte’ class is unused i.e. set to \".\""
     :type 'regexp
     :group 'werkstatt))
 
@@ -363,7 +363,7 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
   (defcustom graph "[\041-\177\241-\377]"
     "Rexexp to specify the character class
 Change it, if you want to pick strings differently.
-XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
+XEmacs-users: ‘unibyte’ and ‘multibyte’ class is unused i.e. set to \".\""
     :type 'regexp
     :group 'werkstatt))
 
@@ -371,7 +371,7 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
   (defcustom lower "[a-zäöüß]"
     "Rexexp to specify the character class
 Change it, if you want to pick strings differently.
-XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
+XEmacs-users: ‘unibyte’ and ‘multibyte’ class is unused i.e. set to \".\""
     :type 'regexp
     :group 'werkstatt))
 
@@ -379,7 +379,7 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
   (defcustom multibyte "[.]"
     "Rexexp to specify the character class
 Change it, if you want to pick strings differently.
-XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
+XEmacs-users: ‘unibyte’ and ‘multibyte’ class is unused i.e. set to \".\""
     :type 'regexp
     :group 'werkstatt))
 
@@ -387,7 +387,7 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
   (defcustom nonascii "[^\040-\177]"
     "Rexexp to specify the character class
 Change it, if you want to pick strings differently.
-XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
+XEmacs-users: ‘unibyte’ and ‘multibyte’ class is unused i.e. set to \".\""
     :type 'regexp
     :group 'werkstatt))
 
@@ -395,7 +395,7 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
   (defcustom print "[\041-\177\241-\377]"
     "Rexexp to specify the character class
 Change it, if you want to pick strings differently.
-XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
+XEmacs-users: ‘unibyte’ and ‘multibyte’ class is unused i.e. set to \".\""
     :type 'regexp
     :group 'werkstatt))
 
@@ -403,7 +403,7 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
   (defcustom punct "[.,-_:;?!]"
     "Rexexp to specify the character class
 Change it, if you want to pick strings differently.
-XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
+XEmacs-users: ‘unibyte’ and ‘multibyte’ class is unused i.e. set to \".\""
     :type 'regexp
     :group 'werkstatt))
 
@@ -411,7 +411,7 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
   (defcustom space "[ \t]"
     "Rexexp to specify the character class
 Change it, if you want to pick strings differently.
-XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
+XEmacs-users: ‘unibyte’ and ‘multibyte’ class is unused i.e. set to \".\""
     :type 'regexp
     :group 'werkstatt))
 
@@ -419,7 +419,7 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
   (defcustom unibyte "[.]"
     "Rexexp to specify the character class
 Change it, if you want to pick strings differently.
-XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
+XEmacs-users: ‘unibyte’ and ‘multibyte’ class is unused i.e. set to \".\""
     :type 'regexp
     :group 'werkstatt))
 
@@ -427,7 +427,7 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
   (defcustom upper "[A-ZÄÖÜ]"
     "Rexexp to specify the character class
 Change it, if you want to pick strings differently.
-XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
+XEmacs-users: ‘unibyte’ and ‘multibyte’ class is unused i.e. set to \".\""
     :type 'regexp
     :group 'werkstatt))
 
@@ -435,7 +435,7 @@ XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
   (defcustom xdigit "[0-9.,]"
     "Rexexp to specify the character class
 Change it, if you want to pick strings differently.
-XEmacs-users: `unibyte' and `multibyte' class is unused i.e. set to \".\""
+XEmacs-users: ‘unibyte’ and ‘multibyte’ class is unused i.e. set to \".\""
     :type 'regexp
     :group 'werkstatt))
 
@@ -2589,7 +2589,7 @@ If non-nil, return a list composed of
 (defcustom copy-or-alternative "word"
   "Copy-or commands may act on thing specified here.
 
-For example when `ar-doublequote-or-copy-atpt' is called with positive
+For example when ‘ar-doublequote-or-copy-atpt’ is called with positive
 argument but without active region and also thing-at-point
  --i.e. doublequoted here-- doesn't exist,
 it would doublequote a word at point "
@@ -2802,9 +2802,9 @@ it would doublequote a word at point "
 
 (defun ar-th (thing &optional no-delimiters iact check)
   "Returns a buffer substring according to THING.
-  THING may be a well known form as `symbol',
-  `list', `sexp', `defun' or a newly defined THING.
-  When mark-thingatpt is `t' - the default - a found THING
+  THING may be a well known form as ‘symbol’,
+  ‘list’, ‘sexp’, ‘defun’ or a newly defined THING.
+  When mark-thingatpt is ‘t’ - the default - a found THING
   is set as current region, enabling further action on them
 
   If NO-DELIMITERS set by user functions, THING returned is
@@ -3018,7 +3018,7 @@ NO-CHECK assumes being at or behind a closing delimiter, doesn't check for nesti
 
 (defun ar-th-trim (thing &optional no-delimiters iact check left right)
   "Trims given THING at point.
-If boundaries of thing are know, use `ar-th-trim-base' directly. "
+If boundaries of thing are know, use ‘ar-th-trim-base’ directly. "
   (let* ((bounds (ar-th-bounds thing no-delimiters iact check))
          (beg (or (ignore-errors (caar bounds)) (car-safe bounds)))
          (end (or (ignore-errors (cadr (cadr bounds)))(ignore-errors (cdr (cadr bounds)))(ignore-errors (cdr bounds)))))
@@ -3065,7 +3065,7 @@ If boundaries of thing are know, use `ar-th-trim-base' directly. "
 \[foo [bar baz]] --> [bar baz]
 --^-----------
 
-Inspired by stuff like `paredit-splice-sexp-killing-backward'; however, instead of working `-backward' or `-forward' deletes expression at point.
+Inspired by stuff like ‘paredit-splice-sexp-killing-backward’; however, instead of working ‘-backward’ or ‘-forward’ deletes expression at point.
 
 "
   (let* ((outer (ar-th-bounds thing no-delimiters iact check))
@@ -3402,7 +3402,7 @@ contiguous.
 
 Usually the records are rearranged in order of ascending sort key.
 If REVERSE is non-nil, they are rearranged in order of descending sort key.
-The variable `sort-fold-case' determines whether alphabetic case affects
+The variable ‘sort-fold-case’ determines whether alphabetic case affects
 the sort order.
 
 The next four arguments are functions to be called to move point
@@ -3470,11 +3470,11 @@ it defaults to `<', otherwise it defaults to `string<'."
 
 (defun ar-th-delim (thing &optional arg beg-char end-char iact beg end)
   "Process begin and end of region according to value of
-  `delim-action'
+  ‘delim-action’
   If no region is active, process borders of THING-at-point
   according to value of delim-action-beginning- resp. -end-position
   Default is symbol-at.
-  With  or arg `escaped' to `t': insert escaped doublequotes"
+  With  or arg ‘escaped’ to ‘t’: insert escaped doublequotes"
   (interactive "*p")
   (save-restriction
     (let ((orig (point))
