@@ -1,7 +1,7 @@
 ;; ar-core-tests-1.el --- Tests -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2013 Free Software Foundation, Inc.
-;; Copyright (C) 2014-2018 Andreas Röhler, <andreas.roehler@online.de>
+;; Copyright (C) 2014-2023 Andreas Röhler, <andreas.roehler@online.de>
 
 ;; GNU Emacs is free software: you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -164,6 +164,13 @@
       (beginning-of-defun))
     (should (looking-at "(defun foo2"))))
 
+(ert-deftest python-comment-text-nYJIEQ ()
+  (ar-test
+      "# print("tagged_tokens[0]: %s " % tagged_tokens[0])
+erg = nltk.pos_tag(res)
+"
+    'python-mode
+    (should-not (ar-in-comment-p-atpt))))
 
 (provide 'ar-core-tests-1)
 ;;; ar-core-tests-1.el ends here

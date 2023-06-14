@@ -57,7 +57,7 @@ FILE1=beg-end.el
 FILE2=ar-subr.el
 FILE3=thingatpt-utils-map.el
 FILE4=thingatpt-utils-core.el
-FILE5=${TESTDIR}thing-at-point-utils-setup-tests.el
+FILE5=${TESTDIR}ar-thingatpt-setup-tests.el
 
 TEST1=${TESTDIR}thingatpt-utils-core-tests.el
 

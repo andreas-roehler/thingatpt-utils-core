@@ -688,8 +688,8 @@ otherwise return complement char"
   "Reverse reciproke CHARs as \"[\" to \"]\"."
   (pcase char
     ;; ‘M-x append-to-register <RET> R’ can use ‘C-x r +’
-    ;; (?+ ?-)
-    ;; (?- ?+)
+    (?+ ?-)
+    (?- ?+)
     (92 47)
     (47 92)
     ;; (?' ?\")
