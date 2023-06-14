@@ -36,8 +36,26 @@ erg = nltk.pos_tag(res)
     ar-debug-p
     (goto-char (point-max))
     (search-backward "erg")
-    (sit-for 0.1) 
+    (sit-for 0.1)
     (should-not (ar-in-comment-p-atpt))))
+
+(ert-deftest python-comment-text-ZRWCVJ ()
+  (ar-test
+"    # print(\"tagged_tokens[0]: %s \" % tagged_tokens[0])
+    erg = nltk.pos_tag(res)
+        # for i in erg:
+        # print(i)
+    "
+    'python-mode
+    ar-debug-p
+    (goto-char (point-max))
+    (search-backward "erg" nil t 2)
+    ;; (sit-for 0.1)
+    (save-excursion (ar-comment-or-uncomment-lor))
+    (back-to-indentation) 
+    (should (eq 4 (current-indentation)))
+    (should (looking-at comment-start))))
+
 
 (provide 'ar-thingatpt-utils-python-mode-tests)
 ;;; ar-thingatpt-utils-python-mode-tests.el ends here

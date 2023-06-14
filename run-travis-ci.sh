@@ -59,6 +59,7 @@ FILE2=ar-subr.el
 FILE3=thingatpt-utils-map.el
 FILE4=thingatpt-utils-core.el
 FILE5=${UTILSDIR}thing-at-point-utils.el
+FILE6=${UTILSDIR}ar-comment-lor.el
 
 SETUP=${TESTDIR}ar-thingatpt-setup-tests.el
 TEST1=${TESTDIR}ar-thingatpt-utils-emacs-lisp-tests.el
@@ -75,7 +76,7 @@ echo "\$EMACS: $EMACS"
 h1() { 
     date; time -p $EMACS -Q -L . --batch \
 --eval "(message (emacs-version))" \
---eval "(setq py-debug-p nil)" \
+--eval "(setq ar-debug-p nil)" \
 --eval "(require 'ert)" \
 --eval "(setq py-install-dir \"$PDIR\")" \
 --eval "(add-to-list 'load-path \"$TESTDIR/\")" \
@@ -83,6 +84,8 @@ h1() {
 -load $FILE2 \
 -load $FILE3 \
 -load $FILE4 \
+-load $FILE5 \
+-load $FILE6 \
 -load $SETUP \
 -l $TEST1 \
 -f ert-run-tests-batch-and-exit
@@ -91,7 +94,7 @@ h1() {
 h2() {
     date; time -p $EMACS -Q -L . --batch \
 --eval "(message (emacs-version))" \
---eval "(setq py-debug-p nil)" \
+--eval "(setq ar-debug-p nil)" \
 --eval "(require 'ert)" \
 --eval "(add-to-list 'load-path \"$TESTDIR/\")" \
 -load $FILE1 \
@@ -99,6 +102,7 @@ h2() {
 -load $FILE3 \
 -load $FILE4 \
 -load $FILE5 \
+-load $FILE6 \
 -load $SETUP \
 -l $TEST2 \
 -f ert-run-tests-batch-and-exit
