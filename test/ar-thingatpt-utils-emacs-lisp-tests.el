@@ -1,4 +1,4 @@
-;; ar-core-tests-1.el --- Tests -*- lexical-binding: t; -*-
+;; ar-thingatpt-utils-emacs-lisp-tests.el --- Tests -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2013 Free Software Foundation, Inc.
 ;; Copyright (C) 2014-2023 Andreas Röhler, <andreas.roehler@online.de>
@@ -23,8 +23,9 @@
 ;; (require 'ert)
 
 (require 'ar-subr)
+(require 'ar-thingatpt-setup-tests)
 
-;; tests are expected to run from directory test
+;; (setq ar-debug-p t)
 
 (ert-deftest ar-ert-raise-numbers-3 ()
   (ar-test-with-elisp-buffer-point-min
@@ -164,13 +165,5 @@
       (beginning-of-defun))
     (should (looking-at "(defun foo2"))))
 
-(ert-deftest python-comment-text-nYJIEQ ()
-  (ar-test
-      "# print("tagged_tokens[0]: %s " % tagged_tokens[0])
-erg = nltk.pos_tag(res)
-"
-    'python-mode
-    (should-not (ar-in-comment-p-atpt))))
-
-(provide 'ar-core-tests-1)
-;;; ar-core-tests-1.el ends here
+(provide 'ar-thingatpt-utils-emacs-lisp-tests)
+;;; ar-thingatpt-utils-emacs-lisp-tests.el ends here

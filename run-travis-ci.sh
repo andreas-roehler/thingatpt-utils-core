@@ -18,7 +18,6 @@
 
 # Code:
 
-
 if [ $1 == e25 ]; then
     export EMACS=$(echo $(alias $1) | sed "s,alias [^~]*.\([^ ]*\).*,$HOME\1,g")
 elif
@@ -53,14 +52,17 @@ TESTDIR=test/
 export TESTDIR
 echo "\$TESTDIR: $TESTDIR"
 
+UTILSDIR=$HOME/werkstatt/thing-at-point-utils/
+
 FILE1=beg-end.el
 FILE2=ar-subr.el
 FILE3=thingatpt-utils-map.el
 FILE4=thingatpt-utils-core.el
-FILE5=${TESTDIR}ar-thingatpt-setup-tests.el
+FILE5=${UTILSDIR}thing-at-point-utils.el
 
-TEST1=${TESTDIR}thingatpt-utils-core-tests.el
-
+SETUP=${TESTDIR}ar-thingatpt-setup-tests.el
+TEST1=${TESTDIR}ar-thingatpt-utils-emacs-lisp-tests.el
+TEST2=${TESTDIR}ar-thingatpt-utils-python-mode-tests.el
 
 # if [ -s emacs24 ]; then
 #     EMACS=emacs24
@@ -70,6 +72,38 @@ TEST1=${TESTDIR}thingatpt-utils-core-tests.el
 
 echo "\$EMACS: $EMACS"
 
+h1() { 
+    date; time -p $EMACS -Q -L . --batch \
+--eval "(message (emacs-version))" \
+--eval "(setq py-debug-p nil)" \
+--eval "(require 'ert)" \
+--eval "(setq py-install-dir \"$PDIR\")" \
+--eval "(add-to-list 'load-path \"$TESTDIR/\")" \
+-load $FILE1 \
+-load $FILE2 \
+-load $FILE3 \
+-load $FILE4 \
+-load $SETUP \
+-l $TEST1 \
+-f ert-run-tests-batch-and-exit
+}
+
+h2() {
+    date; time -p $EMACS -Q -L . --batch \
+--eval "(message (emacs-version))" \
+--eval "(setq py-debug-p nil)" \
+--eval "(require 'ert)" \
+--eval "(add-to-list 'load-path \"$TESTDIR/\")" \
+-load $FILE1 \
+-load $FILE2 \
+-load $FILE3 \
+-load $FILE4 \
+-load $FILE5 \
+-load $SETUP \
+-l $TEST2 \
+-f ert-run-tests-batch-and-exit
+}
+
 hier () {
     $EMACS -Q --batch \
 --eval "(message (emacs-version))" \
@@ -78,8 +112,10 @@ hier () {
 -load $FILE3 \
 -load $FILE4 \
 -load $FILE5 \
+-load $SETUP \
 \
 -load $TEST1 \
+-load $TEST2 \
 -f ert-run-tests-batch-and-exit
 }
 
@@ -90,12 +126,10 @@ entfernt () {
 -load $FILE2 \
 -load $FILE3 \
 -load $FILE4 \
--load $FILE5 \
 \
 -load $TEST1 \
 -f ert-run-tests-batch-and-exit
 }
-
 
 WERKSTATT=${WERKSTATT:=1}
 echo "\$WERKSTATT: $WERKSTATT"
@@ -104,8 +138,8 @@ if [ $WERKSTATT -eq 0 ]; then
     while getopts 123456789abcdefghijklmnpqrstuvx option
     do
         case $option in
-	    1) echo "h1: Lade \$TEST1: \"$TEST1\"";hier;;
-	    # 2) echo "h2: Lade \$TEST2: \"$TEST2\"";h2;;
+	    1) echo "h1: Lade \$TEST1: \"$TEST1\"";h1;;
+	    2) echo "h2: Lade \$TEST2: \"$TEST2\"";h2;;
 	    # 3) echo "h3: Lade \$TEST3: \"$TEST3\"";h3;;
 	    # 4) echo "h4: Lade \$TEST4: \"$TEST4\"";h4;;
 	    # 5) echo "h5: Lade \$TEST5: \"$TEST5\"";h5;;
