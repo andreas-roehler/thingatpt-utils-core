@@ -51,10 +51,25 @@ erg = nltk.pos_tag(res)
     (goto-char (point-max))
     (search-backward "erg" nil t 2)
     ;; (sit-for 0.1)
-    (save-excursion (ar-comment-or-uncomment-lor))
+    (save-excursion (ar-comment-or-uncomment-lor 1))
     (back-to-indentation) 
     (should (eq 4 (current-indentation)))
     (should (looking-at comment-start))))
+
+(ert-deftest python-comment-text-t8l5IA ()
+  (ar-test-point-min
+"    # for i in text:
+    #     print(\"(i): {}\".format(str(i)))
+    #     aus.write(str(i))
+    "
+    'python-mode
+    ar-debug-p
+    (goto-char (point-min))
+    ;; (sit-for 0.1)
+    (save-excursion (ar-comment-or-uncomment-lor 1))
+    (back-to-indentation) 
+    (should (eq 0 (current-indentation)))
+    (should (eq (char-after) ?f))))
 
 
 (provide 'ar-thingatpt-utils-python-mode-tests)

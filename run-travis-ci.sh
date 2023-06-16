@@ -116,6 +116,7 @@ hier () {
 -load $FILE3 \
 -load $FILE4 \
 -load $FILE5 \
+-load $FILE6 \
 -load $SETUP \
 \
 -load $TEST1 \
