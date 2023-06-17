@@ -1585,15 +1585,16 @@ XEmacs-users: ‘unibyte’ and ‘multibyte’ class is unused i.e. set to \".\
               (erg (when nesting
                      (if (looking-at comment-start)
                          (cons (match-beginning 0) (match-end 0))
-                       (beginning-of-form-base comment-start comment-end nil 'move 1 t)))))
+                       (beginning-of-form-base comment-start comment-end nil 'move 1 t))))
+              last)
          (unless erg
            (when (looking-at comment-start)
              (setq erg (cons (match-beginning 0) (match-end 0)))
              (skip-chars-backward " \t\r\n\f"))
-           (while (and (setq erg (nth 8 (parse-partial-sexp (point-min) (point))))
-                       (goto-char erg))
-             (unless (string= "" comment-end)(skip-chars-backward " \t\r\n\f")))
-           ;; (skip-chars-forward " \t\r\n\f")
+           (while (and (setq erg (nth 8 (parse-partial-sexp (point-min) (point)))) (goto-char erg) (setq last (point)))
+             (skip-chars-backward " 	
+"))
+           (when last (goto-char last))
            (when (looking-at comment-start)
              (setq erg (cons (match-beginning 0) (match-end 0)))))
          erg)))
@@ -1751,7 +1752,7 @@ XEmacs-users: ‘unibyte’ and ‘multibyte’ class is unused i.e. set to \".\
 	     ;; (member (char-after) (list ?‘ ?> ?<))
 	     ;; https://lists.gnu.org/archive/html/bug-gnu-emacs/2020-01/msg00549.html
 	     (setq delimited-start-pos-intern (point))
-             (forward-char 1) 
+             (forward-char 1)
              (if (eq (char-before) ?`)
                  (progn
                    (setq end-char-re (concat "`\\|" (char-to-string (ar--return-complement-char-maybe start-char))))
