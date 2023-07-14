@@ -1105,5 +1105,43 @@ unless not already there"
 	       (delete-region (point) (scan-sexps (point) 1))
 	       (insert expr))))))
 
+(defun ar-align-equal-sign ()
+  (interactive "*")
+  (when (eq this-command 'self-insert-command)
+    (save-excursion
+      (let ((end (copy-marker (line-end-position)))
+            (secondcolumn (and (looking-back "[^=]+\\(=\\) *" (line-beginning-position))
+                               ;; (member (char-after) (list 32 ?\n ?\t ?\f))
+                               ;;  haskell
+                               (not (looking-back "main +\\(=+\\) *" (line-beginning-position)))
+                               (goto-char (match-beginning 1))
+                               (current-column)))
+            (maxcolumn 0))
+        ;; an equal-sign at current line
+        (when secondcolumn
+          (put 'secondcolumn 'pos (point))
+          (setq maxcolumn secondcolumn)
+          (while
+              (progn (beginning-of-line)
+                     (not (bobp))
+                     (forward-line -1)
+                     (not (looking-at comment-start))
+                     (looking-at ".+ +\\(=\\)[[:blank:]]+.*")
+                     )
+            (goto-char (match-beginning 1))
+            (when (< maxcolumn (current-column))
+              (setq maxcolumn (current-column))))
+          (goto-char (match-beginning 1))
+          (while (<= (line-end-position) end)
+            (when (< (current-column) maxcolumn)
+              (insert (make-string (- maxcolumn (current-column)) 32)))
+            (forward-line 1)
+            (when (looking-at ".+ +\\(=\\)[[:blank:]]+.*")
+              (goto-char (match-beginning 1)))))))))
+
+(defun ar-align-in-current-buffer ()
+  (interactive)
+  (add-hook 'post-command-hook #'ar-align-equal-sign nil t))
+
 (provide 'ar-subr)
 ;;; ar-subr.el ends here
