@@ -64,6 +64,10 @@
      (and (eq (char-before (point)) ?\\ )
           (ar-escaped))))
 
+(defun ar-nth1-syntax ()
+  "Goto beginning of list at point."
+  )
+
 (defvar ar-strip-chars-before  "\\`[ \t\r\n]*"
   "Regexp indicating which chars shall be stripped before STRING - which is defined by `string-chars-preserve'.")
 
@@ -1119,7 +1123,7 @@ unless not already there"
             (maxcolumn 0))
         ;; an equal-sign at current line
         (when secondcolumn
-          (put 'secondcolumn 'pos (point))
+          ;; (put 'secondcolumn 'pos (point))
           (setq maxcolumn secondcolumn)
           (while
               (and (progn (beginning-of-line)
@@ -1127,16 +1131,18 @@ unless not already there"
                    (progn (forward-line -1)
                           (not (looking-at comment-start)))
                    (looking-at ".+ +\\(=\\)[[:blank:]]+.*"))
-            (goto-char (match-beginning 1))
+            (when (match-beginning 1)(goto-char (match-beginning 1)))
             (when (< maxcolumn (current-column))
               (setq maxcolumn (current-column))))
-          (goto-char (match-beginning 1))
-          (while (<= (line-end-position) end)
+          ;; before going downward, reach the last match
+          (when (match-beginning 1)(goto-char (match-beginning 1)))
+          (while (< (line-end-position) end)
+            (when (looking-at ".+ +\\(=\\)[[:blank:]]+.*")
+              (goto-char (match-beginning 1)))
             (when (< (current-column) maxcolumn)
               (insert (make-string (- maxcolumn (current-column)) 32)))
             (forward-line 1)
-            (when (looking-at ".+ +\\(=\\)[[:blank:]]+.*")
-              (goto-char (match-beginning 1)))))))))
+            ))))))
 
 (defun ar-align-in-current-buffer ()
   (interactive)
