@@ -43,6 +43,28 @@
   (setq ar-debug-p (not ar-debug-p))
   (message "ar-debug-p: %s"  ar-debug-p))
 
+(defvar ar-keyboard-operator-chars "<>~!@#$^&*_-+=|:;\"',.?"
+  "(Insert known operator chars existing on a qwerty keybord")
+
+(defun ar-insert-keyboard-operator-chars ()
+  (interactive "*")
+  (insert ar-keyboard-operator-chars))
+
+(defun ar-insert-keyboard-operator-char-listing ()
+  (interactive "*")
+  (let* ((chars ar-keyboard-operator-chars)
+         (laenge (length chars)))
+    (insert "(list")
+    (dotimes (i laenge)
+      (insert (concat " ?" (char-to-string (aref chars i)))))
+    (insert ")")
+    (save-excursion
+      (search-backward ";")
+      (insert "\\"))
+    (save-excursion
+      (search-backward "\"")
+      (insert "\\"))))
+
 (defvar ar-line-move-forward t)
 
 (defvar ar-max-specpdl-size max-specpdl-size
@@ -541,7 +563,6 @@ Return nil if not."
   (let (erg)
       (setq erg (scan-sexps (point-min) (point-max)))))
 
-
 (defun ar-backward-defun-DWIM (&optional outmost pps)
   "A fault-tolerant backward-function command.
 
@@ -826,7 +847,6 @@ otherwise return complement char"
 
 (defvar ar-closing-chars (list ?’  ?´  ?\]  ?}  ?\〉  ?\⦒  ?\⦔  ?\】  ?\⦘  ?\⸥  ?\」  ?\》  ?\⦖  ?\⸩  ?\⧛  ?\｝  ?\）  ?\］  ?\｠  ?\｣  ?\❱  ?\❯  ?\”  ?\❳  ?\⟩  ?\⟫  ?\⟯  ?\⟧  ?\⟭  ?\❵  ?\❫  ?\❩  ?\❭  ?\᚜  ?\〉  ?\⧽  ?\⟆  ?\⸧  ?\﹜  ?\﹚  ?\﹞  ?\⁆  ?\⦎  ?\⦐  ?\⦌  ?\₎  ?\⁾  ?\༽  ?\༻  ?\⸣  ?\〕  ?\』  ?\⦄  ?\〗  ?\⦆  ?\〛  ?\〙  ?\⧙  ?\⦊  ?\⦈  )
   "List of closing delimiters.")
-
 
 (defun ar-align-with-previous-line-maybe ()
   (when (and (eq this-command self-insert-command)
