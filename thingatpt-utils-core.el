@@ -1583,19 +1583,20 @@ XEmacs-users: ‘unibyte’ and ‘multibyte’ class is unused i.e. set to \".\
      (lambda ()
        (let* ((nesting (not (or (string= "" comment-end)(eq 10 comment-end))))
               (erg (when nesting
-                     (if (looking-at comment-start)
+                     (if (looking-at (concat "[ 	]*" (regexp-quote comment-start)))
                          (cons (match-beginning 0) (match-end 0))
                        (beginning-of-form-base comment-start comment-end nil 'move 1 t))))
               last)
          (unless erg
-           (when (looking-at comment-start)
+           (when (looking-at (concat "[ 	]*" (regexp-quote comment-start)))
              (setq erg (cons (match-beginning 0) (match-end 0)))
+             (setq last (point)) 
              (skip-chars-backward " \t\r\n\f"))
            (while (and (setq erg (nth 8 (parse-partial-sexp (point-min) (point)))) (goto-char erg) (setq last (point)))
              (skip-chars-backward " 	
 "))
            (when last (goto-char last))
-           (when (looking-at comment-start)
+           (when (looking-at (concat "[ 	]*" (regexp-quote comment-start)))
              (setq erg (cons (match-beginning 0) (match-end 0)))))
          erg)))
 
@@ -3221,7 +3222,7 @@ If optional positions BEG-2TH END-2TH are given, works on them instead. "
 	     (end (and beg (or (ignore-errors (cadr (cadr bounds)))(ignore-errors (cdr (cadr bounds)))(ignore-errors (cadr bounds))(ignore-errors (cadr (cadr bounds)))))))
 	(and beg end
 	     (if (eq thing 'comment)
-		 (kill-region beg (1+ end))
+                 (kill-region beg (min (point-max) (1+ end)))
 	       (progn
 		 (kill-region beg end)
 		 t))))
