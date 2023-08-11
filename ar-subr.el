@@ -1140,11 +1140,13 @@ unless not already there"
                                (not (looking-back "main +\\(=+\\) *" (line-beginning-position)))
                                (goto-char (match-beginning 1))
                                (current-column)))
-            (maxcolumn 0))
+            (maxcolumn 0)
+            orig)
         ;; an equal-sign at current line
         (when secondcolumn
           ;; (put 'secondcolumn 'pos (point))
           (setq maxcolumn secondcolumn)
+          (setq orig (point))
           (while
               (and (progn (beginning-of-line)
                           (not (bobp)))
@@ -1162,7 +1164,12 @@ unless not already there"
             (when (< (current-column) maxcolumn)
               (insert (make-string (- maxcolumn (current-column)) 32)))
             (forward-line 1)
-            ))))))
+            )
+          (goto-char orig)
+          (when (looking-at " *\\(=\\)[[:blank:]]*")
+            (when (< (current-column) maxcolumn)
+              (insert (make-string (- maxcolumn (current-column)) 32))))
+          )))))
 
 (defun ar-align-in-current-buffer ()
   (interactive)
