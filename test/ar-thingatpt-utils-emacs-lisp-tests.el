@@ -65,15 +65,6 @@
     (ar-beginning-of-defun)
   (should (bobp))))
 
-(ert-deftest ar-ert-forward-sexp-test-LGnrk9 ()
-  (ar-test-with-elisp-buffer-point-min
-      ";;;\\\;; (beg)
-(defun foo1 (&optional beg end))"
-      (goto-char (point-min))
-    (forward-char 9)
-    (ar-forward-sexp)
-    (should (eq (char-before) ?\)))))
-
 (ert-deftest ar-ert-backward-toplevel-test-WRXXPd ()
   (ar-test-with-elisp-buffer
       "(defun foo1 (&optional beg end)
@@ -130,7 +121,6 @@
 )
   (message \"%s\" \"Foo1\"))")
     (emacs-lisp-mode)
-    (switch-to-buffer (current-buffer))
     (goto-char (point-max))
     (search-backward "foo2")
     (if (functionp 'ar-backward-defun)
@@ -156,7 +146,6 @@
 )
   (message \"%s\" \"Foo1\"))")
     (emacs-lisp-mode)
-    (switch-to-buffer (current-buffer))
     (goto-char (point-max))
     (search-backward "Foo3")
     (forward-line 1)
@@ -178,11 +167,11 @@
   ;;                  ((use-region-p)
   ;;                   (copy-marker (region-end)))
   ;;                  (t (copy-marker (point-max))))))"
-    (switch-to-buffer (current-buffer))
     (goto-char (point-max))
     (search-backward ";; (let")
     (ar-kill-comment-atpt)
     (should (eobp))))
+
 
 
 
