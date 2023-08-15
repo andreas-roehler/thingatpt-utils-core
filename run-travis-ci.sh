@@ -54,16 +54,17 @@ echo "\$TESTDIR: $TESTDIR"
 
 UTILSDIR=$HOME/werkstatt/thing-at-point-utils/
 
-FILE1=beg-end.el
-FILE2=ar-subr.el
-FILE3=thingatpt-utils-map.el
-FILE4=thingatpt-utils-core.el
+FILE1=ar-subr.el
+FILE2=beg-end.el
+FILE3=thingatpt-utils-core.el
+FILE4=thingatpt-utils-map.el
 FILE5=${UTILSDIR}thing-at-point-utils.el
 FILE6=${UTILSDIR}ar-comment-lor.el
 
 SETUP=${TESTDIR}ar-thingatpt-setup-tests.el
 TEST1=${TESTDIR}ar-thingatpt-utils-emacs-lisp-tests.el
 TEST2=${TESTDIR}ar-thingatpt-utils-python-mode-tests.el
+TEST3=${TESTDIR}ar-thing-at-point-core-tests.el
 
 # if [ -s emacs24 ]; then
 #     EMACS=emacs24
@@ -121,6 +122,7 @@ hier () {
 \
 -load $TEST1 \
 -load $TEST2 \
+-load $TEST3 \
 -f ert-run-tests-batch-and-exit
 }
 
