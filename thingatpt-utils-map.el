@@ -5366,10 +5366,6 @@
    :help " ‘ar-forward-date-atpt’
    Return end position of DATE at point if succesful, nil otherwise. "]
 
-  ["Forward DEFUN at point"  ar-forward-defun-atpt
-   :help " ‘ar-forward-defun-atpt’
-   Return end position of DEFUN at point if succesful, nil otherwise. "]
-
   ["Forward DELIMITED at point"  ar-forward-delimited-atpt
    :help " ‘ar-forward-delimited-atpt’
    Return end position of DELIMITED at point if succesful, nil otherwise. "]

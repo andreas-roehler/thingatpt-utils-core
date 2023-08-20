@@ -285,7 +285,11 @@ If IN-STRING is non-nil, forms inside string match.
 
 (defun end-of-form-base (begstr endstr &optional bound noerror nesting permit-comment regexp condition permit-string forward)
   "Goto closing of a programming structure in this level.
+
+Returns a list (match-beginning 0) (match-end 0) if a match find after start, nil otherwise.
+
 As it stops one char after form, go one char back onto the last char of form.
+
 Set comment to ‘t’ if forms inside comments should match - also for processing comments itself.
 If SHOW, display nesting and point in message buffer.
 Set 7th argument REGEXP t, if beg/end-strings are regular expressions.
@@ -319,9 +323,9 @@ If IN-STRING is non-nil, forms inside string match.
         (and
          (ignore-errors (< -1 nesting)) (not (eobp)))
       (setq nesting (end-of-form-core begstr endstr regexp nesting permit-comment permit-string condition searchform bound noerror)))
-    (if (ignore-errors (and (match-beginning 0) (match-end 0)))
-	(progn
-	  (unless forward (goto-char (1- (match-end 0))))
+    (if (< orig (point))
+        (when (ignore-errors (and (looking-back searchform (line-beginning-position))(not (ar-escaped-p)) (match-beginning 0) (match-end 0)))
+	  ;; (unless forward (goto-char (1- (match-end 0))))
 	  (list (match-beginning 0) (match-end 0)))
       (goto-char orig))))
 
@@ -772,7 +776,7 @@ optional COMMENT: match also in comments
 optional FORM: a symbol, for example 'bracketed
 when provided, go to the end of FORM"
   (let* ((orig (point))
-	 (erg (end-of-form-base (regexp-quote (char-to-string char)) (regexp-quote (char-to-string (ar--return-complement-char-maybe char))) nil 'move 0 nil t 'ar-syntax t 'forward)))
+	 (erg (end-of-form-base (char-to-string char) (char-to-string (ar--return-complement-char-maybe char)) nil 'move 0 nil t 'ar-syntax t 'forward)))
     ;; maybe not at end yet?
     (if (and erg (< orig (point)))
 	(if (consp erg) (cadr erg) (point))
