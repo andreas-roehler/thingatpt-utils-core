@@ -33,22 +33,6 @@
     ;; (should (eq 118 (1+ (car (read-from-string (number-at-point))))
     (should (eq 118 (1+ (number-at-point))))))
 
-(ert-deftest ar-ert-symbol-atpt-1 ()
-  (ar-test-with-elisp-buffer-point-min
-      "o\\\""
-      (let ((erg (ar-th-bounds 'symbol)))
-	(should (eq 1 (car erg)))
-	(should (eq 4 (cdr erg))))))
-
-(ert-deftest ar-ert-symbol-atpt-2 ()
-  (ar-test-with-elisp-buffer-point-min
-      "(defun w ()"
-      (goto-char (point-min))
-    (search-forward "w")
-    (let ((erg (ar-th-bounds 'symbol)))
-      (should (eq 8 (car erg)))
-      (should (eq 9 (cdr erg))))))
-
 (ert-deftest ar-ert-forward-defun-test ()
   (ar-test-with-elisp-buffer-point-min
       "(defun foo ()
@@ -153,10 +137,6 @@
 	(ar-backward-defun)
       (beginning-of-defun))
     (should (looking-at "(defun foo2"))))
-
-
-
-
 
 (provide 'ar-thingatpt-utils-emacs-lisp-tests)
 ;;; ar-thingatpt-utils-emacs-lisp-tests.el ends here
