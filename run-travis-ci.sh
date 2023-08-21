@@ -65,6 +65,7 @@ SETUP=${TESTDIR}ar-thingatpt-setup-tests.el
 TEST1=${TESTDIR}ar-thingatpt-utils-emacs-lisp-tests.el
 TEST2=${TESTDIR}ar-thingatpt-utils-python-mode-tests.el
 TEST3=${TESTDIR}ar-thing-at-point-core-tests.el
+TEST4=${TESTDIR}ar-thingatpt-utils-interactive-tests.el
 
 # if [ -s emacs24 ]; then
 #     EMACS=emacs24
@@ -109,6 +110,40 @@ h2() {
 -f ert-run-tests-batch-and-exit
 }
 
+h3() {
+    date; time -p $EMACS -Q -L . --batch \
+--eval "(message (emacs-version))" \
+--eval "(setq ar-debug-p nil)" \
+--eval "(require 'ert)" \
+--eval "(add-to-list 'load-path \"$TESTDIR/\")" \
+-load $FILE1 \
+-load $FILE2 \
+-load $FILE3 \
+-load $FILE4 \
+-load $FILE5 \
+-load $FILE6 \
+-load $SETUP \
+-l $TEST3 \
+-f ert-run-tests-batch-and-exit
+}
+
+h4() {
+    date; time -p $EMACS -Q -L . --batch \
+--eval "(message (emacs-version))" \
+--eval "(setq ar-debug-p nil)" \
+--eval "(require 'ert)" \
+--eval "(add-to-list 'load-path \"$TESTDIR/\")" \
+-load $FILE1 \
+-load $FILE2 \
+-load $FILE3 \
+-load $FILE4 \
+-load $FILE5 \
+-load $FILE6 \
+-load $SETUP \
+-l $TEST4 \
+-f ert-run-tests-batch-and-exit
+}
+
 hier () {
     $EMACS -Q --batch \
 --eval "(message (emacs-version))" \
@@ -147,8 +182,8 @@ if [ $WERKSTATT -eq 0 ]; then
         case $option in
 	    1) echo "h1: Lade \$TEST1: \"$TEST1\"";h1;;
 	    2) echo "h2: Lade \$TEST2: \"$TEST2\"";h2;;
-	    # 3) echo "h3: Lade \$TEST3: \"$TEST3\"";h3;;
-	    # 4) echo "h4: Lade \$TEST4: \"$TEST4\"";h4;;
+	    3) echo "h3: Lade \$TEST3: \"$TEST3\"";h3;;
+	    4) echo "h4: Lade \$TEST4: \"$TEST4\"";h4;;
 	    # 5) echo "h5: Lade \$TEST5: \"$TEST5\"";h5;;
 	    # 6) echo "h6: Lade \$TEST6: \"$TEST6\"";h6;;
 	    # 7) echo "h7: Lade \$TEST7: \"$TEST7\"";h7;;

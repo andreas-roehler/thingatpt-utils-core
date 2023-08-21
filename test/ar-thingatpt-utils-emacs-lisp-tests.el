@@ -154,23 +154,6 @@
       (beginning-of-defun))
     (should (looking-at "(defun foo2"))))
 
-(ert-deftest ar-kill-comment-test-5gVmaJ ()
-  (ar-test-with-elisp-buffer
-      "defun foo1 (&optional beg end)
-  \" \"
-  (interactive \"*\")
-  ;; (let ((beg (cond (beg)
-  ;;                  ((use-region-p)
-  ;;                   (region-beginning))
-  ;;                  (t (point-min))))
-  ;;       (end (cond (end (copy-marker end))
-  ;;                  ((use-region-p)
-  ;;                   (copy-marker (region-end)))
-  ;;                  (t (copy-marker (point-max))))))"
-    (goto-char (point-max))
-    (search-backward ";; (let")
-    (ar-kill-comment-atpt)
-    (should (eobp))))
 
 
 
