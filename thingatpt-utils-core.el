@@ -867,14 +867,10 @@ XEmacs-users: ‘unibyte’ and ‘multibyte’ class is unused i.e. set to \".\
 ;; Braced
 (put 'braced 'beginning-op-at
      (lambda ()
-       (if (ignore-errors (char-equal ?{ (char-after)))
-           (list (point) (1+ (point)))
-         (beginning-of-form-base "{" "}" nil 'move 0 nil nil 'ar-syntax ar-generic-match-p))))
+       (beginning-of-form-base "{" "}" nil 'move 0 nil nil 'ar-syntax ar-generic-match-p)))
 
 (put 'braced 'end-op-at
      (lambda ()
-       (when (ignore-errors (char-equal ?{ (char-after)))
-         (forward-char 1))
        (end-of-form-base "{" "}" nil 'move 0 nil nil 'ar-syntax ar-generic-match-p)))
 
 (put 'braced 'forward-op-at
@@ -885,14 +881,10 @@ XEmacs-users: ‘unibyte’ and ‘multibyte’ class is unused i.e. set to \".\
 ;; Symboled
 (put 'symboled 'beginning-op-at
      (lambda ()
-       (if (ignore-errors (char-equal ?` (char-after)))
-           (list (point) (1+ (point)))
-         (beginning-of-form-base "`" "'" nil 'move 0 nil nil 'ar-syntax ar-generic-match-p))))
+       (beginning-of-form-base "`" "'" nil 'move 0 nil nil 'ar-syntax ar-generic-match-p)))
 
 (put 'symboled 'end-op-at
      (lambda ()
-       (when (ignore-errors (char-equal ?` (char-after)))
-         (forward-char 1))
        (end-of-form-base "`" "'" nil 'move 0 nil nil 'ar-syntax ar-generic-match-p)))
 
 (put 'symboled 'forward-op-at
@@ -903,14 +895,10 @@ XEmacs-users: ‘unibyte’ and ‘multibyte’ class is unused i.e. set to \".\
 ;; Bracketed
 (put 'bracketed 'beginning-op-at
      (lambda ()
-       (if (ignore-errors (char-equal ?\[ (char-after)))
-           (list (point) (1+ (point)))
-         (beginning-of-form-base "\\[" "\]" nil 'move 0 nil t 'ar-syntax ar-generic-match-p))))
+       (beginning-of-form-base "\\[" "\]" nil 'move 0 nil t 'ar-syntax ar-generic-match-p)))
 
 (put 'bracketed 'end-op-at
      (lambda ()
-       (when (ignore-errors (char-equal ?\[ (char-after)))
-         (forward-char 1))
        (end-of-form-base "\\[" "\]" nil 'move 0 nil t 'ar-syntax ar-generic-match-p)))
 
 (put 'bracketed 'forward-op-at
@@ -921,14 +909,10 @@ XEmacs-users: ‘unibyte’ and ‘multibyte’ class is unused i.e. set to \".\
 ;; Lesserangled
 (put 'lesserangled 'beginning-op-at
      (lambda ()
-       (if (ignore-errors (char-equal ?< (char-after)))
-           (list (point) (1+ (point)))
-         (beginning-of-form-base "<" ">" nil 'move 0 nil nil 'ar-syntax ar-generic-match-p))))
+       (beginning-of-form-base "<" ">" nil 'move 0 nil nil 'ar-syntax ar-generic-match-p)))
 
 (put 'lesserangled 'end-op-at
      (lambda ()
-       (when (ignore-errors (char-equal ?< (char-after)))
-         (forward-char 1))
        (end-of-form-base "<" ">" nil 'move 0 nil nil 'ar-syntax ar-generic-match-p)))
 
 (put 'lesserangled 'forward-op-at
@@ -939,14 +923,10 @@ XEmacs-users: ‘unibyte’ and ‘multibyte’ class is unused i.e. set to \".\
 ;; Greaterangled
 (put 'greaterangled 'beginning-op-at
      (lambda ()
-       (if (ignore-errors (char-equal ?> (char-after)))
-           (list (point) (1+ (point)))
-         (beginning-of-form-base ">" "<" nil 'move 0 nil nil 'ar-syntax ar-generic-match-p))))
+       (beginning-of-form-base ">" "<" nil 'move 0 nil nil 'ar-syntax ar-generic-match-p)))
 
 (put 'greaterangled 'end-op-at
      (lambda ()
-       (when (ignore-errors (char-equal ?> (char-after)))
-         (forward-char 1))
        (end-of-form-base ">" "<" nil 'move 0 nil nil 'ar-syntax ar-generic-match-p)))
 
 (put 'greaterangled 'forward-op-at
@@ -957,14 +937,10 @@ XEmacs-users: ‘unibyte’ and ‘multibyte’ class is unused i.e. set to \".\
 ;; Curvedsinglequoted
 (put 'curvedsinglequoted 'beginning-op-at
      (lambda ()
-       (if (ignore-errors (char-equal ?‘ (char-after)))
-           (list (point) (1+ (point)))
-         (beginning-of-form-base "‘" "’" nil 'move 0 nil nil 'ar-syntax ar-generic-match-p))))
+       (beginning-of-form-base "‘" "’" nil 'move 0 nil nil 'ar-syntax ar-generic-match-p)))
 
 (put 'curvedsinglequoted 'end-op-at
      (lambda ()
-       (when (ignore-errors (char-equal ?‘ (char-after)))
-         (forward-char 1))
        (end-of-form-base "‘" "’" nil 'move 0 nil nil 'ar-syntax ar-generic-match-p)))
 
 (put 'curvedsinglequoted 'forward-op-at
@@ -975,14 +951,10 @@ XEmacs-users: ‘unibyte’ and ‘multibyte’ class is unused i.e. set to \".\
 ;; Curveddoublequoted
 (put 'curveddoublequoted 'beginning-op-at
      (lambda ()
-       (if (ignore-errors (char-equal ?“ (char-after)))
-           (list (point) (1+ (point)))
-         (beginning-of-form-base "“" "”" nil 'move 0 nil nil 'ar-syntax ar-generic-match-p))))
+       (beginning-of-form-base "“" "”" nil 'move 0 nil nil 'ar-syntax ar-generic-match-p)))
 
 (put 'curveddoublequoted 'end-op-at
      (lambda ()
-       (when (ignore-errors (char-equal ?“ (char-after)))
-         (forward-char 1))
        (end-of-form-base "“" "”" nil 'move 0 nil nil 'ar-syntax ar-generic-match-p)))
 
 (put 'curveddoublequoted 'forward-op-at
@@ -993,14 +965,10 @@ XEmacs-users: ‘unibyte’ and ‘multibyte’ class is unused i.e. set to \".\
 ;; Parentized
 (put 'parentized 'beginning-op-at
      (lambda ()
-       (if (ignore-errors (char-equal ?\( (char-after)))
-           (list (point) (1+ (point)))
-         (beginning-of-form-base "\(" "\)" nil 'move 0 nil nil 'ar-syntax ar-generic-match-p))))
+       (beginning-of-form-base "\(" "\)" nil 'move 0 nil nil 'ar-syntax ar-generic-match-p)))
 
 (put 'parentized 'end-op-at
      (lambda ()
-       (when (ignore-errors (char-equal ?\( (char-after)))
-         (forward-char 1))
        (end-of-form-base "\(" "\)" nil 'move 0 nil nil 'ar-syntax ar-generic-match-p)))
 
 (put 'parentized 'forward-op-at
@@ -2776,10 +2744,10 @@ it would doublequote a word at point "
   "Goto char beginning, core function "
   (goto-char (car-safe (car-safe (ar-th-bounds thing no-delimiters)))))
 
-(defun ar-th-gotoend (thing)
+(defun ar-th-gotoend (thing &optional no-delimiters)
   "Goto char end, core function "
   (condition-case nil
-      (let* ((bounds (ar-th-bounds thing))
+      (let* ((bounds (ar-th-bounds thing no-delimiters))
 	     (end (or (ignore-errors (car (cdr (cadr bounds))))(ignore-errors (cdr (cadr bounds)))(ignore-errors (cadr bounds)))))
 	(goto-char end)
 	(forward-char -1)

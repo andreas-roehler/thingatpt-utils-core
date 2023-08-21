@@ -26,7 +26,8 @@
 
 ;;; Code:
 
-(defvar ar-verbose-p nil)
+(defvar ar-verbose-p nil
+  "Internal use only.")
 
 (defun ar-toggle-verbose-p ()
   "Toggle `ar-verbose-p'. "
