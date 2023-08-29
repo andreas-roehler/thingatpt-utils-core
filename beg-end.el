@@ -58,30 +58,33 @@
 
 (defun beginning-of-form-core (begstr endstr regexp nesting permit-comment permit-string condition searchform bound noerror)
   (let ((form (if regexp 're-search-backward 'search-backward))
-        (nesting nesting))
+        (nesting nesting)
+        (first nil))
     (if (looking-back (beg-end-regexp-quote-maybe endstr) (line-beginning-position))
         (progn
           (setq nesting (1+ nesting))
           (forward-char -1))
       (when (looking-back (beg-end-regexp-quote-maybe begstr) (line-beginning-position))
         (setq nesting (1- nesting))
+        (setq first t)
         (unless (bobp) (forward-char -1))))
-    ;; (when (< 0 nesting)
+    (when (or (< 0 nesting) (not first))
+      (setq first t)
       (cond ((and permit-comment permit-string)
              (while (and (funcall form searchform bound noerror) (ar-escaped-p))))
             (permit-comment
              (while (and (funcall form searchform bound noerror) (or (nth 3 (parse-partial-sexp (point-min) (point))) (ar-escaped-p)))))
             (permit-string
-             (while (and (funcall form searchform bound noerror) (or (nth 4 (parse-partial-sexp (point-min) (point)))(ar-in-comment-p)))))
+             (while (and (funcall form searchform bound noerror) (or (nth 4 (parse-partial-sexp (point-min) (point)))(ar-escaped-p)))))
             (t
-             (while (and (funcall form searchform bound noerror) (or (nth 8 (parse-partial-sexp (point-min) (point))) (ar-escaped-p))))))
-      (if (looking-at (beg-end-regexp-quote-maybe begstr) (line-beginning-position))
+             (while (and (funcall form searchform bound noerror) (or (nth 8 (parse-partial-sexp (point-min) (point))) (ar-escaped-p)))))))
+    (if (looking-at (beg-end-regexp-quote-maybe begstr))
         (setq nesting (1- nesting))
       (when (looking-at (beg-end-regexp-quote-maybe endstr) (line-beginning-position))
         (setq nesting (1+ nesting))))
     nesting))
 
-(defun beginning-of-form-base (begstr &optional endstr bound noerror nesting permit-comment regexp condition permit-string)
+(defun beginning-of-form-base (begstr &optional endstr bound noerror nesting permit-comment regexp condition permit-string backward)
   "Assume being inside delimiters, go to start.
 
 Bound limits search.
@@ -98,7 +101,7 @@ PERMIT-STRING: forms inside string match.
 			       ((and begstr endstr)
 				(progn
 				  (setq regexp t)
-				  (concat begstr "\\|" endstr)))
+				  (concat (beg-end-regexp-quote-maybe begstr) "\\|" endstr)))
 			       (t begstr))
 		       begstr))
          (nesting (or nesting 0))
@@ -121,11 +124,15 @@ PERMIT-STRING: forms inside string match.
           (setq nesting (1+ nesting))))
        ((looking-at (beg-end-regexp-quote-maybe endstr))
         (goto-char (match-beginning 0))
+        ;; (setq nesting (1- nesting))
+        ;; (setq first t)
         (if (string= begstr endstr)
             (progn
               (setq nesting (1- nesting))
               (setq first t))
-          (setq nesting (1+ nesting)))))
+          (setq nesting (1+ nesting)))
+
+        ))
       (when (and (< 1 (length endstr))(looking-back (beg-end-regexp-quote-maybe searchform) (line-beginning-position)))
         (goto-char (match-beginning 0)))
       (while

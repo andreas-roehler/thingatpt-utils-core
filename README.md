@@ -28,3 +28,6 @@ ar-THING-length-atpt
 ar-THING-copy-atpt
 ar-THING-kill-atpt
 ar-THING-backward-atpt
+
+A THING defined by unary delimiters like doublequotes: 
+cursor needs to be between or at the start.
