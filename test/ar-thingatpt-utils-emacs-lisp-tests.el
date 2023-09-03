@@ -138,5 +138,17 @@
       (beginning-of-defun))
     (should (looking-at "(defun foo2"))))
 
+(ert-deftest ar-ert-forward-comment-test-FEjRf5 ()
+  (ar-test-with-elisp-buffer-point-min
+      ";;\\s-*({<[\\].
+[]]>\")\"}\"]\"]"
+      (goto-char (point-min))
+    (skip-chars-forward "^<")
+    (ar-forward-comment)
+    (should-not (eq (char-before) ?>))
+    (should (bolp))
+    (should (eq (char-after) ?\[))
+    ))
+
 (provide 'ar-thingatpt-utils-emacs-lisp-tests)
 ;;; ar-thingatpt-utils-emacs-lisp-tests.el ends here

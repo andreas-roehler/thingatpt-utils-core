@@ -1567,46 +1567,47 @@ XEmacs-users: ‘unibyte’ and ‘multibyte’ class is unused i.e. set to \".\
        (setq delimited-start-pos nil)
        (setq delimited-end-pos nil)
        (let* ((orig (point))
-              (pps (parse-partial-sexp (point-min) (point)))
-              (ar-match-in-string-p (nth 3 pps))
-              (ar-match-in-comment-p (nth 4 pps))
-              opener
-	      (begdel (concat th-beg-delimiter ar-delimiters-atpt))
-	      (dls (and (looking-at (concat "[" th-end-delimiter "]"))
-                        (car-safe (beginning-of-form-base (char-to-string (ar--return-complement-char-maybe (char-after))) (char-to-string (char-after)) nil 'move 0 ar-match-in-comment-p t 'ar-syntax ar-match-in-string-p))))
-              (delimited-list-start (or dls (nth 1 pps)))
-	      (delimited-list-end
-               ;; starting from the closing delimiter
-	       (cond ((and dls delimited-list-start)
-                      (goto-char orig)
-                      (when (looking-at (concat "[" th-end-delimiter "]"))
-                        (setq delimited-start-pos delimited-list-start)
-                        (setq delimited-end-pos (match-end 0))))
-                     (delimited-list-start
-                      (progn (goto-char delimited-list-start)
-			     (setq opener (char-after))
-                             (car-safe (cdr-safe (end-of-form-base (char-to-string (char-after)) (char-to-string (ar--return-complement-char-maybe (char-after))) nil 'move 0 ar-match-in-comment-p t 'ar-syntax ar-match-in-string-p)))))))
-              erg)
-         ;; {<$>}
-         (and
-	  (eq orig (point))
-          opener
-          (looking-at (char-to-string (ar--return-complement-char-maybe opener)) delimited-list-start)
-          ;; started from closing paren
-          (setq delimited-start-pos delimited-list-start)
-          (setq delimited-end-pos delimited-list-end))
-         (if (and delimited-start-pos delimited-end-pos)
-             delimited-start-pos
-	   (save-restriction
-	     (and delimited-list-start delimited-list-end (narrow-to-region delimited-list-start delimited-list-end))
-             (if
-                 (setq erg (delimited-atpt-intern begdel orig))
-                 (progn
-                   (setq delimited-start-pos (car erg))
-                   (set-mark (car erg))
-                   (setq delimited-end-pos (cdr erg))
-                   delimited-start-pos)
-               (goto-char orig)))))))
+              (pps (parse-partial-sexp (point-min) (point))))
+         (let* ((ar-match-in-string-p (when (nth 3 pps) (nth 8 pps)))
+                (ar-match-in-comment-p (nth 4 pps))
+                opener
+	        (begdel (concat th-beg-delimiter ar-delimiters-atpt))
+	        (dls (and (looking-at (concat "[" th-end-delimiter "]"))
+                          (car-safe (beginning-of-form-base (char-to-string (ar--return-complement-char-maybe (char-after))) (char-to-string (char-after)) nil 'move 0 ar-match-in-comment-p t 'ar-syntax ar-match-in-string-p))))
+                (delimited-list-start (or dls (nth 1 pps)))
+	        (delimited-list-end
+                 ;; starting from the closing delimiter
+	         (cond ((and dls delimited-list-start)
+                        (goto-char orig)
+                        (when (looking-at (concat "[" th-end-delimiter "]"))
+                          (setq delimited-start-pos delimited-list-start)
+                          (setq delimited-end-pos (match-end 0))))
+                       (delimited-list-start
+                        (when (and (nth 8 pps) (< (nth 8 pps) delimited-list-start))
+                          (progn (goto-char delimited-list-start)
+			         (setq opener (char-after))
+                                 (car-safe (cdr-safe (end-of-form-base (char-to-string (char-after)) (char-to-string (ar--return-complement-char-maybe (char-after))) nil 'move 0 ar-match-in-comment-p t 'ar-syntax ar-match-in-string-p))))))))
+                erg)
+           ;; {<$>}
+           (and
+	    (eq orig (point))
+            opener
+            (looking-at (char-to-string (ar--return-complement-char-maybe opener)) delimited-list-start)
+            ;; started from closing paren
+            (setq delimited-start-pos delimited-list-start)
+            (setq delimited-end-pos delimited-list-end))
+           (if (and delimited-start-pos delimited-end-pos)
+               delimited-start-pos
+	     (save-restriction
+               (if
+                   (setq erg (delimited-atpt-intern begdel orig))
+                   (progn
+                     (setq delimited-start-pos (car erg))
+                     (set-mark (car erg))
+                     (setq delimited-end-pos (cdr erg))
+                     delimited-start-pos)
+                 (goto-char orig))))))))
+
 
 (put 'delimited 'end-op-at
      (lambda ()
@@ -2384,7 +2385,7 @@ it would doublequote a word at point "
 (put 'beginendquoted 'end-op-at
      (lambda ()
        (when (ignore-errors (looking-at "\\begin{quote}"))
-         (goto-char (match-end 0)) 
+         (goto-char (match-end 0))
          (end-of-form-base "\\begin{quote}" "\\end{quote}" nil 'move 1 nil nil nil))))
 
 
@@ -2398,7 +2399,7 @@ it would doublequote a word at point "
 (put 'blok 'end-op-at
      (lambda ()
        (when (ignore-errors (looking-at "{% "))
-         (goto-char (match-end 0)) 
+         (goto-char (match-end 0))
          (end-of-form-base "{% " " %}" nil 'move 1 nil t nil))))
 
 
@@ -2412,7 +2413,7 @@ it would doublequote a word at point "
 (put 'doublebackslashed 'end-op-at
      (lambda ()
        (when (ignore-errors (looking-at "\\\\"))
-         (goto-char (match-end 0)) 
+         (goto-char (match-end 0))
          (end-of-form-base "\\\\" "\\\\" nil 'move 1 nil nil 'ar-escaped))))
 
 
@@ -2426,7 +2427,7 @@ it would doublequote a word at point "
 (put 'doublebackticked 'end-op-at
      (lambda ()
        (when (ignore-errors (looking-at "``"))
-         (goto-char (match-end 0)) 
+         (goto-char (match-end 0))
          (end-of-form-base "``" "``" nil 'move 1 nil nil 'ar-escaped))))
 
 
@@ -2440,7 +2441,7 @@ it would doublequote a word at point "
 (put 'doubleslashed 'end-op-at
      (lambda ()
        (when (ignore-errors (looking-at "//"))
-         (goto-char (match-end 0)) 
+         (goto-char (match-end 0))
          (end-of-form-base "//" "//" nil 'move 1 nil nil 'ar-escaped))))
 
 
@@ -2454,7 +2455,7 @@ it would doublequote a word at point "
 (put 'doublebackslashedparen 'end-op-at
      (lambda ()
        (when (ignore-errors (looking-at "\\\\\\\\("))
-         (goto-char (match-end 0)) 
+         (goto-char (match-end 0))
          (end-of-form-base "\\\\\\\\(" "\\\\\\\\)" nil 'move 1 nil nil 'ar-escaped))))
 
 
@@ -2468,7 +2469,7 @@ it would doublequote a word at point "
 (put 'tabledatap 'end-op-at
      (lambda ()
        (when (ignore-errors (looking-at "<td[^>]*>"))
-         (goto-char (match-end 0)) 
+         (goto-char (match-end 0))
          (end-of-form-base "<td[^>]*>" "</td>" nil 'move 1 nil nil nil))))
 
 
@@ -2482,7 +2483,7 @@ it would doublequote a word at point "
 (put 'backslashedparen 'end-op-at
      (lambda ()
        (when (ignore-errors (looking-at "\\\\("))
-         (goto-char (match-end 0)) 
+         (goto-char (match-end 0))
          (end-of-form-base "\\\\(" "\\\\)" nil 'move 1 nil nil 'ar-escaped))))
 
 
@@ -2496,7 +2497,7 @@ it would doublequote a word at point "
 (put 'slashedparen 'end-op-at
      (lambda ()
        (when (ignore-errors (looking-at "////////("))
-         (goto-char (match-end 0)) 
+         (goto-char (match-end 0))
          (end-of-form-base "////////(" "////////)" nil 'move 1 nil nil 'ar-escaped))))
 
 
@@ -2510,7 +2511,7 @@ it would doublequote a word at point "
 (put 'triplequoteddq 'end-op-at
      (lambda ()
        (when (ignore-errors (looking-at "\"\"\"\\|'''"))
-         (goto-char (match-end 0)) 
+         (goto-char (match-end 0))
          (end-of-form-base "\"\"\"\\|'''" "\"\"\"\\|'''" nil 'move 1 nil nil 'ar-escaped))))
 
 
@@ -2524,7 +2525,7 @@ it would doublequote a word at point "
 (put 'triplequotedsq 'end-op-at
      (lambda ()
        (when (ignore-errors (looking-at "\"\"\"\\|'''"))
-         (goto-char (match-end 0)) 
+         (goto-char (match-end 0))
          (end-of-form-base "\"\"\"\\|'''" "\"\"\"\\|'''" nil 'move 1 nil nil 'ar-escaped))))
 
 
@@ -2538,7 +2539,7 @@ it would doublequote a word at point "
 (put 'xslstylesheetp 'end-op-at
      (lambda ()
        (when (ignore-errors (looking-at "<xsl:stylesheet[^<]+>.*$"))
-         (goto-char (match-end 0)) 
+         (goto-char (match-end 0))
          (end-of-form-base "<xsl:stylesheet[^<]+>.*$" "</xsl:stylesheet>" nil 'move 1 nil nil nil))))
 
 
@@ -2905,7 +2906,11 @@ Return position if at opening delimiter"
 (defun ar-thing-in-thing (thing-1th thing-2th th-function &optional no-delimiters)
   "Addresses things of 1th kind within the borders of the 2th,
 If optional positions BEG-2TH END-2TH are given, works on them instead. "
-  (let* ((bounds (ar-th-bounds thing-2th))
+  (let* ((ar-match-in-comment-p-orig ar-match-in-comment-p)
+         (ar-match-in-string-p-orig ar-match-in-string-p)
+         (ar-match-in-comment-p 'ignore)
+         (ar-match-in-string-p 'ignore)
+         (bounds (ar-th-bounds thing-2th))
 	 ;; take the inner pos of a delimiter
 	 (beg (or
 	       (ignore-errors (car (cdr (car-safe bounds))))
@@ -2919,6 +2924,8 @@ If optional positions BEG-2TH END-2TH are given, works on them instead. "
     (save-excursion
       (save-restriction
         (narrow-to-region beg end)
+        (setq ar-match-in-string-p ar-match-in-string-p-orig)
+        (setq ar-match-in-comment-p ar-match-in-comment-p-orig)
         (goto-char beg)
         ;; (if (eq th-function 'ar-th-sort)
         ;;     (ar-th-sort thing-1th nil beg end nil nil nil)
@@ -2929,7 +2936,7 @@ If optional positions BEG-2TH END-2TH are given, works on them instead. "
              (or (not done) (< last (point)))
 	     (setq last (point))
 	     (progn
-               (funcall th-function thing-1th no-delimiters)
+               (funcall th-function thing-1th)
 	       (setq done t)))
 	  (unless (eq 'char thing-1th) (setq inner-end (ar-th-forward thing-1th 1))))))))
 
@@ -3240,42 +3247,42 @@ Move backward with negative argument "
 
 (defun ar-th-symbol (thing &optional no-delimiters)
   " "
-  (interactive "*P") 
+  (interactive "*P")
   (ar-th-delim thing "`" "'" no-delimiters))
 
 (defun ar-th-brace (thing &optional no-delimiters)
   " "
-  (interactive "*P") 
+  (interactive "*P")
   (ar-th-delim thing "{" "}" no-delimiters))
 
 (defun ar-th-bracket (thing &optional no-delimiters)
   " "
-  (interactive "*P") 
+  (interactive "*P")
   (ar-th-delim thing "[" "]" no-delimiters))
 
 (defun ar-th-lesserangle (thing &optional no-delimiters)
   " "
-  (interactive "*P") 
+  (interactive "*P")
   (ar-th-delim thing "<" ">" no-delimiters))
 
 (defun ar-th-greaterangle (thing &optional no-delimiters)
   " "
-  (interactive "*P") 
+  (interactive "*P")
   (ar-th-delim thing ">" "<" no-delimiters))
 
 (defun ar-th-curvedsinglequote (thing &optional no-delimiters)
   " "
-  (interactive "*P") 
+  (interactive "*P")
   (ar-th-delim thing "‘" "’" no-delimiters))
 
 (defun ar-th-curveddoublequote (thing &optional no-delimiters)
   " "
-  (interactive "*P") 
+  (interactive "*P")
   (ar-th-delim thing "“" "”" no-delimiters))
 
 (defun ar-th-parentize (thing &optional no-delimiters)
   " "
-  (interactive "*P") 
+  (interactive "*P")
   (ar-th-delim thing "(" ")" no-delimiters))
 ;; ar-insert-delimit-forms-intern ar-paired-delimit-aktiv-raw: end
 
@@ -3284,92 +3291,92 @@ Move backward with negative argument "
 
 (defun ar-th-colon (thing &optional no-delimiters)
   " "
-  (interactive "*P") 
+  (interactive "*P")
   (ar-th-delim thing ":" ":" no-delimiters))
 
 (defun ar-th-cross (thing &optional no-delimiters)
   " "
-  (interactive "*P") 
+  (interactive "*P")
   (ar-th-delim thing "+" "+" no-delimiters))
 
 (defun ar-th-doubleslash (thing &optional no-delimiters)
   " "
-  (interactive "*P") 
+  (interactive "*P")
   (ar-th-delim thing "//" "//" no-delimiters))
 
 (defun ar-th-backslash (thing &optional no-delimiters)
   " "
-  (interactive "*P") 
+  (interactive "*P")
   (ar-th-delim thing "\\" "\\" no-delimiters))
 
 (defun ar-th-backtick (thing &optional no-delimiters)
   " "
-  (interactive "*P") 
+  (interactive "*P")
   (ar-th-delim thing "`" "`" no-delimiters))
 
 (defun ar-th-dollar (thing &optional no-delimiters)
   " "
-  (interactive "*P") 
+  (interactive "*P")
   (ar-th-delim thing "$" "$" no-delimiters))
 
 (defun ar-th-doublequote (thing &optional no-delimiters)
   " "
-  (interactive "*P") 
+  (interactive "*P")
   (ar-th-delim thing "\"" "\"" no-delimiters))
 
 (defun ar-th-equalize (thing &optional no-delimiters)
   " "
-  (interactive "*P") 
+  (interactive "*P")
   (ar-th-delim thing "=" "=" no-delimiters))
 
 (defun ar-th-escape (thing &optional no-delimiters)
   " "
-  (interactive "*P") 
+  (interactive "*P")
   (ar-th-delim thing "\\" "\\" no-delimiters))
 
 (defun ar-th-hash (thing &optional no-delimiters)
   " "
-  (interactive "*P") 
+  (interactive "*P")
   (ar-th-delim thing "#" "#" no-delimiters))
 
 (defun ar-th-hyphen (thing &optional no-delimiters)
   " "
-  (interactive "*P") 
+  (interactive "*P")
   (ar-th-delim thing "-" "-" no-delimiters))
 
 (defun ar-th-pipe (thing &optional no-delimiters)
   " "
-  (interactive "*P") 
+  (interactive "*P")
   (ar-th-delim thing "|" "|" no-delimiters))
 
 (defun ar-th-singlequote (thing &optional no-delimiters)
   " "
-  (interactive "*P") 
+  (interactive "*P")
   (ar-th-delim thing "'" "'" no-delimiters))
 
 (defun ar-th-slash (thing &optional no-delimiters)
   " "
-  (interactive "*P") 
+  (interactive "*P")
   (ar-th-delim thing "/" "/" no-delimiters))
 
 (defun ar-th-star (thing &optional no-delimiters)
   " "
-  (interactive "*P") 
+  (interactive "*P")
   (ar-th-delim thing "*" "*" no-delimiters))
 
 (defun ar-th-tild (thing &optional no-delimiters)
   " "
-  (interactive "*P") 
+  (interactive "*P")
   (ar-th-delim thing "~" "~" no-delimiters))
 
 (defun ar-th-underscore (thing &optional no-delimiters)
   " "
-  (interactive "*P") 
+  (interactive "*P")
   (ar-th-delim thing "_" "_" no-delimiters))
 
 (defun ar-th-whitespace (thing &optional no-delimiters)
   " "
-  (interactive "*P") 
+  (interactive "*P")
   (ar-th-delim thing " " " " no-delimiters))
 ;; ar-insert-delimit-forms-intern ar-unpaired-delimit-aktiv-raw: end
 
@@ -3377,52 +3384,52 @@ Move backward with negative argument "
 
 (defun ar-th-beginendquote (thing &optional no-delimiters)
   " "
-  (interactive "*P") 
+  (interactive "*P")
   (ar-th-delim thing "\\begin{quote}" "\\end{quote}" no-delimiters))
 
 (defun ar-th-blok (thing &optional no-delimiters)
   " "
-  (interactive "*P") 
+  (interactive "*P")
   (ar-th-delim thing "{% " " %}" no-delimiters))
 
 (defun ar-th-doublebackslash (thing &optional no-delimiters)
   " "
-  (interactive "*P") 
+  (interactive "*P")
   (ar-th-delim thing "\\\\" "\\\\" no-delimiters))
 
 (defun ar-th-doublebackslashparen (thing &optional no-delimiters)
   " "
-  (interactive "*P") 
+  (interactive "*P")
   (ar-th-delim thing "\\\\(" "\\\\)" no-delimiters))
 
 (defun ar-th-doublebacktick (thing &optional no-delimiters)
   " "
-  (interactive "*P") 
+  (interactive "*P")
   (ar-th-delim thing "``" "``" no-delimiters))
 
 (defun ar-th-triplebacktick (thing &optional no-delimiters)
   " "
-  (interactive "*P") 
+  (interactive "*P")
   (ar-th-delim thing "```" "```" no-delimiters))
 
 (defun ar-th-backslashparen (thing &optional no-delimiters)
   " "
-  (interactive "*P") 
+  (interactive "*P")
   (ar-th-delim thing "\\(" "\\)" no-delimiters))
 
 (defun ar-th-slashparen (thing &optional no-delimiters)
   " "
-  (interactive "*P") 
+  (interactive "*P")
   (ar-th-delim thing "////(" "////)" no-delimiters))
 
 (defun ar-th-triplequotedq (thing &optional no-delimiters)
   " "
-  (interactive "*P") 
+  (interactive "*P")
   (ar-th-delim thing "\"\"\"" "\"\"\"" no-delimiters))
 
 (defun ar-th-triplequotesq (thing &optional no-delimiters)
   " "
-  (interactive "*P") 
+  (interactive "*P")
   (ar-th-delim thing "'''" "\"\"\"\\|'''" no-delimiters))
 ;; ar-atpt-data-forms-aktiv end
 
@@ -3442,33 +3449,31 @@ Move backward with negative argument "
   (let ((erg (logand (car (syntax-after (1- (point)))) 65535)))
     (when erg (message "%s" erg)) erg))
 
-(defun ar-syntax-atpt (&optional arg docu pos)
-  (interactive "p")
-  (when pos
-    (goto-char pos))
-  (let* ((elt (car (if (featurep 'xemacs)
-                       (char-syntax (char-after))
-                     (syntax-after (point)))))
-         (stax (cond ((eq elt 0) "0 whitespace")
-                     ((eq elt 5) "5 close parenthesis")
-                     ((eq elt 10) "10 character quote")
-                     ((eq elt 1) "1 punctuation")
-                     ((eq elt 6) "6 expression prefix")
-                     ((eq elt 11) "11 comment-start")
-                     ((eq elt 2) "2 word")
-                     ((eq elt 7) "7 string quote")
-                     ((eq elt 12) "12 comment-end")
-                     ((eq elt 3) "3 symbol")
-                     ((eq elt 8) "8 paired delimiter")
-                     ((eq elt 13) "13 inherit")
-                     ((eq elt 4) "4 open parenthesis")
-                     ((eq elt 9) "9 escape")
-                     ((eq elt 14) "14 generic comment")
-                     ((eq elt 15) "15 generic string"))))
-    (when arg
-      (message (format "%s" stax)))
-    (if docu
-        (format "%s" stax)
+(defun ar-syntax-atpt (&optional pos)
+  ""
+  (interactive)
+  (save-excursion
+    (when pos
+      (goto-char pos))
+    (let* ((elt (car (if (featurep 'xemacs)
+                         (char-syntax (char-after))
+                       (syntax-after (point)))))
+           (stax (cond ((eq elt 0) "0 whitespace")
+                       ((eq elt 5) "5 close parenthesis")
+                       ((eq elt 10) "10 character quote")
+                       ((eq elt 1) "1 punctuation")
+                       ((eq elt 6) "6 expression prefix")
+                       ((eq elt 11) "11 comment-start")
+                       ((eq elt 2) "2 word")
+                       ((eq elt 7) "7 string quote")
+                       ((eq elt 12) "12 comment-end")
+                       ((eq elt 3) "3 symbol")
+                       ((eq elt 8) "8 paired delimiter")
+                       ((eq elt 13) "13 inherit")
+                       ((eq elt 4) "4 open parenthesis")
+                       ((eq elt 9) "9 escape")
+                       ((eq elt 14) "14 generic comment")
+                       ((eq elt 15) "15 generic string"))))
       elt)))
 
 ;; https://lists.gnu.org/archive/html/bug-gnu-emacs/2019-09/msg00562.html

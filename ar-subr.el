@@ -262,29 +262,15 @@ Optional argument CHAR comment start."
   (interactive)
   (let ((orig (or pos (point)))
 	(char (or char (string-to-char comment-start)))
+        (pps (parse-partial-sexp (point-min) (point)))
 	last)
-    (unless (ar-in-comment-p)
-      (search-forward comment-start nil t 1))
-    (while (and (not (eobp))
-		(forward-comment 99999)))
-    (when (eq (point) orig)
-      ;; forward-comment fails sometimes
-      (while
-	  (and (not (eobp)) (or (ar-in-comment-p)(eq (point) orig)))
-	(setq last (line-end-position))
-	(forward-line 1)
-	(end-of-line)
-	;; (setq orig (point))
-))
-    (and (eq orig (point)) (prog1 (forward-line 1) (back-to-indentation))
-	 (while (member (char-after) (list char 10))(forward-line 1)(back-to-indentation)))
-    ;; go
-    (when last
-      (goto-char last)
-      (skip-chars-forward " \t\r\n\f")
-      (back-to-indentation))
-    (unless (eq (point) orig)
-      (point))))
+    (cond ((nth 8 pps)
+           (goto-char (nth 8 pps))
+           (forward-comment 99999)
+           (unless (eq (point) orig)
+             (point)))
+          (t (search-forward comment-start nil t 1)))
+    ))
 
 (defun ar-in-comment-p (&optional start)
   "Return the beginning of current line's comment, if inside.
@@ -1189,6 +1175,24 @@ Optional PERMIT-STRING: match inside a string."
     (or (and (nth 4 pps) (not permit-comment))
         (and (nth 3 pps) (not permit-string))
         (ar-escaped-p))))
+
+
+(defun ar-narrow-to-comment-atpt ()
+  (interactive)
+  (let ((pps (parse-partial-sexp (point-min) (point))))
+    (when (nth 4 pps)
+      (ar-backward-comment)
+      (set-mark (point))
+      (ar-forward-comment)
+      (narrow-to-region (mark) (point)))))
+
+(defun ar-narrow-to-string-atpt ()
+  (interactive)
+  (let ((pps (parse-partial-sexp (point-min) (point))))
+    (set-mark (goto-char (nth 8 pps)))
+    (forward-sexp)
+    (narrow-to-region (mark) (point))))
+
 
 (provide 'ar-subr)
 ;;; ar-subr.el ends here
