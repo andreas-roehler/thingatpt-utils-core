@@ -60,6 +60,7 @@ FILE3=thingatpt-utils-core.el
 FILE4=thingatpt-utils-map.el
 FILE5=${UTILSDIR}thing-at-point-utils.el
 FILE6=${UTILSDIR}ar-comment-lor.el
+FILE7=ar-thingatpt-basic-definitions.el
 
 SETUP=${TESTDIR}ar-thingatpt-setup-tests.el
 TEST1=${TESTDIR}ar-thingatpt-utils-emacs-lisp-tests.el
@@ -88,6 +89,7 @@ h1() {
 -load $FILE4 \
 -load $FILE5 \
 -load $FILE6 \
+-load $FILE7 \
 -load $SETUP \
 -l $TEST1 \
 -f ert-run-tests-batch-and-exit
@@ -105,6 +107,7 @@ h2() {
 -load $FILE4 \
 -load $FILE5 \
 -load $FILE6 \
+-load $FILE7 \
 -load $SETUP \
 -l $TEST2 \
 -f ert-run-tests-batch-and-exit
@@ -122,6 +125,7 @@ h3() {
 -load $FILE4 \
 -load $FILE5 \
 -load $FILE6 \
+-load $FILE7 \
 -load $SETUP \
 -l $TEST3 \
 -f ert-run-tests-batch-and-exit
@@ -139,6 +143,7 @@ h4() {
 -load $FILE4 \
 -load $FILE5 \
 -load $FILE6 \
+-load $FILE7 \
 -load $SETUP \
 -l $TEST4 \
 -f ert-run-tests-batch-and-exit
@@ -147,12 +152,18 @@ h4() {
 hier () {
     $EMACS -Q --batch \
 --eval "(message (emacs-version))" \
+--eval "(setq ar-debug-p nil)" \
+--eval "(require 'ert)" \
+--eval "(setq py-install-dir \"$PDIR\")" \
+--eval "(add-to-list 'load-path \"$PDIR/\")" \
+--eval "(add-to-list 'load-path \"$TESTDIR/\")" \
 -load $FILE1 \
 -load $FILE2 \
 -load $FILE3 \
 -load $FILE4 \
 -load $FILE5 \
 -load $FILE6 \
+-load $FILE7 \
 -load $SETUP \
 \
 -load $TEST1 \

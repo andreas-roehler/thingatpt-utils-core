@@ -76,6 +76,7 @@
 (defun beginning-of-form-intern (begstr endstr bound noerror nesting in-comment regexp condition in-string backward)
   (let ((searchform (if (stringp begstr)
 			(cond ((and (string= begstr endstr))
+                               (setq regexp nil)
 			       begstr)
 			      ((and begstr endstr)
 			       (progn
@@ -85,24 +86,26 @@
 		      begstr))
         (nesting (or nesting 0))
         (orig (point))
-        first)
+        first done)
     (cond
-     ((looking-back (beg-end-regexp-quote-maybe endstr) (line-beginning-position))
+     ((and regexp (looking-back (beg-end-regexp-quote-maybe endstr) (line-beginning-position)))
       (goto-char (match-beginning 0))
-      (if (string= begstr endstr)
-          (progn
-            (setq nesting (1- nesting))
-            (setq first t))
-        (setq nesting (1+ nesting))))
-     ((looking-at (beg-end-regexp-quote-maybe endstr))
+      ;; (if (string= begstr endstr)
+      ;;     (progn
+      ;;       (setq nesting (1- nesting))
+      (setq first t)
+     (setq nesting (1+ nesting)))
+        ;; )
+      ;; )
+     ((and regexp (not first) (looking-at (beg-end-regexp-quote-maybe endstr)))
       (goto-char (match-beginning 0))
       (if (string= begstr endstr)
           (progn
             (setq nesting (1- nesting))
             (setq first t))
         (setq nesting (1+ nesting)))))
-    (when (and (< 1 (length endstr))(looking-back (beg-end-regexp-quote-maybe searchform) (line-beginning-position)))
-      (goto-char (match-beginning 0)))
+    ;; (when (and (< 1 (length endstr))(looking-back (beg-end-regexp-quote-maybe searchform) (line-beginning-position)))
+      ;; (goto-char (match-beginning 0)))
     (while
         (and
          (or (not first) (< 0 nesting)) (not (bobp)))
@@ -142,7 +145,7 @@ PERMIT-STRING: forms inside string match.
          (in-string (unless (eq in-string 'ignore)(or in-string (nth 3 pps)))))
         (cond (in-string
                (if
-                   (looking-at (beg-end-regexp-quote-maybe begstr))
+                   (and (not (string-match begstr ar-delimiters-atpt))(looking-at (beg-end-regexp-quote-maybe begstr)))
                    (list (match-beginning 0) (match-end 0))
                  (unless bound (setq bound (when (nth 8 pps)(nth 8 pps))))
                  (beginning-of-form-intern begstr endstr (when (numberp bound) bound) noerror nesting in-comment regexp condition in-string backward)))
@@ -201,7 +204,7 @@ If IN-STRING is non-nil, forms inside string match.
                            ((and begstr endstr)
                             (progn
                               (setq regexp t)
-                              (concat begstr "\\|" endstr)))
+                              (concat (beg-end-regexp-quote-maybe begstr) "\\|" (beg-end-regexp-quote-maybe endstr))))
                            (t endstr)))
          (nesting (or nesting 0))
          (orig (point))
@@ -253,7 +256,7 @@ PERMIT-STRING: forms inside string match.
   (let* ((pps (parse-partial-sexp (point-min) (point)))
          (in-comment (unless (eq in-comment 'ignore)(or in-comment (nth 4 pps))))
          (in-string (unless (eq in-string 'ignore)(or in-string (nth 3 pps))))
-         bound)
+         )
     (cond (in-string
            (unless bound (setq bound (save-excursion (when (nth 8 pps) (goto-char (nth 8 pps))) (forward-sexp) (point))))
            (end-of-form-base-intern begstr endstr (when (numberp bound) bound) noerror nesting in-comment regexp condition in-string forward))
