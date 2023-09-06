@@ -1237,7 +1237,7 @@ XEmacs-users: ‘unibyte’ and ‘multibyte’ class is unused i.e. set to \".\
 (put 'beginendquoted 'end-op-at
      (lambda ()
        (when (ignore-errors (looking-at "\\begin{quote}"))
-         (goto-char (match-end 0))
+         (goto-char (match-end 0)) 
          (end-of-form-base "\\begin{quote}" "\\end{quote}" nil 'move 1 nil nil nil))))
 
 
@@ -1251,7 +1251,7 @@ XEmacs-users: ‘unibyte’ and ‘multibyte’ class is unused i.e. set to \".\
 (put 'blok 'end-op-at
      (lambda ()
        (when (ignore-errors (looking-at "{% "))
-         (goto-char (match-end 0))
+         (goto-char (match-end 0)) 
          (end-of-form-base "{% " " %}" nil 'move 1 nil t nil))))
 
 
@@ -1265,7 +1265,7 @@ XEmacs-users: ‘unibyte’ and ‘multibyte’ class is unused i.e. set to \".\
 (put 'doublebackslashed 'end-op-at
      (lambda ()
        (when (ignore-errors (looking-at "\\\\"))
-         (goto-char (match-end 0))
+         (goto-char (match-end 0)) 
          (end-of-form-base "\\\\" "\\\\" nil 'move 1 nil nil 'ar-escaped))))
 
 
@@ -1279,7 +1279,7 @@ XEmacs-users: ‘unibyte’ and ‘multibyte’ class is unused i.e. set to \".\
 (put 'doublebackticked 'end-op-at
      (lambda ()
        (when (ignore-errors (looking-at "``"))
-         (goto-char (match-end 0))
+         (goto-char (match-end 0)) 
          (end-of-form-base "``" "``" nil 'move 1 nil nil 'ar-escaped))))
 
 
@@ -1293,7 +1293,7 @@ XEmacs-users: ‘unibyte’ and ‘multibyte’ class is unused i.e. set to \".\
 (put 'doubleslashed 'end-op-at
      (lambda ()
        (when (ignore-errors (looking-at "//"))
-         (goto-char (match-end 0))
+         (goto-char (match-end 0)) 
          (end-of-form-base "//" "//" nil 'move 1 nil nil 'ar-escaped))))
 
 
@@ -1307,7 +1307,7 @@ XEmacs-users: ‘unibyte’ and ‘multibyte’ class is unused i.e. set to \".\
 (put 'doublebackslashedparen 'end-op-at
      (lambda ()
        (when (ignore-errors (looking-at "\\\\\\\\("))
-         (goto-char (match-end 0))
+         (goto-char (match-end 0)) 
          (end-of-form-base "\\\\\\\\(" "\\\\\\\\)" nil 'move 1 nil nil 'ar-escaped))))
 
 
@@ -1321,7 +1321,7 @@ XEmacs-users: ‘unibyte’ and ‘multibyte’ class is unused i.e. set to \".\
 (put 'tabledatap 'end-op-at
      (lambda ()
        (when (ignore-errors (looking-at "<td[^>]*>"))
-         (goto-char (match-end 0))
+         (goto-char (match-end 0)) 
          (end-of-form-base "<td[^>]*>" "</td>" nil 'move 1 nil nil nil))))
 
 
@@ -1335,7 +1335,7 @@ XEmacs-users: ‘unibyte’ and ‘multibyte’ class is unused i.e. set to \".\
 (put 'backslashedparen 'end-op-at
      (lambda ()
        (when (ignore-errors (looking-at "\\\\("))
-         (goto-char (match-end 0))
+         (goto-char (match-end 0)) 
          (end-of-form-base "\\\\(" "\\\\)" nil 'move 1 nil nil 'ar-escaped))))
 
 
@@ -1349,7 +1349,7 @@ XEmacs-users: ‘unibyte’ and ‘multibyte’ class is unused i.e. set to \".\
 (put 'slashedparen 'end-op-at
      (lambda ()
        (when (ignore-errors (looking-at "////////("))
-         (goto-char (match-end 0))
+         (goto-char (match-end 0)) 
          (end-of-form-base "////////(" "////////)" nil 'move 1 nil nil 'ar-escaped))))
 
 
@@ -1363,7 +1363,7 @@ XEmacs-users: ‘unibyte’ and ‘multibyte’ class is unused i.e. set to \".\
 (put 'triplequoteddq 'end-op-at
      (lambda ()
        (when (ignore-errors (looking-at "\"\"\"\\|'''"))
-         (goto-char (match-end 0))
+         (goto-char (match-end 0)) 
          (end-of-form-base "\"\"\"\\|'''" "\"\"\"\\|'''" nil 'move 1 nil nil 'ar-escaped))))
 
 
@@ -1377,7 +1377,7 @@ XEmacs-users: ‘unibyte’ and ‘multibyte’ class is unused i.e. set to \".\
 (put 'triplequotedsq 'end-op-at
      (lambda ()
        (when (ignore-errors (looking-at "\"\"\"\\|'''"))
-         (goto-char (match-end 0))
+         (goto-char (match-end 0)) 
          (end-of-form-base "\"\"\"\\|'''" "\"\"\"\\|'''" nil 'move 1 nil nil 'ar-escaped))))
 
 
@@ -1391,7 +1391,7 @@ XEmacs-users: ‘unibyte’ and ‘multibyte’ class is unused i.e. set to \".\
 (put 'xslstylesheetp 'end-op-at
      (lambda ()
        (when (ignore-errors (looking-at "<xsl:stylesheet[^<]+>.*$"))
-         (goto-char (match-end 0))
+         (goto-char (match-end 0)) 
          (end-of-form-base "<xsl:stylesheet[^<]+>.*$" "</xsl:stylesheet>" nil 'move 1 nil nil nil))))
 
 
@@ -1400,42 +1400,42 @@ XEmacs-users: ‘unibyte’ and ‘multibyte’ class is unused i.e. set to \".\
 
 (defun ar-th-symbol (thing &optional no-delimiters)
   " "
-  (interactive "*P")
+  (interactive "*P") 
   (ar-th-delim thing "`" "'" no-delimiters))
 
 (defun ar-th-brace (thing &optional no-delimiters)
   " "
-  (interactive "*P")
+  (interactive "*P") 
   (ar-th-delim thing "{" "}" no-delimiters))
 
 (defun ar-th-bracket (thing &optional no-delimiters)
   " "
-  (interactive "*P")
+  (interactive "*P") 
   (ar-th-delim thing "[" "]" no-delimiters))
 
 (defun ar-th-lesserangle (thing &optional no-delimiters)
   " "
-  (interactive "*P")
+  (interactive "*P") 
   (ar-th-delim thing "<" ">" no-delimiters))
 
 (defun ar-th-greaterangle (thing &optional no-delimiters)
   " "
-  (interactive "*P")
+  (interactive "*P") 
   (ar-th-delim thing ">" "<" no-delimiters))
 
 (defun ar-th-curvedsinglequote (thing &optional no-delimiters)
   " "
-  (interactive "*P")
+  (interactive "*P") 
   (ar-th-delim thing "‘" "’" no-delimiters))
 
 (defun ar-th-curveddoublequote (thing &optional no-delimiters)
   " "
-  (interactive "*P")
+  (interactive "*P") 
   (ar-th-delim thing "“" "”" no-delimiters))
 
 (defun ar-th-parentize (thing &optional no-delimiters)
   " "
-  (interactive "*P")
+  (interactive "*P") 
   (ar-th-delim thing "(" ")" no-delimiters))
 ;; ar-insert-delimit-forms-intern ar-paired-delimit-aktiv-raw: end
 
@@ -1444,92 +1444,92 @@ XEmacs-users: ‘unibyte’ and ‘multibyte’ class is unused i.e. set to \".\
 
 (defun ar-th-colon (thing &optional no-delimiters)
   " "
-  (interactive "*P")
+  (interactive "*P") 
   (ar-th-delim thing ":" ":" no-delimiters))
 
 (defun ar-th-cross (thing &optional no-delimiters)
   " "
-  (interactive "*P")
+  (interactive "*P") 
   (ar-th-delim thing "+" "+" no-delimiters))
 
 (defun ar-th-doubleslash (thing &optional no-delimiters)
   " "
-  (interactive "*P")
+  (interactive "*P") 
   (ar-th-delim thing "//" "//" no-delimiters))
 
 (defun ar-th-backslash (thing &optional no-delimiters)
   " "
-  (interactive "*P")
+  (interactive "*P") 
   (ar-th-delim thing "\\" "\\" no-delimiters))
 
 (defun ar-th-backtick (thing &optional no-delimiters)
   " "
-  (interactive "*P")
+  (interactive "*P") 
   (ar-th-delim thing "`" "`" no-delimiters))
 
 (defun ar-th-dollar (thing &optional no-delimiters)
   " "
-  (interactive "*P")
+  (interactive "*P") 
   (ar-th-delim thing "$" "$" no-delimiters))
 
 (defun ar-th-doublequote (thing &optional no-delimiters)
   " "
-  (interactive "*P")
+  (interactive "*P") 
   (ar-th-delim thing "\"" "\"" no-delimiters))
 
 (defun ar-th-equalize (thing &optional no-delimiters)
   " "
-  (interactive "*P")
+  (interactive "*P") 
   (ar-th-delim thing "=" "=" no-delimiters))
 
 (defun ar-th-escape (thing &optional no-delimiters)
   " "
-  (interactive "*P")
+  (interactive "*P") 
   (ar-th-delim thing "\\" "\\" no-delimiters))
 
 (defun ar-th-hash (thing &optional no-delimiters)
   " "
-  (interactive "*P")
+  (interactive "*P") 
   (ar-th-delim thing "#" "#" no-delimiters))
 
 (defun ar-th-hyphen (thing &optional no-delimiters)
   " "
-  (interactive "*P")
+  (interactive "*P") 
   (ar-th-delim thing "-" "-" no-delimiters))
 
 (defun ar-th-pipe (thing &optional no-delimiters)
   " "
-  (interactive "*P")
+  (interactive "*P") 
   (ar-th-delim thing "|" "|" no-delimiters))
 
 (defun ar-th-singlequote (thing &optional no-delimiters)
   " "
-  (interactive "*P")
+  (interactive "*P") 
   (ar-th-delim thing "'" "'" no-delimiters))
 
 (defun ar-th-slash (thing &optional no-delimiters)
   " "
-  (interactive "*P")
+  (interactive "*P") 
   (ar-th-delim thing "/" "/" no-delimiters))
 
 (defun ar-th-star (thing &optional no-delimiters)
   " "
-  (interactive "*P")
+  (interactive "*P") 
   (ar-th-delim thing "*" "*" no-delimiters))
 
 (defun ar-th-tild (thing &optional no-delimiters)
   " "
-  (interactive "*P")
+  (interactive "*P") 
   (ar-th-delim thing "~" "~" no-delimiters))
 
 (defun ar-th-underscore (thing &optional no-delimiters)
   " "
-  (interactive "*P")
+  (interactive "*P") 
   (ar-th-delim thing "_" "_" no-delimiters))
 
 (defun ar-th-whitespace (thing &optional no-delimiters)
   " "
-  (interactive "*P")
+  (interactive "*P") 
   (ar-th-delim thing " " " " no-delimiters))
 ;; ar-insert-delimit-forms-intern ar-unpaired-delimit-aktiv-raw: end
 
@@ -1537,52 +1537,52 @@ XEmacs-users: ‘unibyte’ and ‘multibyte’ class is unused i.e. set to \".\
 
 (defun ar-th-beginendquote (thing &optional no-delimiters)
   " "
-  (interactive "*P")
+  (interactive "*P") 
   (ar-th-delim thing "\\begin{quote}" "\\end{quote}" no-delimiters))
 
 (defun ar-th-blok (thing &optional no-delimiters)
   " "
-  (interactive "*P")
+  (interactive "*P") 
   (ar-th-delim thing "{% " " %}" no-delimiters))
 
 (defun ar-th-doublebackslash (thing &optional no-delimiters)
   " "
-  (interactive "*P")
+  (interactive "*P") 
   (ar-th-delim thing "\\\\" "\\\\" no-delimiters))
 
 (defun ar-th-doublebackslashparen (thing &optional no-delimiters)
   " "
-  (interactive "*P")
+  (interactive "*P") 
   (ar-th-delim thing "\\\\(" "\\\\)" no-delimiters))
 
 (defun ar-th-doublebacktick (thing &optional no-delimiters)
   " "
-  (interactive "*P")
+  (interactive "*P") 
   (ar-th-delim thing "``" "``" no-delimiters))
 
 (defun ar-th-triplebacktick (thing &optional no-delimiters)
   " "
-  (interactive "*P")
+  (interactive "*P") 
   (ar-th-delim thing "```" "```" no-delimiters))
 
 (defun ar-th-backslashparen (thing &optional no-delimiters)
   " "
-  (interactive "*P")
+  (interactive "*P") 
   (ar-th-delim thing "\\(" "\\)" no-delimiters))
 
 (defun ar-th-slashparen (thing &optional no-delimiters)
   " "
-  (interactive "*P")
+  (interactive "*P") 
   (ar-th-delim thing "////(" "////)" no-delimiters))
 
 (defun ar-th-triplequotedq (thing &optional no-delimiters)
   " "
-  (interactive "*P")
+  (interactive "*P") 
   (ar-th-delim thing "\"\"\"" "\"\"\"" no-delimiters))
 
 (defun ar-th-triplequotesq (thing &optional no-delimiters)
   " "
-  (interactive "*P")
+  (interactive "*P") 
   (ar-th-delim thing "'''" "\"\"\"\\|'''" no-delimiters))
 ;; ar-atpt-data-forms-aktiv end
 
@@ -1802,70 +1802,6 @@ Returns final position when called from inside section, nil otherwise"
    '(stared "*")
    '(underscored "_")
    '(whitespaced " ")))
-
-(defun ar--transform-delimited-new-delimiter (to)
-  "Return the new delimiter - either paired or unpaired. "
-  (let ((erg))
-    (dolist (ele ar-paired-delimited-passiv-raw)
-      (when (member to ele)
-	(setq erg (cdr ele))
-	(message "%s" (car erg))))
-    (unless erg
-      (dolist (ele ar-unpaired-delimited-raw)
-	(when (member to ele)
-	  (setq erg (cdr ele))
-	  (message "%s" (car erg)))))
-    erg))
-
-(defun ar--transform-insert-opening-delimiter-according-to-type (new-delimiter)
-  "If a cons, insert car. "
-  (if (string-match "\"" (car new-delimiter))
-      (insert "\"")
-    (insert (car new-delimiter))))
-
-(defun ar--transform-return-closing-delimiter-according-to-type (new-delimiter)
-  "Return closing delimiter. "
-  (let ((erg (if (< 1 (length new-delimiter))
-		 (cadr new-delimiter)
-	       (car new-delimiter))))
-    (if (string-match "\"" erg)
-	"\""
-      erg)))
-
-;; (defun ar--transform-insert-opening-delimiter-according-to-type (new-delimiter)
-;;   "If a cons, insert car. "
-;;   (insert (car new-delimiter)))
-
-;; (defun ar--transform-return-closing-delimiter-according-to-type (new-delimiter)
-;;   "Return closing delimiter. "
-;;   (if (< 1 (length new-delimiter))
-;;       (cadr new-delimiter)
-;;     (car new-delimiter)))
-
-(defun ar--transform-delimited-intern (from to)
-  "Expects string. "
-  (save-restriction
-    (let* ((bounds (ignore-errors (funcall (car (read-from-string (concat "ar-bounds-of-" from "-atpt"))))))
-           (end (cond
-               ((numberp (cdr-safe bounds))
-                (cdr-safe bounds))
-               ((numberp (ignore-errors (cadr bounds)))
-                (cadr bounds))
-               ((numberp (ignore-errors (cadr (cadr bounds))))
-                (cadr (cadr bounds)))
-               ((numberp (ignore-errors (cdr (cadr bounds))))
-                (cdr (cadr bounds)))))
-	   ;; (end (copy-marker (or (ignore-errors (cadr (cadr bounds)))(ignore-errors (cdr (cadr bounds))))))
-	   (new-delimiter (ar--transform-delimited-new-delimiter (car (read-from-string to)))))
-      (unless bounds (message (concat "ar--transform-delimited-intern: can't see " from)))
-      (unless new-delimiter (message (concat "ar--transform-delimited-intern: can't see " to)))
-      (goto-char (car bounds))
-      (delete-char 1)
-      (ar--transform-insert-opening-delimiter-according-to-type new-delimiter)
-      (goto-char end)
-      (delete-char -1)
-      (insert (ar--transform-return-closing-delimiter-according-to-type new-delimiter)))))
-
 
 (defvar ar-paired-delimited-passiv-raw
   (list

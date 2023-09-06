@@ -1209,8 +1209,8 @@ it would doublequote a word at point "
              (cdr (cadr end)))))))
     (cons first second)))
 
-(defvar ar-th-bounds-backfix nil
-   "starting delimiter pos might need correction from end")
+;; (defvar ar-th-bounds-backfix nil
+;;    "starting delimiter pos might need correction from end")
 
 (defun ar-th-bounds (thing &optional no-delimiters)
   "Determine the start and end buffer locations for the THING at point.
@@ -1220,7 +1220,7 @@ it would doublequote a word at point "
   Call THING by his name, i.e. ar-word-atpt etc.
 
 "
-  (setq ar-th-bounds-backfix nil)
+  ;; (setq ar-th-bounds-backfix nil)
   (ignore-errors
     (cond ((eq thing 'region)
 	   (ignore-errors (cons (region-beginning) (region-end))))
@@ -1232,9 +1232,9 @@ it would doublequote a word at point "
 			(beg (funcall (get thing 'beginning-op-at)))
                         (beg_char (if (consp beg) (car beg) beg))
 			(end (and beg (goto-char beg_char) (funcall (get thing 'end-op-at)))))
-		   (when ar-th-bounds-backfix
-		     (message "backfix: %s" ar-th-bounds-backfix)
-		     (setq beg ar-th-bounds-backfix))
+		   ;; (when ar-th-bounds-backfix
+		   ;;   (message "backfix: %s" ar-th-bounds-backfix)
+		   ;;   (setq beg ar-th-bounds-backfix))
 		   (when beg
                      (if (numberp beg)
 		       (ar--th-bounds-char-return beg end orig no-delimiters)
@@ -1370,7 +1370,15 @@ it would doublequote a word at point "
     (ignore-errors
       (let* (bounds
              (beg (or beg (and (setq bounds (ar-th-bounds thing no-delimiters)) (car bounds))))
-             (end (or end (cadr (cadr bounds))))
+             (end (cond
+               ((numberp (cdr-safe bounds))
+                (cdr-safe bounds))
+               ((numberp (ignore-errors (cadr bounds)))
+                (cadr bounds))
+               ((numberp (ignore-errors (cadr (cadr bounds))))
+                (cadr (cadr bounds)))
+               ((numberp (ignore-errors (cdr (cadr bounds))))
+                (cdr (cadr bounds)))))
              (matchcount 0)
              (erg 0)
              len)
@@ -2034,11 +2042,21 @@ Move backward with negative argument "
   "Expects string. "
   (save-restriction
     (let* ((bounds (ignore-errors (funcall (car (read-from-string (concat "ar-bounds-of-" from "-atpt"))))))
-	   (end (copy-marker (or (ignore-errors (cadr (cadr bounds)))(ignore-errors (cdr (cadr bounds))))))
+           (end (copy-marker
+                 (cond
+                  ((numberp (cdr-safe bounds))
+                   (cdr-safe bounds))
+                  ((numberp (ignore-errors (cadr bounds)))
+                   (cadr bounds))
+                  ((numberp (ignore-errors (cadr (cadr bounds))))
+                   (cadr (cadr bounds)))
+                  ((numberp (ignore-errors (cdr (cadr bounds))))
+                   (cdr (cadr bounds))))))
+	   ;;(end (copy-marker (or (ignore-errors (cadr (cadr bounds)))(ignore-errors (cdr (cadr bounds))))))
 	   (new-delimiter (ar--transform-delimited-new-delimiter (car (read-from-string to)))))
       (unless bounds (message (concat "ar--transform-delimited-intern: can't see " from)))
       (unless new-delimiter (message (concat "ar--transform-delimited-intern: can't see " to)))
-      (goto-char (caar bounds))
+      (goto-char (car bounds))
       (delete-char 1)
       (ar--transform-insert-opening-delimiter-according-to-type new-delimiter)
       (goto-char end)
