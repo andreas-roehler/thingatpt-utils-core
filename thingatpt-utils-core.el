@@ -255,7 +255,7 @@
 (require 'ar-subr)
 (require 'beg-end)
 (require 'hideshow)
-(require 'ar-thingatpt-basic-definitions)
+;; (require 'ar-thingatpt-basic-definitions)
 (defconst Emacs-Werkstatt-version "1.5")
 
 (when (featurep 'xemacs) (require 'overlay))
