@@ -58,9 +58,9 @@ FILE1=ar-subr.el
 FILE2=beg-end.el
 FILE3=thingatpt-utils-core.el
 FILE4=thingatpt-utils-map.el
-FILE5=${UTILSDIR}thing-at-point-utils.el
-FILE6=${UTILSDIR}ar-comment-lor.el
-FILE7=ar-thingatpt-basic-definitions.el
+FILE5=ar-thingatpt-basic-definitions.el
+FILE6=${UTILSDIR}thing-at-point-utils.el
+FILE7=${UTILSDIR}ar-comment-lor.el
 
 SETUP=${TESTDIR}ar-thingatpt-setup-tests.el
 TEST1=${TESTDIR}ar-thingatpt-utils-emacs-lisp-tests.el
