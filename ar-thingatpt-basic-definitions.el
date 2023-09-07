@@ -365,34 +365,33 @@
               (ar-match-in-string-p (when (nth 3 pps) (nth 8 pps)))
               (ar-match-in-comment-p (nth 4 pps))
               (lower-bound (cond ((nth 1 pps)
-                            (nth 1 pps))
-                           ((nth 8 pps)
-                            (nth 8 pps) )))
+                                  (nth 1 pps))
+                                 ((nth 8 pps)
+                                  (nth 8 pps))))
               (upper-bound (when lower-bound
                              (save-excursion
-                             (goto-char lower-bound)
-                             (ignore-errors (forward-sexp))
-                             (and lower-bound (< lower-bound (point)) (point)))))
+                               (goto-char lower-bound)
+                               (ignore-errors (forward-sexp))
+                               (and lower-bound (< lower-bound (point)) (point)))))
 	      (begdel (concat th-beg-delimiter ar-delimiters-atpt))
               (erg
                (cond
                 ((looking-at (concat "[" th-beg-delimiter "]"))
-                      (beginning-of-form-base (char-to-string (char-after)) (char-to-string (ar--return-complement-char-maybe (char-after))) lower-bound 'move 0 ar-match-in-comment-p t 'ar-syntax ar-match-in-string-p))
+                 (beginning-of-form-base (char-to-string (char-after)) (char-to-string (ar--return-complement-char-maybe (char-after))) lower-bound 'move 0 ar-match-in-comment-p t 'ar-syntax ar-match-in-string-p))
                 ((looking-at (concat "[" th-end-delimiter "]"))
-                      (beginning-of-form-base (char-to-string (ar--return-complement-char-maybe (char-after))) (char-to-string (char-after)) lower-bound 'move 0 ar-match-in-comment-p t 'ar-syntax ar-match-in-string-p))
+                 (beginning-of-form-base (char-to-string (ar--return-complement-char-maybe (char-after))) (char-to-string (char-after)) lower-bound 'move 0 ar-match-in-comment-p t 'ar-syntax ar-match-in-string-p))
                 ((looking-at (concat "[" begdel "]"))
-                      (beginning-of-form-base (char-to-string (ar--return-complement-char-maybe (char-after))) (char-to-string (char-after)) lower-bound 'move 0 ar-match-in-comment-p t 'ar-syntax ar-match-in-string-p))
-                     (t (delimited-atpt-intern begdel orig lower-bound upper-bound)))
-               ))
+                 (or (beginning-of-form-base (char-to-string (ar--return-complement-char-maybe (char-after))) (char-to-string (char-after)) lower-bound 'move 0 ar-match-in-comment-p t 'ar-syntax ar-match-in-string-p)
+                     (delimited-atpt-intern begdel orig lower-bound upper-bound)))
+                (t (delimited-atpt-intern begdel orig lower-bound upper-bound)))))
          (or erg
              ;; (progn
              ;;   (setq delimited-start (car-safe erg))
              ;;   erg)
-               ;; (set-mark (car-safe delimited-start))
-               ;; (setq delimited-end (cadr erg))
-               ;; delimited-start)
-           (goto-char orig))
-         )))
+             ;; (set-mark (car-safe delimited-start))
+             ;; (setq delimited-end (cadr erg))
+             ;; delimited-start)
+             (goto-char orig)))))
 
 (put 'delimited 'end-op-at
      (lambda ()
@@ -928,6 +927,7 @@ Otherwise assume being behind an opening delimiter or at a closing "
        (backward-sentence)))
 
 ;; Sexp
+
 (put 'sexp 'beginning-op-at
      (lambda ()
        (ar-backward-sexp)))
