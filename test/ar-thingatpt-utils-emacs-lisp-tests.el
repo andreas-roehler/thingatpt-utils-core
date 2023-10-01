@@ -150,5 +150,18 @@
     (should (eq (char-after) ?\[))
     ))
 
+(ert-deftest ar-ert-trim-test-zJuViH ()
+  (ar-test-with-elisp-buffer
+      "'(org-mode)"
+    (goto-char (point-max))
+    (skip-chars-backward "^o" (line-beginning-position))
+    (ar-trim-delimited-atpt)
+    (end-of-line) 
+    (should (eq (char-before) ?e))
+    (skip-chars-backward "^'" (line-beginning-position))
+    (should (eq (char-after) ?o))))
+
+
+
 (provide 'ar-thingatpt-utils-emacs-lisp-tests)
 ;;; ar-thingatpt-utils-emacs-lisp-tests.el ends here

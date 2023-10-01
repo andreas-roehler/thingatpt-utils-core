@@ -29,6 +29,8 @@
 (defvar ar-verbose-p nil
   "Internal use only.")
 
+;; (setq ar-verbose-p t)
+
 (defun ar-toggle-verbose-p ()
   "Toggle `ar-verbose-p'. "
   (interactive)

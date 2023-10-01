@@ -336,9 +336,10 @@
         (progn
           (setq delimited-start beg)
           (setq delimited-end erg)
-          beg)
-          (goto-char this)
-          nil)))
+          erg)
+      (progn
+        (goto-char this)
+        nil))))
 
 (defun delimited-atpt-intern--repeat (begdel orig lower-bound upper-bound)
   "Internal use only."
@@ -352,8 +353,11 @@
   "Returns borders, a cons, if successful."
   (unless done (goto-char orig))
   (save-excursion
-    (cond ((and (member (car (syntax-after (point))) (list 4 7 8 15)) (delimited-atpt-intern--find-end orig upper-bound (cons (point) (1+ (point))))))
-	  ((and (looking-at (concat "[" begdel "]"))(delimited-atpt-intern--find-end orig upper-bound (cons (match-beginning 0) (match-end 0)))))
+    (cond ((and (member (car (syntax-after (point))) (list 4 7 8 15)) (save-match-data (setq delimited-end (delimited-atpt-intern--find-end orig upper-bound (cons (point) (1+ (point)))))))
+           (setq delimited-start (cons (match-beginning 0) (match-end 0))))
+	  ((and (looking-at (concat "[" begdel "]"))
+                (save-match-data (setq delimited-end (delimited-atpt-intern--find-end orig upper-bound (cons (match-beginning 0) (match-end 0))))))
+                (setq delimited-start (cons (match-beginning 0) (match-end 0))))
            (t (delimited-atpt-intern--repeat begdel orig lower-bound upper-bound)))))
 
 (put 'delimited 'beginning-op-at
@@ -1678,6 +1682,7 @@ If optional positions BEG-2TH END-2TH are given, works on them instead. "
                (funcall th-function thing-1th)
 	       (setq done t)))
 	  (unless (eq 'char thing-1th) (setq inner-end (ar-th-forward thing-1th 1))))))))
+
 (defun ar-th-kill (thing &optional no-delimiters)
   " "
   (condition-case nil
