@@ -44,6 +44,12 @@ fi
 echo "before shift \$EMACS: $EMACS"
 shift
 
+WERKSTATT=${WERKSTATT:=1}
+echo "\$WERKSTATT: $WERKSTATT"
+
+IFLOCAL=${IFLOCAL:=1}
+echo "\$IFLOCAL: $IFLOCAL"
+
 echo "\$*: $*"
 PDIR=$PWD
 echo "\$PWD: $PWD"
@@ -187,9 +193,7 @@ entfernt () {
 -f ert-run-tests-batch-and-exit
 }
 
-WERKSTATT=${WERKSTATT:=1}
-echo "\$WERKSTATT: $WERKSTATT"
-if [ $WERKSTATT -eq 0 ]; then
+if [ $IFLOCAL -eq 0 ]; then
 
     while getopts 123456789abcdefghijklmnpqrstuvx option
     do

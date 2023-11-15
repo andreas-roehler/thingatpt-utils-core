@@ -733,29 +733,29 @@ Otherwise assume being behind an opening delimiter or at a closing "
        (unless (eobp)
          (let ((case-fold-search t)
                (erg
-                (cond ((looking-at "#[0-9a-fA-F]+|x[0-9]+")
-                       (forward-char 2)
-                       (skip-chars-forward "0-9a-f" (line-end-position))
-                       (and (< 0 (skip-chars-forward "^0-9"))(point)))
-                      ((looking-at "#o[0-9]+")
-                       (forward-char 2)
-                       (skip-chars-forward "0-9" (line-end-position))
-                       (and (< 0 (skip-chars-forward "^0-9"))(point)))
-                      ((looking-at "[0-9]+")
-                       (skip-chars-forward "0-9" (line-end-position))
-                       (and (< 0 (skip-chars-forward "^0-9"))(point)))
-                      (t
-                       (re-search-forward "#x[a-fA-F0-9]+\\|#o[0-8]+\\|[0-9e]+" nil t 1)
-                       (when (ignore-errors (match-beginning 0))
-                         (goto-char (match-beginning 0)))))))
-           (cond ((looking-at "#[xX][a-fA-F0-9]+")
-                  (setq erg (point)))
-                 ((looking-at "#o[0-9]+")
-                  (setq erg (point)))
-                 ((looking-at "[0-9]+")
-                  (setq erg (point)))
-                 ((eobp)
-                  (setq erg nil)))
+                (when
+                    (cond ((looking-at "#[0-9a-fA-F]+|x[0-9]+")
+                           (forward-char 2)
+                           (skip-chars-forward "0-9a-f" (line-end-position))
+                           (and (< 0 (skip-chars-forward "^0-9"))(point)))
+                          ((looking-at "#o[0-9]+")
+                           (forward-char 2)
+                           (skip-chars-forward "0-9" (line-end-position))
+                           (and (< 0 (skip-chars-forward "^0-9"))(point)))
+                          ((looking-at "[0-9]+")
+                           (skip-chars-forward "0-9" (line-end-position))
+                           (and (< 0 (skip-chars-forward "^0-9"))(point)))
+                          ((re-search-forward "#x[a-fA-F0-9]+\\|#o[0-8]+\\|[0-9]+e?" nil t 1)
+                           (when (ignore-errors (match-beginning 0))
+                             (goto-char (match-beginning 0)))))
+                  (cond ((looking-at "#[xX][a-fA-F0-9]+")
+                         (setq erg (point)))
+                        ((looking-at "#o[0-9]+")
+                         (setq erg (point)))
+                        ((looking-at "[0-9]+")
+                         (setq erg (point)))
+                        ((eobp)
+                         (setq erg nil))))))
            erg))))
 
 (put 'number 'backward-op-at
@@ -1807,11 +1807,14 @@ Move backward with negative argument "
   (let* ((pps (parse-partial-sexp (point-min) (point)))
          (ar-match-in-string-p (nth 3 pps))
          (ar-match-in-comment-p (nth 4 pps))
+         (orig (point))
 	 (arg (or arg 1)))
     (if (< 0 arg)
-        (funcall (get thing 'forward-op-at))
+        (progn
+          (funcall (get thing 'forward-op-at))
+          (and (< orig (point)) (point)))
       (funcall (get thing 'backward-op-at))
-      )))
+      (and (< (point) orig)))))
 
 (defun ar-th-un-ml (thing &optional beg end)
   (save-excursion
@@ -1838,10 +1841,8 @@ Move backward with negative argument "
     (widen)))
 
 (defun ar-th-backward (thing &optional arg)
- "Returns beg and end of THING before point as a list. "
-  (condition-case nil
-      (ar-th-forward thing (- (or arg 1)))
-    (error nil)))
+  "Returns beg and end of THING before point as a list. "
+  (ar-th-forward thing (- (or arg 1))))
 
 (defvar paired-start-pos nil)
 

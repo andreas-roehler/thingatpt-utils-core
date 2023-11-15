@@ -115,7 +115,7 @@
         (progn
 
           (when (and (looking-at (beg-end-regexp-quote-maybe begstr))
-                     (not (ar-in-string-comment-or-escaped (nth 8 (parse-partial-sexp (point-min) (point))) in-comment in-string)))
+                     (not (ar-in-string-comment-or-escaped (parse-partial-sexp (point-min) (point)) in-comment in-string)))
             (list (match-beginning 0) (match-end 0))))
       (if backward
           (progn
