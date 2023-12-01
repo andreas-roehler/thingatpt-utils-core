@@ -69,7 +69,7 @@ FILE6=${UTILSDIR}thing-at-point-utils.el
 FILE7=${UTILSDIR}ar-comment-lor.el
 
 SETUP=${TESTDIR}ar-thingatpt-setup-tests.el
-TEST1=${TESTDIR}ar-thingatpt-utils-emacs-lisp-tests.el
+TEST1=${TESTDIR}ar-thingatpt-utils-core-elisp-tests.el
 TEST2=${TESTDIR}ar-thingatpt-utils-python-mode-tests.el
 TEST3=${TESTDIR}ar-thing-at-point-core-tests.el
 TEST4=${TESTDIR}ar-thingatpt-utils-interactive-tests.el
