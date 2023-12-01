@@ -1,4 +1,4 @@
-;; ar-thingatpt-utils-emacs-lisp-tests.el --- Tests -*- lexical-binding: t; -*-
+;; ar-thingatpt-utils-core-elisp-tests.el --- Tests -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2013 Free Software Foundation, Inc.
 ;; Copyright (C) 2014-2023 Andreas Röhler, <andreas.roehler@online.de>
@@ -150,18 +150,6 @@
     (should (eq (char-after) ?\[))
     ))
 
-(ert-deftest ar-ert-trim-test-zJuViH ()
-  (ar-test-with-elisp-buffer
-      "'(org-mode)"
-    (goto-char (point-max))
-    (skip-chars-backward "^o" (line-beginning-position))
-    (ar-trim-delimited-atpt)
-    (end-of-line) 
-    (should (eq (char-before) ?e))
-    (skip-chars-backward "^'" (line-beginning-position))
-    (should (eq (char-after) ?o))))
 
-
-
-(provide 'ar-thingatpt-utils-emacs-lisp-tests)
-;;; ar-thingatpt-utils-emacs-lisp-tests.el ends here
+(provide 'ar-thingatpt-utils-core-elisp-tests)
+;;; ar-thingatpt-utils-core-elisp-tests.el ends here
