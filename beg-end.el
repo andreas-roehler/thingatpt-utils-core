@@ -253,7 +253,17 @@ REGEXP: if beg/end-str are regular expressions.
 CONDITION takes a function as argument perfoming the match.
 PERMIT-STRING: forms inside string match.
 "
-  (let* ((pps (parse-partial-sexp (point-min) (point)))
+  (let* ((start (cond ((and
+                         (member major-mode
+                                 (list 'shell-mode 'py-shell-mode 'inferior-python-mode))
+                         (ignore-errors (cdr comint-last-prompt)))
+		       (min (ignore-errors (cdr comint-last-prompt)) (line-beginning-position)))
+		      ((eq major-mode 'haskell-interactive-mode)
+		       (if (ignore-errors (cdr comint-last-prompt))
+                           (min (cdr comint-last-prompt) (line-beginning-position))
+                           (point-min)))
+		      (t (point-min))))
+         (pps (parse-partial-sexp start (point)))
          (in-comment (unless (eq in-comment 'ignore)(or in-comment (nth 4 pps))))
          (in-string (unless (eq in-string 'ignore)(or in-string (nth 3 pps))))
          )
