@@ -200,7 +200,7 @@
              (setq last (point))
              (skip-chars-backward " \t\r\n\f"))
            (while (and (setq erg (nth 8 (parse-partial-sexp (point-min) (point)))) (goto-char erg) (setq last (point)))
-             (skip-chars-backward " 	
+             (skip-chars-backward "
 "))
            (when last (goto-char last))
            (when (looking-at (concat "[ 	]*" (regexp-quote comment-start)))
@@ -329,7 +329,7 @@
 (defun delimited-atpt-intern--find-end (orig upper-bound beg)
   (let ((beg (cons (match-beginning 0) (match-end 0)))
         (this (point))
-        (erg (end-of-form-base (char-to-string (char-after)) (char-to-string (ar--return-complement-char-maybe (char-after))) upper-bound 'move 0 ar-match-in-comment-p t 'ar-syntax ar-match-in-string-p)))
+        (erg (end-of-form-base (char-to-string (char-after)) (char-to-string (ar--return-complement-char-maybe (char-after))) upper-bound 'move 0 t 'ar-syntax)))
     (if
         (ignore-errors
           (and erg (< orig (cadr erg))))
@@ -366,8 +366,6 @@
        (setq delimited-end nil)
        (let* ((orig (point))
               (pps (parse-partial-sexp (point-min) (point)))
-              (ar-match-in-string-p (when (nth 3 pps) (nth 8 pps)))
-              (ar-match-in-comment-p (nth 4 pps))
               (lower-bound (cond ((nth 1 pps)
                                   (nth 1 pps))
                                  ((nth 8 pps)
@@ -378,24 +376,29 @@
                                (ignore-errors (forward-sexp))
                                (and lower-bound (< lower-bound (point)) (point)))))
 	      (begdel (concat th-beg-delimiter ar-delimiters-atpt))
-              (erg
-               (cond
-                ((looking-at (concat "[" th-beg-delimiter "]"))
-                 (beginning-of-form-base (char-to-string (char-after)) (char-to-string (ar--return-complement-char-maybe (char-after))) lower-bound 'move 0 ar-match-in-comment-p t 'ar-syntax ar-match-in-string-p))
-                ((looking-at (concat "[" th-end-delimiter "]"))
-                 (beginning-of-form-base (char-to-string (ar--return-complement-char-maybe (char-after))) (char-to-string (char-after)) lower-bound 'move 0 ar-match-in-comment-p t 'ar-syntax ar-match-in-string-p))
-                ((looking-at (concat "[" begdel "]"))
-                 (or (beginning-of-form-base (char-to-string (ar--return-complement-char-maybe (char-after))) (char-to-string (char-after)) lower-bound 'move 0 ar-match-in-comment-p t 'ar-syntax ar-match-in-string-p)
-                     (delimited-atpt-intern begdel orig lower-bound upper-bound)))
-                (t (delimited-atpt-intern begdel orig lower-bound upper-bound)))))
-         (or erg
-             ;; (progn
-             ;;   (setq delimited-start (car-safe erg))
-             ;;   erg)
-             ;; (set-mark (car-safe delimited-start))
-             ;; (setq delimited-end (cadr erg))
-             ;; delimited-start)
-             (goto-char orig)))))
+              erg)
+         (when (and lower-bound upper-bound)
+           (save-restriction
+             (narrow-to-region lower-bound upper-bound)))
+         (setq erg
+               (or
+                (cond
+                 ((looking-at (concat "[" th-beg-delimiter "]"))
+                  (beginning-of-form-base (char-to-string (char-after)) (char-to-string (ar--return-complement-char-maybe (char-after))) lower-bound 'move 0 t 'ar-syntax))
+                 ((looking-at (concat "[" th-end-delimiter "]"))
+                  (beginning-of-form-base (char-to-string (ar--return-complement-char-maybe (char-after))) (char-to-string (char-after)) lower-bound 'move 0 t 'ar-syntax))
+                 ((looking-at (concat "[" begdel "]"))
+                  (or (beginning-of-form-base (char-to-string (ar--return-complement-char-maybe (char-after))) (char-to-string (char-after)) lower-bound 'move 0 t 'ar-syntax)
+                      (delimited-atpt-intern begdel orig lower-bound upper-bound)))
+                 (t (delimited-atpt-intern begdel orig lower-bound upper-bound)))))
+         ;; (progn
+         ;;   (setq delimited-start (car-safe erg))
+         ;;   erg)
+         ;; (set-mark (car-safe delimited-start))
+         ;; (setq delimited-end (cadr erg))
+         ;; delimited-start)
+         (widen)  
+         (or erg (goto-char orig)))))
 
 (put 'delimited 'end-op-at
      (lambda ()
@@ -405,7 +408,7 @@
            (unless (looking-at (concat "[" begdel "]"))
              (funcall (get 'delimited 'beginning-op-at)))
            (if (looking-at (concat "[" begdel "]"))
-               (end-of-form-base (char-to-string (char-after)) (char-to-string (ar--return-complement-char-maybe (char-after))) nil 'move 0 ar-match-in-comment-p t 'ar-syntax ar-match-in-string-p)
+               (end-of-form-base (char-to-string (char-after)) (char-to-string (ar--return-complement-char-maybe (char-after))) nil 'move 0 t 'ar-syntax)
              (error "'delimited 'end-op-at: Can't see start of delimited form"))))))
 
 (put 'delimited 'forward-op-at
@@ -414,7 +417,7 @@
          (unless (looking-at (concat "[" begdel "]"))
            (funcall (get 'delimited 'beginning-op-at)))
          (if (looking-at (concat "[" begdel "]"))
-             (end-of-form-base (char-to-string (char-after)) (char-to-string (ar--return-complement-char-maybe (char-after))) nil 'move 0 ar-match-in-comment-p t 'ar-syntax ar-match-in-string-p 'forward)
+             (end-of-form-base (char-to-string (char-after)) (char-to-string (ar--return-complement-char-maybe (char-after))) nil 'move 0 t 'ar-syntax 'forward)
            (error "'delimited 'forward-op-at: Can't see start of delimited form")))))
 
 (put 'delimited 'backward-op-at
@@ -422,7 +425,7 @@
        (let ((enddel (concat th-end-delimiter ar-delimiters-atpt)))
          (if (looking-back (concat "[" enddel "]") (line-beginning-position))
              (funcall (get 'delimited 'beginning-op-at))
-           (beginning-of-form-base (char-to-string (ar--return-complement-char-maybe (char-after))) (char-to-string (char-after)) nil 'move 0 ar-match-in-comment-p t 'ar-syntax ar-match-in-string-p 'forward)))))
+           (beginning-of-form-base (char-to-string (ar--return-complement-char-maybe (char-after))) (char-to-string (char-after)) nil 'move 0 t 'ar-syntax 'forward)))))
 
 (defun ar-set-delimiter-zeichen ()
   (setq ar-delimiter-zeichen-atpt
@@ -602,7 +605,7 @@ Otherwise assume being behind an opening delimiter or at a closing "
   (lambda ()
     (if (ignore-errors (looking-at markup-startstring-atpt))
         (list (match-beginning 0) (match-end 0))
-      (beginning-of-form-base markup-startstring-atpt markup-endstring-atpt nil 'move nil ar-match-in-comment-p t nil ar-match-in-string-p))))
+      (beginning-of-form-base markup-startstring-atpt markup-endstring-atpt nil 'move nil t nil))))
 
 (put 'markup 'end-op-at
   (lambda ()
@@ -635,7 +638,7 @@ Otherwise assume being behind an opening delimiter or at a closing "
   (lambda ()
     (if (ignore-errors (looking-at markup-startstring-atpt))
         (match-end 0)
-      (beginning-of-form-base markup-startstring-atpt markup-endstring-atpt nil 'move nil ar-match-in-comment-p t)
+      (beginning-of-form-base markup-startstring-atpt markup-endstring-atpt nil 'move nil t)
       (when (ignore-errors (looking-at markup-startstring-atpt))
         (match-end 0)))))
 
@@ -749,13 +752,13 @@ Otherwise assume being behind an opening delimiter or at a closing "
                            (when (ignore-errors (match-beginning 0))
                              (goto-char (match-beginning 0)))))
                   (cond ((looking-at "#[xX][a-fA-F0-9]+")
-                         (setq erg (point)))
+                         (point))
                         ((looking-at "#o[0-9]+")
-                         (setq erg (point)))
+                         (point))
                         ((looking-at "[0-9]+")
-                         (setq erg (point)))
+                         (point))
                         ((eobp)
-                         (setq erg nil))))))
+                         nil)))))
            erg))))
 
 (put 'number 'backward-op-at
@@ -988,70 +991,70 @@ Otherwise assume being behind an opening delimiter or at a closing "
 ;; Triplebackticked
 (put 'triplebackticked 'beginning-op-at
    (lambda ()
-       (beginning-of-form-base "```" "```" nil 'move 0 ar-match-in-comment-p nil 'ar-syntax ar-match-in-string-p)))
+       (beginning-of-form-base "```" "```" nil 'move 0 nil 'ar-syntax)))
 
 (put 'triplebackticked 'end-op-at
   (lambda ()
-    (end-of-form-base "```" "```" nil 'move 0 ar-match-in-comment-p nil 'ar-syntax ar-match-in-string-p)))
+    (end-of-form-base "```" "```" nil 'move 0 nil 'ar-syntax)))
 
 (put 'triplebackticked 'forward-op-at
   (lambda ()
-     (end-of-form-base "```" "```" nil 'move 0 ar-match-in-comment-p nil 'ar-syntax ar-match-in-string-p t)))
+     (end-of-form-base "```" "```" nil 'move 0 nil 'ar-syntax t)))
 
 (put 'triplebackticked 'backward-op-at
   (lambda ()
-    (beginning-of-form-base "```" "```" nil 'move 0 ar-match-in-comment-p nil 'ar-syntax ar-match-in-string-p)))
+    (beginning-of-form-base "```" "```" nil 'move 0 nil 'ar-syntax)))
 
 ;; Triplequoted
 (put 'triplequoted 'beginning-op-at
    (lambda ()
-       (beginning-of-form-base "\"\"\"\\|'''" "\"\"\"\\|'''" nil 'move 0 ar-match-in-comment-p nil 'ar-syntax ar-match-in-string-p)))
+       (beginning-of-form-base "\"\"\"\\|'''" "\"\"\"\\|'''" nil 'move 0 nil 'ar-syntax)))
 
 (put 'triplequoted 'end-op-at
   (lambda ()
-    (end-of-form-base "\"\"\"\\|'''" "\"\"\"\\|'''" nil 'move 0 ar-match-in-comment-p nil 'ar-syntax ar-match-in-string-p)))
+    (end-of-form-base "\"\"\"\\|'''" "\"\"\"\\|'''" nil 'move 0 nil 'ar-syntax)))
 
 (put 'triplequoted 'forward-op-at
   (lambda ()
-     (end-of-form-base "\"\"\"\\|'''" "\"\"\"\\|'''" nil 'move 0 ar-match-in-comment-p nil 'ar-syntax ar-match-in-string-p t)))
+     (end-of-form-base "\"\"\"\\|'''" "\"\"\"\\|'''" nil 'move 0 nil 'ar-syntax t)))
 
 (put 'triplequoted 'backward-op-at
   (lambda ()
-    (beginning-of-form-base "\"\"\"\\|'''" "\"\"\"\\|'''" nil 'move 0 ar-match-in-comment-p nil 'ar-syntax ar-match-in-string-p)))
+    (beginning-of-form-base "\"\"\"\\|'''" "\"\"\"\\|'''" nil 'move 0 nil 'ar-syntax)))
 
 ;; Triplequoted-Dq
 (put 'triplequoteddq 'beginning-op-at
    (lambda ()
-       (beginning-of-form-base "\"\"\"" "\"\"\"" nil 'move 0 ar-match-in-comment-p nil 'ar-syntax ar-match-in-string-p)))
+       (beginning-of-form-base "\"\"\"" "\"\"\"" nil 'move 0 nil 'ar-syntax)))
 
 (put 'triplequoteddq 'end-op-at
   (lambda ()
-    (end-of-form-base "\"\"\"" "\"\"\"" nil 'move 0 ar-match-in-comment-p nil 'ar-syntax ar-match-in-string-p)))
+    (end-of-form-base "\"\"\"" "\"\"\"" nil 'move 0 nil 'ar-syntax)))
 
 (put 'triplequoteddq 'forward-op-at
   (lambda ()
-     (end-of-form-base "\"\"\"" "\"\"\"" nil 'move 0 ar-match-in-comment-p nil 'ar-syntax ar-match-in-string-p t)))
+     (end-of-form-base "\"\"\"" "\"\"\"" nil 'move 0 nil 'ar-syntax t)))
 
 (put 'triplequoteddq 'backward-op-at
   (lambda ()
-    (beginning-of-form-base "\"\"\"" "\"\"\"" nil 'move 0 ar-match-in-comment-p nil 'ar-syntax ar-match-in-string-p)))
+    (beginning-of-form-base "\"\"\"" "\"\"\"" nil 'move 0 nil 'ar-syntax)))
 
 ;; Triplequoted-Sq
 (put 'triplequotedsq 'beginning-op-at
    (lambda ()
-       (beginning-of-form-base "'''" "'''" nil 'move 0 ar-match-in-comment-p nil 'ar-syntax ar-match-in-string-p)))
+       (beginning-of-form-base "'''" "'''" nil 'move 0 nil 'ar-syntax)))
 
 (put 'triplequotedsq 'end-op-at
   (lambda ()
-    (end-of-form-base "'''" "'''" nil 'move 0 ar-match-in-comment-p nil 'ar-syntax ar-match-in-string-p)))
+    (end-of-form-base "'''" "'''" nil 'move 0 nil 'ar-syntax)))
 
 (put 'triplequotedsq 'forward-op-at
   (lambda ()
-     (end-of-form-base "'''" "'''" nil 'move 0 ar-match-in-comment-p nil 'ar-syntax ar-match-in-string-p t)))
+     (end-of-form-base "'''" "'''" nil 'move 0 nil 'ar-syntax t)))
 
 (put 'triplequotedsq 'backward-op-at
   (lambda ()
-    (beginning-of-form-base "'''" "'''" nil 'move 0 ar-match-in-comment-p nil 'ar-syntax ar-match-in-string-p)))
+    (beginning-of-form-base "'''" "'''" nil 'move 0 nil 'ar-syntax)))
 
 ;; Url
 ;; use thingatpt.el's form here too
@@ -1640,11 +1643,7 @@ Return position if at opening delimiter"
 (defun ar-thing-in-thing (thing-1th thing-2th th-function &optional no-delimiters)
   "Addresses things of 1th kind within the borders of the 2th,
 If optional positions BEG-2TH END-2TH are given, works on them instead. "
-  (let* ((ar-match-in-comment-p-orig ar-match-in-comment-p)
-         (ar-match-in-string-p-orig ar-match-in-string-p)
-         (ar-match-in-comment-p 'ignore)
-         (ar-match-in-string-p 'ignore)
-         (bounds (ar-th-bounds thing-2th))
+  (let* ((bounds (ar-th-bounds thing-2th))
 	 ;; take the inner pos of a delimiter
 	 (beg (or
 	       (ignore-errors (car (cdr (car-safe bounds))))
@@ -1667,8 +1666,6 @@ If optional positions BEG-2TH END-2TH are given, works on them instead. "
     (save-excursion
       (save-restriction
         (narrow-to-region beg end)
-        (setq ar-match-in-string-p ar-match-in-string-p-orig)
-        (setq ar-match-in-comment-p ar-match-in-comment-p-orig)
         (goto-char beg)
         ;; (if (eq th-function 'ar-th-sort)
         ;;     (ar-th-sort thing-1th nil beg end nil nil nil)
@@ -1805,8 +1802,6 @@ If optional positions BEG-2TH END-2TH are given, works on them instead. "
 Return position, if successful, nil otherwise.
 Move backward with negative argument "
   (let* ((pps (parse-partial-sexp (point-min) (point)))
-         (ar-match-in-string-p (nth 3 pps))
-         (ar-match-in-comment-p (nth 4 pps))
          (orig (point))
 	 (arg (or arg 1)))
     (if (< 0 arg)

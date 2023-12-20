@@ -45,7 +45,7 @@
          (regexp-quote str))
         (t str)))
 
-(defun beginning-of-form-core (begstr endstr regexp nesting in-comment in-string condition searchform bound noerror)
+(defun beginning-of-form-core (begstr endstr regexp nesting condition searchform bound noerror)
   (let ((form (if regexp 're-search-backward 'search-backward))
         (nesting nesting)
         (first nil))
@@ -58,22 +58,29 @@
         (setq first t)
         (unless (bobp) (forward-char -1))))
     (when (or (< 0 nesting) (not first))
-      (setq first t)
-      (cond ((and in-comment in-string)
-             (while (and (funcall form searchform bound noerror) (ar-escaped-p))))
-            (in-comment
-             (while (and (funcall form searchform bound noerror) (or (nth 3 (parse-partial-sexp (point-min) (point))) (ar-escaped-p)))))
-            (in-string
-             (while (and (funcall form searchform bound noerror) (or (nth 4 (parse-partial-sexp (point-min) (point)))(ar-escaped-p)))))
-            (t
-             (while (and (funcall form searchform bound noerror) (or (nth 8 (parse-partial-sexp (point-min) (point))) (ar-escaped-p)))))))
-    (if (looking-at (beg-end-regexp-quote-maybe begstr))
-        (setq nesting (1- nesting))
-      (when (looking-at (beg-end-regexp-quote-maybe endstr) (line-beginning-position))
-        (setq nesting (1+ nesting))))
+      ;; (setq first t)
+      ;; (cond ;; ((and in-comment in-string)
+      ;;  (while (and (funcall form searchform bound noerror) (ar-escaped-p))))
+      ;; (in-comment
+      ;;  (while (and (funcall form searchform bound noerror) (or (nth 3 (parse-partial-sexp (point-min) (point))) (ar-escaped-p)))))
+      ;; (in-string
+      ;;  (while (and (funcall form searchform bound noerror) (or (nth 4 (parse-partial-sexp (point-min) (point)))(ar-escaped-p)))))
+      ;; (t
+      (if (looking-at (beg-end-regexp-quote-maybe begstr))
+          (setq nesting (1- nesting))
+        (while
+            (and (or (< 0 nesting) (not first))
+                 (funcall form searchform bound noerror))
+          ;; (or (nth 8 (parse-partial-sexp (point-min) (point))) (ar-escaped-p))
+          ;;)))))
+          (setq first t)
+          (if (looking-at (beg-end-regexp-quote-maybe begstr))
+              (setq nesting (1- nesting))
+            (when (looking-at (beg-end-regexp-quote-maybe endstr) (line-beginning-position))
+              (setq nesting (1+ nesting)))))))
     nesting))
 
-(defun beginning-of-form-intern (begstr endstr bound noerror nesting in-comment regexp condition in-string backward)
+(defun beginning-of-form-intern (begstr endstr bound noerror nesting  regexp condition  backward)
   (let ((searchform (if (stringp begstr)
 			(cond ((and (string= begstr endstr))
                                (setq regexp nil)
@@ -86,7 +93,7 @@
 		      begstr))
         (nesting (or nesting 0))
         (orig (point))
-        first done)
+        first)
     (cond
      ((and regexp (looking-back (beg-end-regexp-quote-maybe endstr) (line-beginning-position)))
       (goto-char (match-beginning 0))
@@ -110,18 +117,18 @@
         (and
          (or (not first) (< 0 nesting)) (not (bobp)))
       (setq first t)
-      (setq nesting (beginning-of-form-core begstr endstr regexp nesting in-comment in-string condition searchform bound noerror)))
+      (setq nesting (beginning-of-form-core begstr endstr regexp nesting condition searchform bound noerror)))
     (if (< (point) orig)
         (progn
 
           (when (and (looking-at (beg-end-regexp-quote-maybe begstr))
-                     (not (ar-in-string-comment-or-escaped (parse-partial-sexp (point-min) (point)) in-comment in-string)))
+                     (not (ar-in-string-comment-or-escaped (parse-partial-sexp (point-min) (point))  )))
             (list (match-beginning 0) (match-end 0))))
       (if backward
           (progn
             (setq nesting 0)
             (while (and (< 0 (abs (skip-chars-backward (concat "^" endstr) bound)))
-                        (ar-in-string-comment-or-escaped (parse-partial-sexp (point-min) (point)) in-comment in-string)))
+                        (ar-in-string-comment-or-escaped (parse-partial-sexp (point-min) (point))  )))
             (cond ((or (string= endstr (char-to-string ?$))(string= endstr (char-to-string ?\\)))
                    (when
                        (looking-back (beg-end-regexp-quote-maybe endstr) (line-beginning-position))
@@ -129,7 +136,7 @@
                   (t (when (looking-back endstr (line-beginning-position))
                        (list (match-beginning 0) (match-end 0))))))))))
 
-(defun beginning-of-form-base (begstr &optional endstr bound noerror nesting in-comment regexp condition in-string backward)
+(defun beginning-of-form-base (begstr &optional endstr bound noerror nesting regexp condition backward)
   "Assume being inside delimiters, go to start.
 
 Bound limits search.
@@ -140,51 +147,56 @@ REGEXP: if beg/end-str are regular expressions.
 CONDITION takes a function as argument perfoming the match.
 PERMIT-STRING: forms inside string match.
 "
-  (let* ((pps (parse-partial-sexp (point-min) (point)))
-         (in-comment (unless (eq in-comment 'ignore)(or in-comment (nth 4 pps))))
-         (in-string (unless (eq in-string 'ignore)(or in-string (nth 3 pps)))))
-        (cond (in-string
-               (if
-                   (and (not (string-match begstr ar-delimiters-atpt))(looking-at (beg-end-regexp-quote-maybe begstr)))
-                   (list (match-beginning 0) (match-end 0))
-                 (unless bound (setq bound (when (nth 8 pps)(nth 8 pps))))
-                 (beginning-of-form-intern begstr endstr (when (numberp bound) bound) noerror nesting in-comment regexp condition in-string backward)))
-          (in-comment
-           (if
-               (looking-at (beg-end-regexp-quote-maybe begstr))
-               (list (match-beginning 0) (match-end 0))
-             (unless bound (setq bound (when (nth 8 pps) (nth 8 pps))))
-             (beginning-of-form-intern begstr endstr (when (numberp bound) bound) noerror nesting in-comment regexp condition in-string backward)))
-          (t (if
+  ;; (let* ((pps (parse-partial-sexp (point-min) (point)))
+  ;;        (in-comment (unless (eq in-comment 'ignore)(or in-comment (nth 4 pps))))
+  ;;        (in-string (unless (eq in-string 'ignore)(or in-string (nth 3 pps)))))
+        ;; (cond (in-string
+        ;;        (if
+        ;;            (and (not (string-match begstr ar-delimiters-atpt))(looking-at (beg-end-regexp-quote-maybe begstr)))
+        ;;            (list (match-beginning 0) (match-end 0))
+        ;;          (unless bound (setq bound (when (nth 8 pps)(nth 8 pps))))
+        ;;          (beginning-of-form-intern begstr endstr (when (numberp bound) bound) noerror nesting in-comment regexp condition in-string backward)))
+        ;;   (in-comment
+        ;;    (if
+        ;;        (looking-at (beg-end-regexp-quote-maybe begstr))
+        ;;        (list (match-beginning 0) (match-end 0))
+        ;;      (unless bound (setq bound (when (nth 8 pps) (nth 8 pps))))
+        ;;      (beginning-of-form-intern begstr endstr (when (numberp bound) bound) noerror nesting in-comment regexp condition in-string backward)))
+          (if
                  (looking-at (beg-end-regexp-quote-maybe begstr))
                  (list (match-beginning 0) (match-end 0))
-               (beginning-of-form-intern begstr endstr bound noerror nesting in-comment regexp condition in-string backward))))))
+               (beginning-of-form-intern begstr endstr bound noerror nesting regexp condition backward)))
 
-(defun end-of-form-core (begstr endstr regexp nesting in-comment in-string condition searchform bound noerror)
+(defun end-of-form-core (begstr endstr regexp nesting condition searchform bound noerror &optional start)
   (let ((form (if regexp 're-search-forward 'search-forward))
-        (nesting nesting))
+        (nesting nesting)
+        (start (or start (point-min)))
+        last)
     (while (and (not (eobp)) (or (not bound)(< (point) bound))(< 0 nesting))
-      (cond ((and in-comment in-string)
-             (while (and (funcall form searchform bound noerror) (ar-escaped-p (1- (point)))))
-             )
-            (in-comment
-             (while (and (funcall form searchform bound noerror)
-                         (ar-escaped-p (1- (point)))
-                         )))
-            (in-string
-             (while (and (funcall form searchform bound noerror) (or (ar-escaped-p (1- (point)))(nth 4 (parse-partial-sexp (point-min) (point)))))))
-            (t
-             (while (and (funcall form searchform bound noerror)
-                         (or (nth 8 (parse-partial-sexp (point-min) (point))) (if (string= (beg-end-regexp-quote-maybe searchform) (regexp-quote "\\")) (ar-backslash-escaped-p) (ar-escaped-p (1- (point)))))))))
-      (cond ((looking-back (beg-end-regexp-quote-maybe begstr) (line-beginning-position))
-             (if (string= begstr endstr)
-                 (setq nesting (1- nesting))
-               (setq nesting (1+ nesting))))
-            ((looking-back (beg-end-regexp-quote-maybe endstr) (line-beginning-position))
-             (setq nesting (1- nesting)))))
+      ;; (cond ((and in-comment in-string)
+      ;;        (while (and (funcall form searchform bound noerror) (ar-escaped-p (1- (point)))))
+      ;;)
+      ;;       (in-comment
+      ;;        (while (and (funcall form searchform bound noerror)
+      ;;                    (ar-escaped-p (1- (point)))
+      ;;)))
+      ;;       (in-string
+      ;;        (while (and (funcall form searchform bound noerror) (or (ar-escaped-p (1- (point)))(nth 4 (parse-partial-sexp (point-min) (point)))))))
+      ;;       (t
+      (when (and (< 0 nesting) (funcall form searchform bound noerror) (not (nth 8 (parse-partial-sexp start (point)))) (setq last (point)))
+          ;; (or (nth 8 (parse-partial-sexp (point-min) (point))) (if (string= (beg-end-regexp-quote-maybe searchform) (regexp-quote "\\")) (ar-backslash-escaped-p) (ar-escaped-p (1- (point)))))
+          (cond ((looking-back (beg-end-regexp-quote-maybe begstr) (line-beginning-position))
+                 (if (string= begstr endstr)
+                     (setq nesting (1- nesting))
+                   (setq nesting (1+ nesting))))
+                ((looking-back (beg-end-regexp-quote-maybe endstr) (line-beginning-position))
+                 (setq nesting (1- nesting))))))
+        ;; in case of no match, make it stop
+    (setq nesting 0)
+    (when last (goto-char last))
     nesting))
 
-(defun end-of-form-base-intern (begstr endstr &optional bound noerror nesting in-comment regexp condition in-string forward)
+(defun end-of-form-base-intern (begstr endstr &optional bound noerror nesting regexp condition forward)
   "Goto closing of a programming structure in this level.
 
 Returns a list if a match found after start, nil otherwise.
@@ -204,7 +216,7 @@ If IN-STRING is non-nil, forms inside string match.
                            ((and begstr endstr)
                             (progn
                               (setq regexp t)
-                              (concat (beg-end-regexp-quote-maybe begstr) "\\|" (beg-end-regexp-quote-maybe endstr))))
+                              (concat (beg-end-regexp-quote-maybe begstr) "\\|"(beg-end-regexp-quote-maybe endstr))))
                            (t endstr)))
          (nesting (or nesting 0))
          (orig (point))
@@ -212,19 +224,22 @@ If IN-STRING is non-nil, forms inside string match.
     (when (looking-at (beg-end-regexp-quote-maybe begstr))
       (goto-char (match-end 0))
       (setq nesting (1+ nesting)))
-    (when (and (< 1 (length endstr))(looking-at (beg-end-regexp-quote-maybe searchform)))
+    (when (and (< 1 (length endstr)) (looking-at (beg-end-regexp-quote-maybe searchform)))
       (goto-char (match-end 0)))
     (while
         (and
-         (or (not first) (< 0 nesting)) (or (not bound)(< (point) bound))(not (eobp)))
+         (or (not first) (< 0 nesting)) (or (not bound) (< (point) bound))(not (eobp)))
       (setq first t)
-      (cond ((eq (car (syntax-after (1- (point)))) 7)
-             ;; in-string set to t
-             (setq nesting (end-of-form-core begstr endstr regexp nesting in-comment t condition searchform bound noerror)))
-            ((eq (syntax-after (1- (point))) 11)
-             ;; in-comment set to t
-             (setq nesting (end-of-form-core begstr endstr regexp nesting t in-string condition searchform bound noerror)))
-            (t (setq nesting (end-of-form-core begstr endstr regexp nesting in-comment in-string condition searchform bound noerror)))))
+      ;; (cond ((eq (car (syntax-after (1- (point)))) 7)
+      ;;        ;; in-string set to t
+      ;;        (setq nesting (end-of-form-core begstr endstr regexp nesting in-comment t condition searchform bound noerror)))
+      ;;       ((eq (syntax-after (1- (point))) 11)
+      ;;        ;; in-comment set to t
+      ;;        (setq nesting (end-of-form-core begstr endstr regexp nesting t in-string condition searchform bound noerror)))
+      ;;       (t
+      (if (eobp)
+          (setq nesting 0)
+        (setq nesting (end-of-form-core begstr endstr regexp nesting condition searchform bound noerror))))
     (if (< orig (point))
         (progn
 	  (when forward (goto-char (match-end 0)))
@@ -234,46 +249,56 @@ If IN-STRING is non-nil, forms inside string match.
           (progn
             (setq nesting 0)
             (while (and (< 0 (abs (skip-chars-forward (concat "^" begstr) bound)))
-                        (ar-in-string-comment-or-escaped (parse-partial-sexp (point-min) (point)) in-comment in-string)))
-            (cond ((or (string= begstr (char-to-string ?$))(string= begstr (char-to-string ?\\)))
+                        (ar-in-string-comment-or-escaped (parse-partial-sexp (point-min) (point)))))
+            (cond ((or (string= begstr (char-to-string ?$)) (string= begstr (char-to-string ?\\)))
                    (when
                        (looking-at (beg-end-regexp-quote-maybe begstr))
                      (list (match-beginning 0) (match-end 0))))
                   (t (when (looking-at begstr)
                        (list (match-beginning 0) (match-end 0))))))))))
 
-(defun end-of-form-base (begstr endstr &optional bound noerror nesting in-comment regexp condition in-string forward)
+(defun end-of-form-base (begstr endstr &optional bound noerror nesting regexp condition forward)
   "Assume being inside delimiters, go to start.
 
 Bound limits search.
 NOERROR: no error message is raised if not successful.
 NESTING: counts nested forms.
-PERMIT-COMMENT: match inside comments.
+IN-COMMENT: match inside comments.
 REGEXP: if beg/end-str are regular expressions.
 CONDITION takes a function as argument perfoming the match.
-PERMIT-STRING: forms inside string match.
+IN-STRING: forms inside string match.
 "
-  (let* ((start (cond ((and
-                         (member major-mode
-                                 (list 'shell-mode 'py-shell-mode 'inferior-python-mode))
-                         (ignore-errors (cdr comint-last-prompt)))
-		       (min (ignore-errors (cdr comint-last-prompt)) (line-beginning-position)))
-		      ((eq major-mode 'haskell-interactive-mode)
-		       (if (ignore-errors (cdr comint-last-prompt))
-                           (min (cdr comint-last-prompt) (line-beginning-position))
-                           (point-min)))
-		      (t (point-min))))
-         (pps (parse-partial-sexp start (point)))
-         (in-comment (unless (eq in-comment 'ignore)(or in-comment (nth 4 pps))))
-         (in-string (unless (eq in-string 'ignore)(or in-string (nth 3 pps))))
-         )
-    (cond (in-string
-           (unless bound (setq bound (save-excursion (when (nth 8 pps) (goto-char (nth 8 pps))) (forward-sexp) (point))))
-           (end-of-form-base-intern begstr endstr (when (numberp bound) bound) noerror nesting in-comment regexp condition in-string forward))
-          (in-comment
-           (unless bound (setq bound (save-excursion (when (nth 8 pps) (ar-forward-comment)))))
-           (end-of-form-base-intern begstr endstr (when (numberp bound) bound) noerror nesting in-comment regexp condition in-string forward))
-          (t (end-of-form-base-intern begstr endstr bound noerror nesting in-comment regexp condition in-string forward)))))
+  (unless (eobp)
+    (let* (;; (start (cond ((and
+           ;;                (member major-mode
+           ;;                        (list 'shell-mode 'py-shell-mode 'inferior-python-mode))
+           ;;                (ignore-errors (cdr comint-last-prompt)))
+	   ;;               (min (ignore-errors (cdr comint-last-prompt)) (line-beginning-position)))
+	   ;;              ((eq major-mode 'haskell-interactive-mode)
+           ;;               (if (ignore-errors (cdr comint-last-prompt))
+           ;;                   (min (cdr comint-last-prompt)(line-beginning-position))
+           ;;                 (point-min)))
+	   ;;              (t (point-min))))
+           )
+      (end-of-form-base-intern begstr endstr bound noerror nesting regexp condition forward))))
+
+      ;;      (pps (parse-partial-sexp start (point)))
+      ;;      (in-comment (unless (eq in-comment 'ignore)(or in-comment (nth 4 pps))))
+      ;;      (in-string (unless (eq in-string 'ignore)(or in-string (nth 3 pps)(save-excursion (forward-char 1)(nth 3 (parse-partial-sexp start (point))))))))
+      ;; (cond (in-string (eq (car-safe (syntax-after (point))) 7))
+      ;;        (cond
+      ;;         ;; ((nth 8 pps)
+      ;;         ;;  (goto-char (nth 8 pps)) (forward-sexp)(point))
+      ;;         ((eq (car-safe (syntax-after (point))) 7)
+      ;;          (progn (forward-sexp)(cons (1- (point)) (point))))
+      ;;         ;; ((save-excursion (forward-char 1)(nth 8 (parse-partial-sexp start (point))))
+      ;;         ;;  (goto-char (progn (forward-char 1)(nth 8 (parse-partial-sexp start (point)))))
+      ;;         ;;  (point))
+      ;;         (t (end-of-form-base-intern begstr endstr (when (numberp bound) bound) noerror nesting in-comment regexp condition in-string forward))))
+      ;;       (in-comment
+      ;;        (unless bound (setq bound (save-excursion (when (nth 8 pps)(ar-forward-comment)))))
+      ;;        (end-of-form-base-intern begstr endstr (when (numberp bound) bound) noerror nesting in-comment regexp condition in-string forward))
+      ;;       (t (end-of-form-base-intern begstr endstr bound noerror nesting in-comment regexp condition in-string forward))))))
 
 (provide 'beg-end)
 ;;; beg-end.el ends here
