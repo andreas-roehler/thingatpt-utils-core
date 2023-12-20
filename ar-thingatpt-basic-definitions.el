@@ -200,8 +200,8 @@
              (setq last (point))
              (skip-chars-backward " \t\r\n\f"))
            (while (and (setq erg (nth 8 (parse-partial-sexp (point-min) (point)))) (goto-char erg) (setq last (point)))
-             (skip-chars-backward "
-"))
+             ;; (unless (bobp) (forward-char -1))
+             (skip-chars-backward " \t\r\n\f")) 
            (when last (goto-char last))
            (when (looking-at (concat "[ 	]*" (regexp-quote comment-start)))
              (setq erg (cons (match-beginning 0) (match-end 0)))))
@@ -360,45 +360,45 @@
                 (setq delimited-start (cons (match-beginning 0) (match-end 0))))
            (t (delimited-atpt-intern--repeat begdel orig lower-bound upper-bound)))))
 
+(defun ar-delimited-beginning-op--intern (orig &optional lower-bound upper-bound)
+  (let* ((begdel (concat th-beg-delimiter ar-delimiters-atpt))
+         (erg
+          (or
+           (cond
+            ((and (looking-at (concat "[" th-beg-delimiter "]"))
+                  (save-match-data (end-of-form-base (char-to-string (char-after)) (char-to-string (ar--return-complement-char-maybe (char-after))) lower-bound 'move 0 t 'ar-syntax))
+                  (cons (match-beginning 0) (match-end 0) )))
+            ((looking-at (concat "[" th-end-delimiter "]"))
+             (beginning-of-form-base (char-to-string (ar--return-complement-char-maybe (char-after))) (char-to-string (char-after)) lower-bound 'move 0 t 'ar-syntax))
+            ((looking-at (concat "[" begdel "]"))
+             (or (beginning-of-form-base (char-to-string (ar--return-complement-char-maybe (char-after))) (char-to-string (char-after)) lower-bound 'move 0 t 'ar-syntax)
+                 (delimited-atpt-intern begdel orig lower-bound upper-bound)))
+            (t (delimited-atpt-intern begdel orig lower-bound upper-bound))))))
+    (or erg (goto-char orig))))
+
 (put 'delimited 'beginning-op-at
      (lambda ()
        (setq delimited-start nil)
        (setq delimited-end nil)
        (let* ((orig (point))
               (pps (parse-partial-sexp (point-min) (point)))
-              (lower-bound (cond ((nth 1 pps)
-                                  (nth 1 pps))
-                                 ((nth 8 pps)
-                                  (nth 8 pps))))
+              (lower-bound (cond
+                            ((and (nth 1 pps)(nth 8 pps))
+                             (max (nth 1 pps)(nth 8 pps)))
+                            ((nth 1 pps))
+                            ((nth 8 pps))))
               (upper-bound (when lower-bound
                              (save-excursion
                                (goto-char lower-bound)
                                (ignore-errors (forward-sexp))
                                (and lower-bound (< lower-bound (point)) (point)))))
-	      (begdel (concat th-beg-delimiter ar-delimiters-atpt))
-              erg)
-         (when (and lower-bound upper-bound)
+	      )
+         (if (and lower-bound upper-bound)
            (save-restriction
-             (narrow-to-region lower-bound upper-bound)))
-         (setq erg
-               (or
-                (cond
-                 ((looking-at (concat "[" th-beg-delimiter "]"))
-                  (beginning-of-form-base (char-to-string (char-after)) (char-to-string (ar--return-complement-char-maybe (char-after))) lower-bound 'move 0 t 'ar-syntax))
-                 ((looking-at (concat "[" th-end-delimiter "]"))
-                  (beginning-of-form-base (char-to-string (ar--return-complement-char-maybe (char-after))) (char-to-string (char-after)) lower-bound 'move 0 t 'ar-syntax))
-                 ((looking-at (concat "[" begdel "]"))
-                  (or (beginning-of-form-base (char-to-string (ar--return-complement-char-maybe (char-after))) (char-to-string (char-after)) lower-bound 'move 0 t 'ar-syntax)
-                      (delimited-atpt-intern begdel orig lower-bound upper-bound)))
-                 (t (delimited-atpt-intern begdel orig lower-bound upper-bound)))))
-         ;; (progn
-         ;;   (setq delimited-start (car-safe erg))
-         ;;   erg)
-         ;; (set-mark (car-safe delimited-start))
-         ;; (setq delimited-end (cadr erg))
-         ;; delimited-start)
-         (widen)  
-         (or erg (goto-char orig)))))
+             ;; (save-excursion
+             (narrow-to-region lower-bound upper-bound)
+             (ar-delimited-beginning-op--intern orig lower-bound upper-bound))
+           (ar-delimited-beginning-op--intern orig)))))
 
 (put 'delimited 'end-op-at
      (lambda ()
