@@ -10,10 +10,14 @@ THING may be a well known
 form as word, paragraph, but also a char class as
 `alnum' or a new defined thing.
 
-For example `ar-alnum-atpt' will return all
+For example ‘ar-alnum-atpt’ will return all
 alpha-numerical chars below and around cursor as a
-string. `ar-bounds-of-alnum-atpt' returns the
+string. ‘ar-bounds-of-alnum-atpt’ returns the
 borders of that string as a list and so on.
+
+‘ar-delimited-atpt’ will fetch buffer content, if point is between or
+at delimiter chars. See customizable vars
+‘th-beg-delimiter’, ‘th-end-delimiter’, ‘ar-delimiters-atpt’.
 
 Presently for a given THING the following is
 implemented:

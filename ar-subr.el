@@ -1179,7 +1179,6 @@ Optional PERMIT-STRING: match inside a string."
         (and (nth 3 pps) (not permit-string))
         (ar-escaped-p))))
 
-
 (defun ar-narrow-to-comment-atpt ()
   (interactive)
   (let ((pps (parse-partial-sexp (point-min) (point))))
@@ -1196,6 +1195,20 @@ Optional PERMIT-STRING: match inside a string."
     (forward-sexp)
     (narrow-to-region (mark) (point))))
 
+(defun ar-buffer-narrowed-p ()
+  "Returns a list, beg and end position of accessible buffer,
+if narrowed, nil otherwise. "
+  (interactive)
+  (let* ((beg (point-min))
+         (end (point-max))
+         (erg (/= (buffer-size)
+                  (- end
+                     beg))))
+    (when (called-interactively-p 'any)
+      (if erg
+          (message "%s" (list beg end))
+        (message "erg: %s" erg)))
+    (and erg (list beg end))))
 
 (provide 'ar-subr)
 ;;; ar-subr.el ends here

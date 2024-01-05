@@ -201,7 +201,7 @@
              (skip-chars-backward " \t\r\n\f"))
            (while (and (setq erg (nth 8 (parse-partial-sexp (point-min) (point)))) (goto-char erg) (setq last (point)))
              ;; (unless (bobp) (forward-char -1))
-             (skip-chars-backward " \t\r\n\f")) 
+             (skip-chars-backward " \t\r\n\f"))
            (when last (goto-char last))
            (when (looking-at (concat "[ 	]*" (regexp-quote comment-start)))
              (setq erg (cons (match-beginning 0) (match-end 0)))))
@@ -326,55 +326,103 @@
   "Internal use only.")
 
 ;; Delimited
-(defun delimited-atpt-intern--find-end (orig upper-bound beg)
-  (let ((beg (cons (match-beginning 0) (match-end 0)))
-        (this (point))
-        (erg (end-of-form-base (char-to-string (char-after)) (char-to-string (ar--return-complement-char-maybe (char-after))) upper-bound 'move 0 t 'ar-syntax)))
-    (if
-        (ignore-errors
-          (and erg (< orig (cadr erg))))
-        (progn
-          (setq delimited-start beg)
-          (setq delimited-end erg)
-          erg)
-      (progn
-        (goto-char this)
-        nil))))
+;; (defun delimited-atpt-intern--find-end (orig upper-bound beg)
+;;   (let (;;(beg (cons (match-beginning 0) (match-end 0)))
+;;         (this (point))
+;;         (erg (end-of-form-base (char-to-string (char-after)) (char-to-string (ar--return-complement-char-maybe (char-after))) upper-bound 'move 0 t 'ar-syntax)))
+;;     (if
+;;         (ignore-errors
+;;           erg
+;;           )
+;;         (progn
+;;           (setq delimited-start beg)
+;;           (setq delimited-end erg)
+;;           erg)
+;;       (progn
+;;         (goto-char this)
+;;         nil))))
 
-(defun delimited-atpt-intern--repeat (begdel orig lower-bound upper-bound)
+;; (defun ar-in-delimited-p (&optional char)
+;;   "Return if CHAR is delimiting at point.
+
+;; ;; When at an unary delimiter, like single-quote, check, if it's a closer or opener.
+;; ;; 'True'False'True'False'...
+;; ;; 'True'False'True looking back from inside results in odd number of delimiters
+
+;; Return position if at opening delimiter"
+;;   (interactive)
+;;   (if char
+;;       (let* ((orig (point))
+;;              ;; (char-raw (or char (char-after)))
+;;              (char (char-to-string char))
+;; 	     (counter 0)
+;; 	     erg)
+;;         (save-excursion
+;;           (goto-char (point-min))
+;;           (while (and (search-forward char (1+ orig) t)
+;; 		      (not (ar-escaped)))
+;; 	    (setq counter (1+ counter))))
+;;         (and (< 0 counter)
+;;              (eq 1 (% counter 2))
+;;              1))
+;;     (ar-delimited-atpt)))
+
+(defun delimited-atpt-intern--repeat (orig lower-bound upper-bound match-in-comment match-in-string)
   "Internal use only."
   (unless (bobp)
     (forward-char -1)
-    (unless (looking-at (concat "[" begdel "]"))
-      (skip-chars-backward (concat "^" begdel) lower-bound))
-    (delimited-atpt-intern begdel orig lower-bound upper-bound t)))
+    (let ((pps (parse-partial-sexp (point-min) (point))))
+      (when (and (nth 8 pps)
+                 (not ar-match-in-string-or-comment))
+        (goto-char (nth 8 pps))
+        (unless (bobp)
+          (forward-char -1)))
+      (unless (looking-at (concat "[" th-begdel "]"))
+        (skip-chars-backward (concat "^" th-begdel) lower-bound))
+      (delimited-atpt-intern orig lower-bound upper-bound match-in-comment match-in-string))))
 
-(defun delimited-atpt-intern (begdel orig lower-bound upper-bound &optional done)
-  "Returns borders, a cons, if successful."
-  (unless done (goto-char orig))
-  (save-excursion
-    (cond ((and (member (car (syntax-after (point))) (list 4 7 8 15)) (save-match-data (setq delimited-end (delimited-atpt-intern--find-end orig upper-bound (cons (point) (1+ (point)))))))
-           (setq delimited-start (cons (match-beginning 0) (match-end 0))))
-	  ((and (looking-at (concat "[" begdel "]"))
-                (save-match-data (setq delimited-end (delimited-atpt-intern--find-end orig upper-bound (cons (match-beginning 0) (match-end 0))))))
-                (setq delimited-start (cons (match-beginning 0) (match-end 0))))
-           (t (delimited-atpt-intern--repeat begdel orig lower-bound upper-bound)))))
-
-(defun ar-delimited-beginning-op--intern (orig &optional lower-bound upper-bound)
-  (let* ((begdel (concat th-beg-delimiter ar-delimiters-atpt))
-         (erg
-          (or
-           (cond
-            ((and (looking-at (concat "[" th-beg-delimiter "]"))
-                  (save-match-data (end-of-form-base (char-to-string (char-after)) (char-to-string (ar--return-complement-char-maybe (char-after))) lower-bound 'move 0 t 'ar-syntax))
-                  (cons (match-beginning 0) (match-end 0) )))
-            ((looking-at (concat "[" th-end-delimiter "]"))
-             (beginning-of-form-base (char-to-string (ar--return-complement-char-maybe (char-after))) (char-to-string (char-after)) lower-bound 'move 0 t 'ar-syntax))
-            ((looking-at (concat "[" begdel "]"))
-             (or (beginning-of-form-base (char-to-string (ar--return-complement-char-maybe (char-after))) (char-to-string (char-after)) lower-bound 'move 0 t 'ar-syntax)
-                 (delimited-atpt-intern begdel orig lower-bound upper-bound)))
-            (t (delimited-atpt-intern begdel orig lower-bound upper-bound))))))
-    (or erg (goto-char orig))))
+;; When at an unary delimiter, like single-quote, check, if it's a closer or opener.
+;; 'True'False'True'False'...
+;; Check forward from point, if a closer is found
+;; Otherwise travel backward for another opener which is closed at or after start
+(defun delimited-atpt-intern (orig &optional lower-bound upper-bound match-in-comment match-in-string)
+  "Returns borders, a list, if successful."
+  (let (erg)
+    (or (cond
+         ((and (eq (point) orig) (looking-at (concat "[" th-end-delimiter "]")))
+          (if
+              (progn (unless (eobp) (forward-char 1))
+                     (save-match-data (setq erg (beginning-of-form-base (char-to-string (ar--return-complement-char-maybe (char-before))) (char-to-string (char-before)) lower-bound 'move 0 t 'ar-syntax))))
+              (progn
+                (setq delimited-end (list (match-beginning 0) (match-end 0)))
+                (setq delimited-start erg))
+            (delimited-atpt-intern--repeat orig lower-bound upper-bound match-in-comment match-in-string)))
+         ;; At an unary delimiter
+         ;; {-foo1-}
+         ;; -|bar-
+         ;; look forward first
+         ((and (looking-at (concat "[" ar-delimiters-atpt "]"))
+               (not (ar-escaped-p)))
+          (if
+              (save-match-data
+                (and
+                 ;; (ar-in-delimited-p (char-after))
+                 (save-excursion
+                   (and
+                    (end-of-form-base (char-to-string (char-after)) (char-to-string (char-after)) upper-bound 'move 0 nil nil nil match-in-comment match-in-string)
+                    (<= orig (point))
+                    (setq delimited-end (list (match-beginning 0) (match-end 0)))))))
+              (list (match-beginning 0) (match-end 0))
+            (delimited-atpt-intern--repeat orig lower-bound upper-bound match-in-comment match-in-string)))
+         ((and (looking-at (concat "[" th-beg-delimiter "]"))
+               (save-excursion
+                 (and (save-match-data
+                        (and (end-of-form-base (char-to-string (char-after)) (char-to-string (ar--return-complement-char-maybe (char-after))) upper-bound t 0 nil nil nil match-in-comment match-in-string)
+                             (< orig (point))
+                        (setq delimited-end (list (match-beginning 0) (match-end 0))))))))
+          (list (match-beginning 0) (match-end 0)))
+         (t (delimited-atpt-intern--repeat orig lower-bound upper-bound match-in-comment match-in-string)))
+        (goto-char orig))))
 
 (put 'delimited 'beginning-op-at
      (lambda ()
@@ -382,6 +430,9 @@
        (setq delimited-end nil)
        (let* ((orig (point))
               (pps (parse-partial-sexp (point-min) (point)))
+              (ar-match-in-string-or-comment (nth 8 pps))
+              (match-in-comment (nth 4 pps))
+              (match-in-string (nth 3 pps))
               (lower-bound (cond
                             ((and (nth 1 pps)(nth 8 pps))
                              (max (nth 1 pps)(nth 8 pps)))
@@ -397,8 +448,8 @@
            (save-restriction
              ;; (save-excursion
              (narrow-to-region lower-bound upper-bound)
-             (ar-delimited-beginning-op--intern orig lower-bound upper-bound))
-           (ar-delimited-beginning-op--intern orig)))))
+             (setq delimited-start (delimited-atpt-intern orig lower-bound upper-bound match-in-comment match-in-string)))
+           (setq delimited-start (delimited-atpt-intern orig lower-bound upper-bound match-in-comment match-in-string))))))
 
 (put 'delimited 'end-op-at
      (lambda ()
@@ -413,19 +464,26 @@
 
 (put 'delimited 'forward-op-at
      (lambda ()
-       (let ((begdel (concat th-beg-delimiter ar-delimiters-atpt)))
+       (let ((begdel (concat th-beg-delimiter ar-delimiters-atpt))
+             erg)
          (unless (looking-at (concat "[" begdel "]"))
-           (funcall (get 'delimited 'beginning-op-at)))
+           (setq erg (funcall (get 'delimited 'beginning-op-at))))
+         (when (car-safe erg) (goto-char (car-safe erg)))
          (if (looking-at (concat "[" begdel "]"))
              (end-of-form-base (char-to-string (char-after)) (char-to-string (ar--return-complement-char-maybe (char-after))) nil 'move 0 t 'ar-syntax 'forward)
-           (error "'delimited 'forward-op-at: Can't see start of delimited form")))))
+           (skip-chars-forward (concat "^" th-beg-delimiter ar-delimiters-atpt))
+           (when (looking-at (concat "[" th-beg-delimiter ar-delimiters-atpt "]"))
+             (list (match-beginning 0) (match-end 0)))))))
 
 (put 'delimited 'backward-op-at
      (lambda ()
-       (let ((enddel (concat th-end-delimiter ar-delimiters-atpt)))
-         (if (looking-back (concat "[" enddel "]") (line-beginning-position))
-             (funcall (get 'delimited 'beginning-op-at))
-           (beginning-of-form-base (char-to-string (ar--return-complement-char-maybe (char-after))) (char-to-string (char-after)) nil 'move 0 t 'ar-syntax 'forward)))))
+       (let ((orig (point)))
+         (funcall (get 'delimited 'beginning-op-at))
+         (unless (< (point) orig)
+           (and (< 0  (abs (skip-chars-backward (concat "^" th-beg-delimiter ar-delimiters-atpt))))
+                (looking-back (concat "[" th-beg-delimiter  ar-delimiters-atpt "]") (line-beginning-position))
+                (forward-char -1)
+                (list (match-beginning 0) (match-end 0)))))))
 
 (defun ar-set-delimiter-zeichen ()
   (setq ar-delimiter-zeichen-atpt
@@ -453,14 +511,22 @@ Otherwise assume being behind an opening delimiter or at a closing "
   :type 'boolean
   :group 'werkstatt)
 
-(defvar ar-delimiters-atpt "|\"'`#\$/=?!:*+~§%&_\;@-"
+(defvar ar-delimiters-atpt "\\\\|\"'`#\\$/=?!:*+~§%&_\\;@-"
 "Specify the delimiter chars. ")
 
-(defvar  th-beg-delimiter "»‘“{<[("
+(setq ar-delimiters-atpt "\\\\|\"'`#\\$/=?!:*+~§%&_\\;@-")
+
+(defvar th-beg-delimiter "»‘“{<[("
   "Specify the delimiter char.")
+
+(defvar th-beg-delimiter-list (list ?» ?\‘ ?\“ ?{ ?< ?\[ ?\()
+  "List the delimiter chars.")
 
 (defvar th-end-delimiter "]}>”)’«"
   "Specify the delimiter char.")
+
+(defvar th-begdel (concat th-beg-delimiter ar-delimiters-atpt)
+  "Internally used only.")
 
 ;; Email
 (put 'email 'beginning-op-at
@@ -1616,29 +1682,14 @@ instead of working ‘-backward’ or ‘-forward’ deletes expression at point
                 ((numberp (ignore-errors (cdr (cadr bounds))))
                  (cdr (cadr bounds)))))))
     (when beg (goto-char beg)
-	  (when (not (looking-back "^[ \t\f\r]*" (line-beginning-position)))
+	  (when (or (ar-buffer-narrowed-p) (not (looking-back "^[ \t\f\r]*" (line-beginning-position))))
 	    (newline ar-newlines-separate-before))
 	  (indent-according-to-mode)
 	  (goto-char end)
-	  (when (not (looking-at "[ \t\f\r]*$"))
-	    (newline 1)
-	    (indent-according-to-mode)))))
-
-(defun ar-in-delimited-p (char)
-  "Return if CHAR is delimiting at point.
-
-Return position if at opening delimiter"
-  (let ((orig (point))
-        (char (char-to-string char))
-	(counter 0)
-	erg)
-    (save-excursion
-      (goto-char (point-min))
-      (while (and (search-forward char orig t)
-		  (not (ar-escaped)))
-	(setq counter (1+ counter))))
-    (setq erg (eq 1 (% counter 2)))
-    (or erg (and (eq (char-after) char)(point)))))
+	  (save-excursion
+            (when (not (looking-at "[ \t\f\r]*$"))
+	      (newline 1)
+	      (indent-according-to-mode))))))
 
 (defun ar-thing-in-thing (thing-1th thing-2th th-function &optional no-delimiters)
   "Addresses things of 1th kind within the borders of the 2th,
@@ -1650,19 +1701,21 @@ If optional positions BEG-2TH END-2TH are given, works on them instead. "
 	       (ignore-errors (car bounds))
                (car-safe bounds)))
 	 ;; take the inner pos of a delimiter
-         (end (cond
-               ((numberp (cdr-safe bounds))
-                (cdr-safe bounds))
-               ((numberp (ignore-errors (cadr bounds)))
-                (cadr bounds))
-               ((numberp (ignore-errors (cadr (cadr bounds))))
-                (cadr (cadr bounds)))
-               ((numberp (ignore-errors (cdr (cadr bounds))))
-                (cdr (cadr bounds)))))
+         (end (copy-marker
+               (cond
+                ((numberp (cdr-safe bounds))
+                 (cdr-safe bounds))
+                ((numberp (ignore-errors (cadr bounds)))
+                 (cadr bounds))
+                ((numberp (ignore-errors (cadr (cadr bounds))))
+                 (cadr (cadr bounds)))
+                ((numberp (ignore-errors (cdr (cadr bounds))))
+                 (cdr (cadr bounds))))))
 	 ;; (end (copy-marker (or (ignore-errors (car (car (cdr bounds))))(ignore-errors (car (cdr (cadr bounds))))(ignore-errors (cdr (cadr bounds)))(cdr-safe bounds))))
          ;; ar-scan-whole-buffer
 	 (last 1)
 	 inner-end done)
+    ;; (sit-for 0.1)
     (save-excursion
       (save-restriction
         (narrow-to-region beg end)
@@ -1676,9 +1729,15 @@ If optional positions BEG-2TH END-2TH are given, works on them instead. "
              (or (not done) (< last (point)))
 	     (setq last (point))
 	     (progn
+               ;; (unless done (forward-char 1))
                (funcall th-function thing-1th)
 	       (setq done t)))
-	  (unless (eq 'char thing-1th) (setq inner-end (ar-th-forward thing-1th 1))))))))
+	  (unless (or (eobp) (eq 'char thing-1th))
+            (when (setq inner-end (ar-th-forward thing-1th 1))
+              ;; (sit-for 0.1)
+              ;; (narrow-to-region (point) end)
+              (sit-for 0.1)
+              )))))))
 
 (defun ar-th-kill (thing &optional no-delimiters)
   " "
@@ -1686,14 +1745,14 @@ If optional positions BEG-2TH END-2TH are given, works on them instead. "
       (let* ((bounds (ar-th-bounds thing no-delimiters))
 	     (beg (or (ignore-errors (car bounds)) (ignore-errors (car bounds))))
              (end (cond
-               ((numberp (cdr-safe bounds))
-                (cdr-safe bounds))
-               ((numberp (ignore-errors (cadr bounds)))
-                (cadr bounds))
-               ((numberp (ignore-errors (cadr (cadr bounds))))
-                (cadr (cadr bounds)))
-               ((numberp (ignore-errors (cdr (cadr bounds))))
-                (cdr (cadr bounds)))))
+                   ((numberp (cdr-safe bounds))
+                    (cdr-safe bounds))
+                   ((numberp (ignore-errors (cadr bounds)))
+                    (cadr bounds))
+                   ((numberp (ignore-errors (cadr (cadr bounds))))
+                    (cadr (cadr bounds)))
+                   ((numberp (ignore-errors (cdr (cadr bounds))))
+                    (cdr (cadr bounds)))))
 	     ;; (end (and beg (or (ignore-errors (cadr (cadr bounds)))(ignore-errors (cdr (cadr bounds)))(ignore-errors (cadr bounds))(ignore-errors (cdr bounds)))))
              )
 	(and beg end
@@ -1809,7 +1868,8 @@ Move backward with negative argument "
           (funcall (get thing 'forward-op-at))
           (and (< orig (point)) (point)))
       (funcall (get thing 'backward-op-at))
-      (and (< (point) orig)))))
+      ;; (and (< (point) orig))
+      )))
 
 (defun ar-th-un-ml (thing &optional beg end)
   (save-excursion
@@ -2003,9 +2063,6 @@ Move backward with negative argument "
     "Keymap used in Sh-Werkstatt mode.")
 
 (define-derived-mode werkstatt emacs-lisp-mode "Werk"
-  ;; (kill-all-local-variables)
-  ;; (setq major-mode 'ar-werkstatt
-        ;; mode-name "Sh-Werkstatt")
   (use-local-map ar-werkstatt-mode-map)
   (and ar-werkstatt-hs-minor-mode-p
        (add-hook 'ar-werkstatt-mode-hook 'hs-minor-mode)))

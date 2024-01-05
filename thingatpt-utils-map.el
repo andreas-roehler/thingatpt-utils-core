@@ -1,7 +1,7 @@
 ;;; thingatpt-utils-map --- the menu
 
 
-;; Copyright (C) 2010-2023 Andreas Röhler, unless
+;; Copyright (C) 2010-2024 Andreas Röhler, unless
 ;; indicated otherwise
 
 ;; Author: Andreas Röhler <andreas.roehler@easy-emacs.de>, unless

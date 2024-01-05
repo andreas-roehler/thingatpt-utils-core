@@ -1,12 +1,12 @@
 ;;; thingatpt-utils-core.el --- th-at-point edit functions -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2010-2023 Andreas Röhler, unless
+;; Copyright (C) 2010-2024 Andreas Röhler, unless
 ;; indicated otherwise
 
 ;; Author: Andreas Röhler <andreas.roehler@easy-emacs.de>, unless
 ;; indicated otherwise
 
-;; Version: 0.1
+;; Version: 0.2
 
 ;; This file is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -35,6 +35,9 @@
 ;; alpha-numerical chars below and around cursor as a
 ;; string. ‘ar-bounds-of-alnum-atpt’ returns the
 ;; borders of that string as a list and so on.
+
+;; ‘ar-delimited-atpt’ returns buffer string between delimiters, defined customizable vars
+;; ‘th-beg-delimiter’, ‘th-end-delimiter’, ‘ar-delimiters-atpt’.
 
 ;; Presently for a given THING the following is
 ;; implemented:
@@ -863,12 +866,12 @@ XEmacs-users: ‘unibyte’ and ‘multibyte’ class is unused i.e. set to \".\
 (put 'braced 'forward-op-at
      (lambda ()
        (unless (eobp)
-         (end-of-form-base "{" "}" nil 'move 0 nil 'ar-syntax t))))
+         (end-of-form-base "{" "}" nil 'move 0  nil 'ar-syntax t))))
 
 (put 'braced 'backward-op-at
      (lambda ()
        (unless (bobp)
-         (beginning-of-form-base "{" "}" nil 'move 0 nil 'ar-syntax t))))
+         (beginning-of-form-base "{" "}" nil 'move 0  nil 'ar-syntax t))))
 
 ;; Symboled
 (put 'symboled 'beginning-op-at
@@ -882,12 +885,12 @@ XEmacs-users: ‘unibyte’ and ‘multibyte’ class is unused i.e. set to \".\
 (put 'symboled 'forward-op-at
      (lambda ()
        (unless (eobp)
-         (end-of-form-base "`" "'" nil 'move 0 nil 'ar-syntax t))))
+         (end-of-form-base "`" "'" nil 'move 0  nil 'ar-syntax t))))
 
 (put 'symboled 'backward-op-at
      (lambda ()
        (unless (bobp)
-         (beginning-of-form-base "`" "'" nil 'move 0 nil 'ar-syntax t))))
+         (beginning-of-form-base "`" "'" nil 'move 0  nil 'ar-syntax t))))
 
 ;; Bracketed
 (put 'bracketed 'beginning-op-at
@@ -901,12 +904,12 @@ XEmacs-users: ‘unibyte’ and ‘multibyte’ class is unused i.e. set to \".\
 (put 'bracketed 'forward-op-at
      (lambda ()
        (unless (eobp)
-         (end-of-form-base "\\[" "\]" nil 'move 0 t 'ar-syntax t))))
+         (end-of-form-base "\\[" "\]" nil 'move 0  t 'ar-syntax t))))
 
 (put 'bracketed 'backward-op-at
      (lambda ()
        (unless (bobp)
-         (beginning-of-form-base "\\[" "\]" nil 'move 0 t 'ar-syntax t))))
+         (beginning-of-form-base "\\[" "\]" nil 'move 0  t 'ar-syntax t))))
 
 ;; Lesserangled
 (put 'lesserangled 'beginning-op-at
@@ -920,12 +923,12 @@ XEmacs-users: ‘unibyte’ and ‘multibyte’ class is unused i.e. set to \".\
 (put 'lesserangled 'forward-op-at
      (lambda ()
        (unless (eobp)
-         (end-of-form-base "<" ">" nil 'move 0 nil 'ar-syntax t))))
+         (end-of-form-base "<" ">" nil 'move 0  nil 'ar-syntax t))))
 
 (put 'lesserangled 'backward-op-at
      (lambda ()
        (unless (bobp)
-         (beginning-of-form-base "<" ">" nil 'move 0 nil 'ar-syntax t))))
+         (beginning-of-form-base "<" ">" nil 'move 0  nil 'ar-syntax t))))
 
 ;; Greaterangled
 (put 'greaterangled 'beginning-op-at
@@ -939,12 +942,12 @@ XEmacs-users: ‘unibyte’ and ‘multibyte’ class is unused i.e. set to \".\
 (put 'greaterangled 'forward-op-at
      (lambda ()
        (unless (eobp)
-         (end-of-form-base ">" "<" nil 'move 0 nil 'ar-syntax t))))
+         (end-of-form-base ">" "<" nil 'move 0  nil 'ar-syntax t))))
 
 (put 'greaterangled 'backward-op-at
      (lambda ()
        (unless (bobp)
-         (beginning-of-form-base ">" "<" nil 'move 0 nil 'ar-syntax t))))
+         (beginning-of-form-base ">" "<" nil 'move 0  nil 'ar-syntax t))))
 
 ;; Curvedsinglequoted
 (put 'curvedsinglequoted 'beginning-op-at
@@ -958,12 +961,12 @@ XEmacs-users: ‘unibyte’ and ‘multibyte’ class is unused i.e. set to \".\
 (put 'curvedsinglequoted 'forward-op-at
      (lambda ()
        (unless (eobp)
-         (end-of-form-base "‘" "’" nil 'move 0 nil 'ar-syntax t))))
+         (end-of-form-base "‘" "’" nil 'move 0  nil 'ar-syntax t))))
 
 (put 'curvedsinglequoted 'backward-op-at
      (lambda ()
        (unless (bobp)
-         (beginning-of-form-base "‘" "’" nil 'move 0 nil 'ar-syntax t))))
+         (beginning-of-form-base "‘" "’" nil 'move 0  nil 'ar-syntax t))))
 
 ;; Curveddoublequoted
 (put 'curveddoublequoted 'beginning-op-at
@@ -977,12 +980,12 @@ XEmacs-users: ‘unibyte’ and ‘multibyte’ class is unused i.e. set to \".\
 (put 'curveddoublequoted 'forward-op-at
      (lambda ()
        (unless (eobp)
-         (end-of-form-base "“" "”" nil 'move 0 nil 'ar-syntax t))))
+         (end-of-form-base "“" "”" nil 'move 0  nil 'ar-syntax t))))
 
 (put 'curveddoublequoted 'backward-op-at
      (lambda ()
        (unless (bobp)
-         (beginning-of-form-base "“" "”" nil 'move 0 nil 'ar-syntax t))))
+         (beginning-of-form-base "“" "”" nil 'move 0  nil 'ar-syntax t))))
 
 ;; Parentized
 (put 'parentized 'beginning-op-at
@@ -996,12 +999,12 @@ XEmacs-users: ‘unibyte’ and ‘multibyte’ class is unused i.e. set to \".\
 (put 'parentized 'forward-op-at
      (lambda ()
        (unless (eobp)
-         (end-of-form-base "\(" "\)" nil 'move 0 nil 'ar-syntax t))))
+         (end-of-form-base "\(" "\)" nil 'move 0  nil 'ar-syntax t))))
 
 (put 'parentized 'backward-op-at
      (lambda ()
        (unless (bobp)
-         (beginning-of-form-base "\(" "\)" nil 'move 0 nil 'ar-syntax t))))
+         (beginning-of-form-base "\(" "\)" nil 'move 0  nil 'ar-syntax t))))
 
 ;; Paired delimited forms end
 
