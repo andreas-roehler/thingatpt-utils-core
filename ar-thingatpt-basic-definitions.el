@@ -1736,7 +1736,7 @@ If optional positions BEG-2TH END-2TH are given, works on them instead. "
             (when (setq inner-end (ar-th-forward thing-1th 1))
               ;; (sit-for 0.1)
               ;; (narrow-to-region (point) end)
-              (sit-for 0.1)
+              ;; (sit-for 0.1)
               )))))))
 
 (defun ar-th-kill (thing &optional no-delimiters)
