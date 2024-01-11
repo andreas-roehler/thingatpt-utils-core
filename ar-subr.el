@@ -1210,5 +1210,40 @@ if narrowed, nil otherwise. "
         (message "erg: %s" erg)))
     (and erg (list beg end))))
 
+(unless (functionp 'pos-bol)
+  (defun pos-bol ()
+    "Provide lisp ‘pos-bol’ for Emacs version < 29
+
+For Emacs version > 28:
+
+pos-bol is a built-in function in ‘src/editfns.c’.
+
+(pos-bol &optional N)
+
+Return the position of the first character on the current line.
+With optional argument N, scan forward N - 1 lines first.
+If the scan reaches the end of the buffer, return that position.
+
+This function ignores text display directionality; it returns the
+position of the first character in logical order, i.e. the smallest
+character position on the logical line.  See ‘vertical-motion’ for
+movement by screen lines.
+
+This function does not move point.  Also see ‘line-beginning-position’.
+
+  Other relevant functions are documented in the buffer group.
+  Probably introduced at or before Emacs version 29.1.
+  This function does not change global state, including the match data.
+"
+    (interactive)
+    (save-match-data
+      (save-excursion
+        (and comint-last-prompt
+             (goto-char (or (cdr-safe comint-last-prompt) (car comint-last-prompt)))
+             (progn (forward-line -1)
+                    (end-of-line)
+                    (forward-char 1)
+                    (point)))))))
+
 (provide 'ar-subr)
 ;;; ar-subr.el ends here
