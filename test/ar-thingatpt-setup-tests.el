@@ -1,6 +1,6 @@
 ;;; ar-thingatpt-setup-tests.el --- Provide needed forms -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2015-2023  Andreas Röhler
+;; Copyright (C) 2015-2024  Andreas Röhler
 
 ;; Author: Andreas Röhler <andreas.roehler@easy-emacs.de>
 
