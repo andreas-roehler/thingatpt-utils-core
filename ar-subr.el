@@ -271,7 +271,8 @@ Optional argument CHAR comment start."
            (forward-comment 99999)
            (unless (eq (point) orig)
              (point)))
-          (t (search-forward comment-start nil t 1)))
+          (t (search-forward comment-start nil t 1)
+             (ar-forward-comment)))
     ))
 
 (defun ar-in-comment-p (&optional start)
