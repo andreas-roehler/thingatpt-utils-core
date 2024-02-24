@@ -1,4 +1,4 @@
-;;; thingatpt-utils-core.el --- th-at-point edit functions -*- lexical-binding: t; -*-
+;;; ar-thingatpt-utils-core.el --- th-at-point edit functions -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2010-2024 Andreas Röhler, unless
 ;; indicated otherwise
@@ -6,7 +6,7 @@
 ;; Author: Andreas Röhler <andreas.roehler@easy-emacs.de>, unless
 ;; indicated otherwise
 
-;; Version: 0.2
+;; Version: 0.1
 
 ;; This file is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -275,16 +275,6 @@ Used by ‘ar-sort-numbers-subr’"
 
   :type 'boolean
   :group 'werkstatt)
-
-(defvar ar-match-in-string-p nil
-  "If an expression starts inside a string.
-
-Internal use only.")
-
-(defvar ar-match-in-comment-p nil
-  "If an expression starts inside a comment.
-
-Internal use only.")
 
 (defcustom ar-werkstatt-hs-minor-mode-p nil
   ""
@@ -1782,29 +1772,6 @@ Returns final position when called from inside section, nil otherwise"
     (goto-char beg)
     (exchange-point-and-mark)))
 
-(defvar ar-paired-delimited-passiv-raw
-  (list
-   '(braced "{" "}")
-   '(bracketed "[" "]")
-   '(lesserangled "<" ">")
-   '(greaterangled ">" "<")
-   '(curvedsinglequoted "‘" "’")
-   '(parentized "(" ")")))
-
-(defvar ar-unpaired-delimited-raw
-  (list
-   '(backslashed "\\\\")
-   '(backticked "`")
-   '(coloned ":")
-   '(dollared "$")
-   '(doublequoted "\\\"")
-   '(equalized "=")
-   '(hyphened "-")
-   '(singlequoted "'")
-   '(slashed "/")
-   '(stared "*")
-   '(underscored "_")
-   '(whitespaced " ")))
 
 (defvar ar-paired-delimited-passiv-raw
   (list
@@ -2174,5 +2141,5 @@ Returns final position when called from inside section, nil otherwise"
 
 
 
-(provide 'thingatpt-utils-core)
-;;; thingatpt-utils-core.el ends here
+(provide 'ar-thingatpt-utils-core)
+;;; ar-thingatpt-utils-core.el ends here

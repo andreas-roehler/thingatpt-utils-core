@@ -1,6 +1,6 @@
 ;;; ar-thingatpt-basic-definitions.el --- Feste Definitionen
 
-;; Copyright (C) 2010-2023 Andreas Röhler
+;; Copyright (C) 2010-2024 Andreas Röhler
 
 ;; Author: Andreas Röhler <andreas.roehler@easy-emacs.de>, unless
 ;; indicated otherwise
