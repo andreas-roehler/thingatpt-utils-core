@@ -1,4 +1,4 @@
-;;; beg-end.el --- Detecting nested forms  -*- lexical-binding: t; -*-
+;;; ar-beg-end.el --- Detecting nested forms  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2009-2024  Andreas Röhler
 
@@ -382,5 +382,5 @@ If IN-STRING is non-nil, forms inside string match.
                          (list (match-beginning 0) (match-end 0)))
 )))))))))
 
-(provide 'beg-end)
-;;; beg-end.el ends here
+(provide 'ar-beg-end)
+;;; ar-beg-end.el ends here

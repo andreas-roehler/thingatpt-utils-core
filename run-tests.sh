@@ -61,10 +61,10 @@ echo "\$TESTDIR: $TESTDIR"
 UTILSDIR=$HOME/werkstatt/thing-at-point-utils/
 
 FILE1=ar-subr.el
-FILE2=beg-end.el
+FILE2=ar-beg-end.el
 FILE3=ar-thingatpt-basic-definitions.el
 FILE4=ar-thingatpt-utils-core.el
-FILE5=thingatpt-utils-map.el
+FILE5=ar-thingatpt-utils-map.el
 FILE6=${UTILSDIR}thing-at-point-utils.el
 FILE7=${UTILSDIR}ar-comment-lor.el
 

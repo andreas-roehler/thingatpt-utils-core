@@ -256,7 +256,7 @@
 
 ;;; Code:
 (require 'ar-subr)
-(require 'beg-end)
+(require 'ar-beg-end)
 (require 'hideshow)
 (require 'ar-thingatpt-basic-definitions)
 (defconst Emacs-Werkstatt-version "1.5")
