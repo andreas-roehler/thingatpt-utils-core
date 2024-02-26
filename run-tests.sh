@@ -64,7 +64,7 @@ FILE1=ar-subr.el
 FILE2=ar-beg-end.el
 FILE3=ar-thingatpt-basic-definitions.el
 FILE4=ar-thingatpt-utils-core.el
-FILE5=ar-thingatpt-utils-map.el
+# FILE5=ar-thingatpt-utils-map.el
 FILE6=${UTILSDIR}ar-thingatpt-utils.el
 FILE7=${UTILSDIR}ar-comment-lor.el
 
@@ -93,7 +93,6 @@ h1() {
 -load $FILE2 \
 -load $FILE3 \
 -load $FILE4 \
--load $FILE5 \
 -load $FILE6 \
 -load $FILE7 \
 -load $SETUP \
@@ -111,7 +110,6 @@ h2() {
 -load $FILE2 \
 -load $FILE3 \
 -load $FILE4 \
--load $FILE5 \
 -load $FILE6 \
 -load $FILE7 \
 -load $SETUP \
@@ -129,7 +127,6 @@ h3() {
 -load $FILE2 \
 -load $FILE3 \
 -load $FILE4 \
--load $FILE5 \
 -load $FILE6 \
 -load $FILE7 \
 -load $SETUP \
@@ -147,7 +144,6 @@ h4() {
 -load $FILE2 \
 -load $FILE3 \
 -load $FILE4 \
--load $FILE5 \
 -load $FILE6 \
 -load $FILE7 \
 -load $SETUP \
@@ -167,7 +163,6 @@ hier () {
 -load $FILE2 \
 -load $FILE3 \
 -load $FILE4 \
--load $FILE5 \
 -load $FILE6 \
 -load $FILE7 \
 -load $SETUP \
@@ -185,7 +180,6 @@ entfernt () {
 -load $FILE2 \
 -load $FILE3 \
 -load $FILE4 \
--load $FILE5 \
 -load $FILE6 \
 -load $FILE7 \
 \
