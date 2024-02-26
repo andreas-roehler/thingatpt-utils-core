@@ -1,4 +1,4 @@
-;; ar-thing-at-point-core-tests.el --- Tests -*- lexical-binding: t; -*-
+;; ar-thingatpt-core-tests.el --- Tests -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2023 Andreas Röhler, <andreas.roehler@online.de>
 
@@ -26,5 +26,5 @@
 
 ;; (setq ar-debug-p t)
 
-(provide 'ar-thing-at-point-core-tests)
-;;; ar-thing-at-point-core-tests.el ends here
+(provide 'ar-thingatpt-core-tests)
+;;; ar-thingatpt-core-tests.el ends here

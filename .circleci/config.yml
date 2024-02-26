@@ -30,7 +30,7 @@ jobs:
             --eval "(load (expand-file-name \"ar-thingatpt-basic-definitions.el\"))" \
             --eval "(load (expand-file-name \"ar-thingatpt-utils-core.el\"))" \
             --eval "(load \"/root/thingatpt-utils-core/test/ar-thingatpt-setup-tests.el\")" \
-            --eval "(load \"/root/thingatpt-utils-core/test/ar-thing-at-point-core-tests.el\")" \
+            --eval "(load \"/root/thingatpt-utils-core/test/ar-thingatpt-core-tests.el\")" \
             --eval "(load \"/root/thingatpt-utils-core/test/ar-thingatpt-utils-core-elisp-tests.el\")" \
             --eval "(setq ar-switch-p nil)" \
             --eval "(setq python-indent-offset 4)" \

@@ -65,13 +65,13 @@ FILE2=ar-beg-end.el
 FILE3=ar-thingatpt-basic-definitions.el
 FILE4=ar-thingatpt-utils-core.el
 FILE5=ar-thingatpt-utils-map.el
-FILE6=${UTILSDIR}thing-at-point-utils.el
+FILE6=${UTILSDIR}ar-thingatpt-utils.el
 FILE7=${UTILSDIR}ar-comment-lor.el
 
 SETUP=${TESTDIR}ar-thingatpt-setup-tests.el
 TEST1=${TESTDIR}ar-thingatpt-utils-core-elisp-tests.el
 TEST2=${TESTDIR}ar-thingatpt-utils-python-mode-tests.el
-TEST3=${TESTDIR}ar-thing-at-point-core-tests.el
+TEST3=${TESTDIR}ar-thingatpt-core-tests.el
 TEST4=${TESTDIR}ar-thingatpt-utils-interactive-tests.el
 
 # if [ -s emacs24 ]; then
