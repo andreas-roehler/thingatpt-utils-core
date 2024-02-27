@@ -36,7 +36,7 @@ erg = nltk.pos_tag(res)
     (goto-char (point-max))
     (search-backward "erg")
     (sit-for 0.1)
-    (should-not (ar-in-comment-p-atpt))))
+    (should-not (ar-in-comment-p))))
 
 (ert-deftest python-comment-text-ZRWCVJ ()
   (ar-test
