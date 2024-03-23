@@ -326,47 +326,6 @@
   "Internal use only.")
 
 ;; Delimited
-;; (defun delimited-atpt-intern--find-end (orig upper-bound beg)
-;;   (let (;;(beg (cons (match-beginning 0) (match-end 0)))
-;;         (this (point))
-;;         (erg (end-of-form-base (char-to-string (char-after)) (char-to-string (ar--return-complement-char-maybe (char-after))) upper-bound 'move 0 t 'ar-syntax)))
-;;     (if
-;;         (ignore-errors
-;;           erg
-;;           )
-;;         (progn
-;;           (setq delimited-start beg)
-;;           (setq delimited-end erg)
-;;           erg)
-;;       (progn
-;;         (goto-char this)
-;;         nil))))
-
-;; (defun ar-in-delimited-p (&optional char)
-;;   "Return if CHAR is delimiting at point.
-
-;; ;; When at an unary delimiter, like single-quote, check, if it's a closer or opener.
-;; ;; 'True'False'True'False'...
-;; ;; 'True'False'True looking back from inside results in odd number of delimiters
-
-;; Return position if at opening delimiter"
-;;   (interactive)
-;;   (if char
-;;       (let* ((orig (point))
-;;              ;; (char-raw (or char (char-after)))
-;;              (char (char-to-string char))
-;; 	     (counter 0)
-;; 	     erg)
-;;         (save-excursion
-;;           (goto-char (point-min))
-;;           (while (and (search-forward char (1+ orig) t)
-;; 		      (not (ar-escaped)))
-;; 	    (setq counter (1+ counter))))
-;;         (and (< 0 counter)
-;;              (eq 1 (% counter 2))
-;;              1))
-;;     (ar-delimited-atpt)))
-
 (defun delimited-atpt-intern--repeat (orig lower-bound upper-bound match-in-comment match-in-string)
   "Internal use only."
   (unless (bobp)
@@ -409,7 +368,7 @@
                  ;; (ar-in-delimited-p (char-after))
                  (save-excursion
                    (and
-                    (end-of-form-base (char-to-string (char-after)) (char-to-string (char-after)) upper-bound 'move 0 nil nil nil match-in-comment match-in-string)
+                    (end-of-form-base (char-to-string (char-after)) (char-to-string (char-after)) upper-bound 'move 0 match-in-comment nil nil match-in-string)
                     (<= orig (point))
                     (setq delimited-end (list (match-beginning 0) (match-end 0)))))))
               (list (match-beginning 0) (match-end 0))
