@@ -376,7 +376,7 @@
          ((and (looking-at (concat "[" th-beg-delimiter "]"))
                (save-excursion
                  (and (save-match-data
-                        (and (end-of-form-base (char-to-string (char-after)) (char-to-string (ar--return-complement-char-maybe (char-after))) upper-bound t 0 nil nil nil match-in-comment match-in-string)
+                        (and (end-of-form-base (char-to-string (char-after)) (char-to-string (ar--return-complement-char-maybe (char-after))) upper-bound t 0  match-in-comment  nil nil match-in-string)
                              (< orig (point))
                         (setq delimited-end (list (match-beginning 0) (match-end 0))))))))
           (list (match-beginning 0) (match-end 0)))
