@@ -376,7 +376,7 @@
          ((and (looking-at (concat "[" th-beg-delimiter "]"))
                (save-excursion
                  (and (save-match-data
-                        (and (end-of-form-base (char-to-string (char-after)) (char-to-string (ar--return-complement-char-maybe (char-after))) upper-bound t 0  match-in-comment  nil nil match-in-string)
+                        (and (end-of-form-base (char-to-string (char-after)) (char-to-string (ar--return-complement-char-maybe (char-after))) upper-bound t 0 t nil nil match-in-comment match-in-string)
                              (< orig (point))
                         (setq delimited-end (list (match-beginning 0) (match-end 0))))))))
           (list (match-beginning 0) (match-end 0)))
@@ -423,16 +423,18 @@
 
 (put 'delimited 'forward-op-at
      (lambda ()
-       (let ((begdel (concat th-beg-delimiter ar-delimiters-atpt))
-             erg)
-         (unless (looking-at (concat "[" begdel "]"))
-           (setq erg (funcall (get 'delimited 'beginning-op-at))))
-         (when (car-safe erg) (goto-char (car-safe erg)))
-         (if (looking-at (concat "[" begdel "]"))
-             (end-of-form-base (char-to-string (char-after)) (char-to-string (ar--return-complement-char-maybe (char-after))) nil 'move 0 t 'ar-syntax 'forward)
-           (skip-chars-forward (concat "^" th-beg-delimiter ar-delimiters-atpt))
-           (when (looking-at (concat "[" th-beg-delimiter ar-delimiters-atpt "]"))
-             (list (match-beginning 0) (match-end 0)))))))
+       (let ((orig (point))
+             (begdel (concat th-beg-delimiter ar-delimiters-atpt))
+             (erg (or
+                   (ar-th-end 'delimited no-delimiters)
+                   (unless (looking-at (concat "[" begdel "]"))
+                     (setq erg (funcall (get 'delimited 'beginning-op-at))))
+                   (when (car-safe erg) (goto-char (car-safe erg)))
+                   (if (looking-at (concat "[" begdel "]"))
+                       (end-of-form-base (char-to-string (char-after)) (char-to-string (ar--return-complement-char-maybe (char-after))) nil 'move 0 t 'ar-syntax 'forward)
+                     (skip-chars-forward (concat "^" th-beg-delimiter ar-delimiters-atpt))
+                     (when (looking-at (concat "[" th-beg-delimiter ar-delimiters-atpt "]"))
+                       (list (match-beginning 0) (match-end 0))))))))))
 
 (put 'delimited 'backward-op-at
      (lambda ()
@@ -1361,7 +1363,7 @@ it would doublequote a word at point "
                    ((numberp (ignore-errors (cdr (cadr bounds))))
                     (cdr (cadr bounds))))))
 	(goto-char end)
-	(forward-char -1)
+	;; (forward-char -1)
 	(cons (point) (1+ (point))))
     (error (concat (format "%s: " thing) "ar-th-gotoend failed"))))
 

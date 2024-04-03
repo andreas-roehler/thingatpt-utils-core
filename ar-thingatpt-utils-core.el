@@ -116,7 +116,7 @@
 ;; behaviour in such, as ‘ar-forward-word-atpt’ stops
 ;; not after THING, but on the last char of
 ;; THING. That's in order to enable a call of
-;; thingatpt functions at the end
+;; thing-at-point functions at the end
 ;; position. Otherwise, when cursor stops after word
 ;; (THING) as does ‘forward-word’, ‘ar-word-atpt’ would return
 ;; nil.
@@ -135,7 +135,7 @@
 ;; of execution via ‘ar-th-test-delay’
 
 ;; Diffs to basics of required thingatpt.el:
-;; ‘bounds-of-thingatpt’ is replaced by a new
+;; ‘bounds-of-thing-at-point’ is replaced by a new
 ;; ‘ar-th-bounds’, which now first searches
 ;; backward. As a consequence several
 ;; ‘beginning-op-at’ and ‘end-op-at’ constructs had
@@ -205,7 +205,7 @@
 ;; beginning-op-at and end-op-at. Point is stored
 ;; after move, beginning and end delivered as pair: as
 ;; consed bounds-of-thing. It's easy to write your own
-;; thingatpt functions that way. You need the
+;; thing-at-point functions that way. You need the
 ;; caller and both move forms:
 
 ;; (defun MY-FORM-atpt (&optional arg)
