@@ -1215,11 +1215,15 @@ it would doublequote a word at point "
   (let ((first (cond ((and (listp beg) (not (null beg)))
                       (if no-delimiters
                           (cond
+                           ((numberp (car-safe beg))
+                            (car-safe beg))
                            ((numberp (cadr (flatten-list beg)))
                             (cadr (flatten-list beg)))
                            ((numberp (cdr (flatten-list beg)))
                             (cdr (flatten-list beg))))
-                        (car (flatten-list beg))))
+                        (cond ((numberp (car-safe beg))
+                               (car-safe beg))
+                        (t beg))))
                      (t beg)))
         (second
          (if no-delimiters
@@ -1741,7 +1745,7 @@ If optional positions BEG-2TH END-2TH are given, works on them instead. "
 	     ;; (end (or (ignore-errors (cdr (cadr bounds)))(ignore-errors (cadr bounds))(ignore-errors (cadr (cadr bounds)))))
              )
         (if (eq thing 'comment)
-            (delete-region beg (1+ end))
+            (delete-region beg (min (point-max) (1+ end)))
           (delete-region beg end)))
     (error nil)))
 
