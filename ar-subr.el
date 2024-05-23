@@ -224,7 +224,7 @@ Optional argument IACT saying interactively called."
     (beginning-of-line)
     (when iact
       (message "%s" (looking-at empty-line-p-chars)))
-    (looking-at empty-line-p-chars)))
+    (save-match-data (looking-at empty-line-p-chars))))
 
 (defun ar-previous-line-empty-or-BOB-p ()
   (save-excursion
@@ -1315,51 +1315,6 @@ unless not already there"
 	       (delete-region (point) (scan-sexps (point) 1))
 	       (insert expr))))))
 
-(defun ar-align-equal-sign ()
-  (interactive "*")
-  (when (eq this-command 'self-insert-command)
-    (save-excursion
-      (let ((end (copy-marker (line-end-position)))
-            (secondcolumn (and (looking-back "[^=]+\\(=\\) *" (line-beginning-position))
-                               ;; (member (char-after) (list 32 ?\n ?\t ?\f))
-                               ;;  haskell
-                               (not (looking-back "main +\\(=+\\) *" (line-beginning-position)))
-                               (goto-char (match-beginning 1))
-                               (current-column)))
-            (maxcolumn 0)
-            orig)
-        ;; an equal-sign at current line
-        (when secondcolumn
-          ;; (put 'secondcolumn 'pos (point))
-          (setq maxcolumn secondcolumn)
-          (setq orig (point))
-          (while
-              (and (progn (beginning-of-line)
-                          (not (bobp)))
-                   (progn (forward-line -1)
-                          (not (looking-at comment-start)))
-                   (looking-at ".+ +\\(=\\)[[:blank:]]+.*"))
-            (when (match-beginning 1)(goto-char (match-beginning 1)))
-            (when (< maxcolumn (current-column))
-              (setq maxcolumn (current-column))))
-          ;; before going downward, reach the last match
-          (when (match-beginning 1)(goto-char (match-beginning 1)))
-          (while (< (line-end-position) end)
-            (when (looking-at ".+ +\\(=\\)[[:blank:]]+.*")
-              (goto-char (match-beginning 1)))
-            (when (< (current-column) maxcolumn)
-              (insert (make-string (- maxcolumn (current-column)) 32)))
-            (forward-line 1)
-            )
-          (goto-char orig)
-          (when (looking-at " *\\(=\\)[[:blank:]]*")
-            (when (< (current-column) maxcolumn)
-              (insert (make-string (- maxcolumn (current-column)) 32))))
-          )))))
-
-(defun ar-align-in-current-buffer ()
-  (interactive)
-  (add-hook 'post-command-hook #'ar-align-equal-sign nil t))
 
 (defun ar-in-string-or-comment-p ()
   "If inside or at beginning of a string or comment."
@@ -1452,6 +1407,66 @@ This function does not move point.  Also see ‘line-beginning-position’.
      (skip-chars-backward " \t\r\n\f")
      (and (eq (char-before (point)) ?\\ )
           (ar-escaped))))
+
+(defun ar-align-equal-sign ()
+  (interactive "*")
+  (let ((pps (parse-partial-sexp (point-min) (point)))
+        (regexp "\\([=>\\|->\\|<-\\|=]+\\)")
+        (negated-re "[^=>\\|->\\|<-\\|=]+"))
+    (unless (nth 8 pps)
+      (when t ;;(eq this-command 'self-insert-command)
+        (save-excursion
+          (let ((end (copy-marker (line-end-position)))
+                (secondcolumn (and (looking-back (concat ".+" regexp "[[:space:]]*") (line-beginning-position))
+                                   (not
+                                     (save-excursion (goto-char (match-beginning 0))
+                                                        (looking-back (concat ".+" regexp ".*") (line-beginning-position))))
+                                   ;; (member (char-after) (list 32 ?\n ?\t ?\f))
+                                   ;;  haskell
+                                   (not (looking-back "main +\\(=+\\) *" (line-beginning-position)))
+                                   (goto-char (match-beginning 1))
+                                   ;; better match-data then from looking-back
+                                   (looking-at regexp)
+                                   (current-column)))
+                (maxcolumn 0)
+                (indent (current-indentation))
+                orig erg col)
+            ;; an equal-sign at current line
+            (when secondcolumn
+              ;; (message "(match-string-no-properties 1): %s" (match-string-no-properties 1))
+              (setq erg (match-string-no-properties 1))
+              (message "erg: %s" erg)
+              (setq maxcolumn secondcolumn)
+              (setq orig (point))
+              (while
+                  (and (progn (beginning-of-line)
+                              (not (bobp)))
+                       (progn (forward-line -1)
+                              (not (looking-at comment-start)))
+                       (not (ar-empty-line-p))
+                       (<= (current-indentation) indent)
+                       (setq col (string-match erg (buffer-substring-no-properties (line-beginning-position) (line-end-position)))))
+                (when col (move-to-column col))
+                (when (< maxcolumn (current-column))
+                  (setq maxcolumn (current-column))))
+              ;; before going downward, reach the last match
+              ;; (when (match-beginning 1) (goto-char (match-beginning 1)))
+              (while (< (line-end-position) end)
+                (setq col (string-match erg (buffer-substring-no-properties (line-beginning-position) (line-end-position))))
+                (when col (move-to-column col)
+                      (when (< (current-column) maxcolumn)
+                        (insert (make-string (- maxcolumn (current-column)) 32))))
+                (forward-line 1))
+              (goto-char orig)
+              (when (concat negated-re "+ +\\(" regexp "\\)[[:blank:]]+.*")
+                (when (< (current-column) maxcolumn)
+                  (insert (make-string (- maxcolumn (current-column)) 32))))
+              )))))))
+
+(defun ar-align-in-current-buffer ()
+  (interactive)
+  (add-hook 'post-command-hook #'ar-align-equal-sign nil t))
+
 
 (provide 'ar-subr)
 ;;; ar-subr.el ends here
