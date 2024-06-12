@@ -1411,16 +1411,17 @@ This function does not move point.  Also see ‘line-beginning-position’.
 (defun ar-align-equal-sign ()
   (interactive "*")
   (let ((pps (parse-partial-sexp (point-min) (point)))
-        (regexp "\\([=>\\|->\\|<-\\|=]+\\)")
-        (negated-re "[^=>\\|->\\|<-\\|=]+"))
+        (regexp "\\(=>\\|->\\|<-\\|=\\)")
+        (negated-re "^=>\\|->\\|<-\\|=+"))
     (unless (nth 8 pps)
-      (when t ;;(eq this-command 'self-insert-command)
+      ;; (when t
+      (when (eq this-command 'self-insert-command)
         (save-excursion
           (let ((end (copy-marker (line-end-position)))
                 (secondcolumn (and (looking-back (concat ".+" regexp "[[:space:]]*") (line-beginning-position))
                                    (not
-                                     (save-excursion (goto-char (match-beginning 0))
-                                                        (looking-back (concat ".+" regexp ".*") (line-beginning-position))))
+                                    (save-excursion (goto-char (match-beginning 0))
+                                                    (looking-back (concat ".+" regexp ".*") (line-beginning-position))))
                                    ;; (member (char-after) (list 32 ?\n ?\t ?\f))
                                    ;;  haskell
                                    (not (looking-back "main +\\(=+\\) *" (line-beginning-position)))
@@ -1460,8 +1461,7 @@ This function does not move point.  Also see ‘line-beginning-position’.
               (goto-char orig)
               (when (concat negated-re "+ +\\(" regexp "\\)[[:blank:]]+.*")
                 (when (< (current-column) maxcolumn)
-                  (insert (make-string (- maxcolumn (current-column)) 32))))
-              )))))))
+                  (insert (make-string (- maxcolumn (current-column)) 32)))))))))))
 
 (defun ar-align-in-current-buffer ()
   (interactive)
