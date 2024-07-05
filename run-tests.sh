@@ -72,7 +72,8 @@ SETUP=${TESTDIR}ar-thingatpt-setup-tests.el
 TEST1=${TESTDIR}ar-thingatpt-utils-core-elisp-tests.el
 TEST2=${TESTDIR}ar-thingatpt-utils-python-mode-tests.el
 TEST3=${TESTDIR}ar-thingatpt-core-tests.el
-TEST4=${TESTDIR}ar-thingatpt-utils-interactive-tests.el
+TEST4=${TESTDIR}ar-thingatpt-core-haskell-tests.el
+TEST5=${TESTDIR}ar-thingatpt-utils-interactive-tests.el
 
 # if [ -s emacs24 ]; then
 #     EMACS=emacs24
@@ -148,6 +149,23 @@ h4() {
 -load $FILE7 \
 -load $SETUP \
 -l $TEST4 \
+-f ert-run-tests-batch-and-exit
+}
+
+h4() {
+    date; time -p $EMACS -Q -L . --batch \
+--eval "(message (emacs-version))" \
+--eval "(setq ar-debug-p nil)" \
+--eval "(require 'ert)" \
+--eval "(add-to-list 'load-path \"$TESTDIR/\")" \
+-load $FILE1 \
+-load $FILE2 \
+-load $FILE3 \
+-load $FILE4 \
+-load $FILE6 \
+-load $FILE7 \
+-load $SETUP \
+-l $TEST5 \
 -f ert-run-tests-batch-and-exit
 }
 

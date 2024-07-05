@@ -1,6 +1,6 @@
 ;; ar-thingatpt-core-tests.el --- Tests -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2023 Andreas Röhler, <andreas.roehler@online.de>
+;; Copyright (C) 2023-2024 Andreas Röhler, <andreas.roehler@online.de>
 
 ;; GNU Emacs is free software: you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -23,8 +23,6 @@
 
 (require 'ar-subr)
 (require 'ar-thingatpt-setup-tests)
-
-;; (setq ar-debug-p t)
 
 (provide 'ar-thingatpt-core-tests)
 ;;; ar-thingatpt-core-tests.el ends here

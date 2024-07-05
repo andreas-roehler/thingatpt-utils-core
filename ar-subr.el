@@ -1410,58 +1410,63 @@ This function does not move point.  Also see ‘line-beginning-position’.
 
 (defun ar-align-equal-sign ()
   (interactive "*")
-  (let ((pps (parse-partial-sexp (point-min) (point)))
+  (unless (nth 8 (parse-partial-sexp (point-min) (point)))
+    ;; (when t
+    (when (eq this-command 'self-insert-command)
+      (ar-align-equal-sign-intern))))
+
+(defun ar-align-equal-sign-intern ()
+  (let (;; (pps (parse-partial-sexp (point-min) (point)))
         (regexp "\\(=>\\|->\\|<-\\|=\\)")
         (negated-re "^=>\\|->\\|<-\\|=+"))
-    (unless (nth 8 pps)
-      ;; (when t
-      (when (eq this-command 'self-insert-command)
-        (save-excursion
-          (let ((end (copy-marker (line-end-position)))
-                (secondcolumn (and (looking-back (concat ".+" regexp "[[:space:]]*") (line-beginning-position))
-                                   (not
-                                    (save-excursion (goto-char (match-beginning 0))
-                                                    (looking-back (concat ".+" regexp ".*") (line-beginning-position))))
-                                   ;; (member (char-after) (list 32 ?\n ?\t ?\f))
-                                   ;;  haskell
-                                   (not (looking-back "main +\\(=+\\) *" (line-beginning-position)))
-                                   (goto-char (match-beginning 1))
-                                   ;; better match-data then from looking-back
-                                   (looking-at regexp)
-                                   (current-column)))
-                (maxcolumn 0)
-                (indent (current-indentation))
-                orig erg col)
-            ;; an equal-sign at current line
-            (when secondcolumn
-              ;; (message "(match-string-no-properties 1): %s" (match-string-no-properties 1))
-              (setq erg (match-string-no-properties 1))
-              (message "erg: %s" erg)
-              (setq maxcolumn secondcolumn)
-              (setq orig (point))
-              (while
-                  (and (progn (beginning-of-line)
-                              (not (bobp)))
-                       (progn (forward-line -1)
-                              (not (looking-at comment-start)))
-                       (not (ar-empty-line-p))
-                       (<= (current-indentation) indent)
-                       (setq col (string-match erg (buffer-substring-no-properties (line-beginning-position) (line-end-position)))))
-                (when col (move-to-column col))
-                (when (< maxcolumn (current-column))
-                  (setq maxcolumn (current-column))))
-              ;; before going downward, reach the last match
-              ;; (when (match-beginning 1) (goto-char (match-beginning 1)))
-              (while (< (line-end-position) end)
-                (setq col (string-match erg (buffer-substring-no-properties (line-beginning-position) (line-end-position))))
-                (when col (move-to-column col)
-                      (when (< (current-column) maxcolumn)
-                        (insert (make-string (- maxcolumn (current-column)) 32))))
-                (forward-line 1))
-              (goto-char orig)
-              (when (concat negated-re "+ +\\(" regexp "\\)[[:blank:]]+.*")
-                (when (< (current-column) maxcolumn)
-                  (insert (make-string (- maxcolumn (current-column)) 32)))))))))))
+    (save-excursion
+      (let ((end (copy-marker (line-end-position)))
+            (secondcolumn (and (looking-back (concat ".+" regexp "[[:space:]]*") (line-beginning-position))
+                               (not
+                                (save-excursion (goto-char (match-beginning 0))
+                                                (looking-back (concat ".+" regexp ".*") (line-beginning-position))))
+                               ;; (member (char-after) (list 32 ?\n ?\t ?\f))
+                               ;;  haskell
+                               (not (looking-back "main +\\(=+\\) *" (line-beginning-position)))
+                               (goto-char (match-beginning 1))
+                               ;; better match-data then from looking-back
+                               (looking-at regexp)
+                               (current-column)))
+            (maxcolumn 0)
+            (indent (current-indentation))
+            (orig (copy-marker (point)))
+            erg col)
+        ;; an equal-sign at current line
+        (when secondcolumn
+          ;; (message "(match-string-no-properties 1): %s" (match-string-no-properties 1))
+          (setq erg (match-string-no-properties 1))
+          (message "erg: %s" erg)
+          (setq maxcolumn secondcolumn)
+          (setq orig (copy-marker (point)))
+          (while
+              (and (progn (beginning-of-line)
+                          (not (bobp)))
+                   (progn (forward-line -1)
+                          (not (looking-at comment-start)))
+                   (not (ar-empty-line-p))
+                   (<= (current-indentation) indent)
+                   (setq col (string-match erg (buffer-substring-no-properties (line-beginning-position) (line-end-position)))))
+            (when col (move-to-column col))
+            (when (< maxcolumn (current-column))
+              (setq maxcolumn (current-column))))
+          ;; before going downward, reach the last match
+          ;; (when (match-beginning 1) (goto-char (match-beginning 1)))
+          (while (< (line-end-position) end)
+            (setq col (string-match erg (buffer-substring-no-properties (line-beginning-position) (line-end-position))))
+            (when col (move-to-column col)
+                  (when (< (current-column) maxcolumn)
+                    (insert (make-string (- maxcolumn (current-column)) 32))))
+            (forward-line 1))
+          (goto-char orig)
+          (when (concat negated-re "+ +\\(" regexp "\\)[[:blank:]]+.*")
+            (when (< (current-column) maxcolumn)
+              (insert (make-string (- maxcolumn (current-column)) 32)))))))))
+
 
 (defun ar-align-in-current-buffer ()
   (interactive)
