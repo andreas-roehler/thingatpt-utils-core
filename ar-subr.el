@@ -1408,11 +1408,11 @@ This function does not move point.  Also see ‘line-beginning-position’.
      (and (eq (char-before (point)) ?\\ )
           (ar-escaped))))
 
-(defun ar-align-equal-sign ()
-  (interactive "*")
+(defun ar-align-equal-sign (&optional arg)
+  (interactive "*p")
   (unless (nth 8 (parse-partial-sexp (point-min) (point)))
     ;; (when t
-    (when (eq this-command 'self-insert-command)
+    (when (or (eq this-command 'self-insert-command)(eq (prefix-numeric-value arg) 1))
       (ar-align-equal-sign-intern))))
 
 (defun ar-align-equal-sign-intern ()
@@ -1440,7 +1440,7 @@ This function does not move point.  Also see ‘line-beginning-position’.
         (when secondcolumn
           ;; (message "(match-string-no-properties 1): %s" (match-string-no-properties 1))
           (setq erg (match-string-no-properties 1))
-          (message "erg: %s" erg)
+          ;; (message "erg: %s" erg)
           (setq maxcolumn secondcolumn)
           (setq orig (copy-marker (point)))
           (while
@@ -1450,7 +1450,9 @@ This function does not move point.  Also see ‘line-beginning-position’.
                           (not (looking-at comment-start)))
                    (not (ar-empty-line-p))
                    (<= (current-indentation) indent)
-                   (setq col (string-match erg (buffer-substring-no-properties (line-beginning-position) (line-end-position)))))
+                   (or
+                    (and (eq major-mode 'scala-mode) (looking-at " *case *$"))
+                    (setq col (string-match erg (buffer-substring-no-properties (line-beginning-position) (line-end-position))))))
             (when col (move-to-column col))
             (when (< maxcolumn (current-column))
               (setq maxcolumn (current-column))))
