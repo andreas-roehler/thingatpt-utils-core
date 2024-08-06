@@ -1235,7 +1235,7 @@ it would doublequote a word at point "
                                       (cdr end-raw))
                                      (t (cadr end-raw))))
                            end-raw)))
-                   (cons beg end)
+                   (and beg end (cons beg end))
                    )))))))
 
 (defun ar-th (thing &optional arg)
