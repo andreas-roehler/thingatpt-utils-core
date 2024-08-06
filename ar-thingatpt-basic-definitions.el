@@ -1202,54 +1202,6 @@ it would doublequote a word at point "
   (interactive)
   (setq thing-copy-region (not thing-copy-region)))
 
-(defun ar--th-bounds-char-return (beg end &optional orig no-delimiters)
-  (when (and beg end
-	     (not (eq beg end))
-	     (or (eobp)
-	       (<= orig end)))
-    (if no-delimiters
-	(cons (1+ beg) (1- beg))
-      (cons beg end))))
-
-(defun ar--th-bounds-list-return (beg end &optional no-delimiters)
-  (let ((first (cond ((and (listp beg) (not (null beg)))
-                      (if no-delimiters
-                          (cond
-                           ((numberp (car-safe beg))
-                            (car-safe beg))
-                           ((numberp (cadr (flatten-list beg)))
-                            (cadr (flatten-list beg)))
-                           ((numberp (cdr (flatten-list beg)))
-                            (cdr (flatten-list beg))))
-                        (cond ((numberp (car-safe beg))
-                               (car-safe beg))
-                        (t beg))))
-                     (t beg)))
-        (second
-         (if no-delimiters
-             (cond
-              ((numberp (car-safe end))
-               (car-safe end))
-              ((numberp (ignore-errors (cadr end)))
-               (cadr end))
-              ((numberp (ignore-errors (cadr (cadr end))))
-               (cadr (cadr end)))
-              ((numberp (ignore-errors (cdr (cadr end))))
-               (cdr (cadr end))))
-           (cond
-            ((numberp (cdr-safe end))
-             (cdr-safe end))
-            ((numberp (ignore-errors (cadr end)))
-             (cadr end))
-            ((numberp (ignore-errors (cadr (cadr end))))
-             (cadr (cadr end)))
-            ((numberp (ignore-errors (cdr (cadr end))))
-             (cdr (cadr end)))))))
-    (cons first second)))
-
-;; (defvar ar-th-bounds-backfix nil
-;;    "starting delimiter pos might need correction from end")
-
 (defun ar-th-bounds (thing &optional no-delimiters)
   "Determine the start and end buffer locations for the THING at point.
   THING is a symbol which specifies the kind entity you want.
@@ -1267,16 +1219,24 @@ it would doublequote a word at point "
 	  (t (save-excursion
 	       (save-restriction
 		 (let* ((orig (point))
-			(beg (funcall (get thing 'beginning-op-at)))
-                        (beg_char (if (consp beg) (car beg) beg))
-			(end (and beg (goto-char beg_char) (funcall (get thing 'end-op-at)))))
-		   ;; (when ar-th-bounds-backfix
-		   ;;   (message "backfix: %s" ar-th-bounds-backfix)
-		   ;;   (setq beg ar-th-bounds-backfix))
-		   (when beg
-                     (if (numberp beg)
-		       (ar--th-bounds-char-return beg end orig no-delimiters)
-		     (ar--th-bounds-list-return beg end no-delimiters))))))))))
+			(beg-raw (funcall (get thing 'beginning-op-at)))
+                        (beg
+                         (if (consp beg-raw)
+                             (if no-delimiters
+                                 (cdr beg-raw)
+                               (car beg-raw))
+                           beg-raw))
+			(end-raw (and beg (goto-char (if (consp beg-raw) (car beg-raw) beg)) (funcall (get thing 'end-op-at))))
+                        (end
+                         (if (consp end-raw)
+                             (if no-delimiters
+                                 (car end-raw)
+                               (cond ((numberp (cdr-safe end-raw))
+                                      (cdr end-raw))
+                                     (t (cadr end-raw))))
+                           end-raw)))
+                   (cons beg end)
+                   )))))))
 
 (defun ar-th (thing &optional arg)
   "Returns a buffer substring according to THING.
@@ -1693,7 +1653,7 @@ If optional positions BEG-2TH END-2TH are given, works on them instead. "
 	     (not (eobp))
              (or (not done) (< last (point)))
 	     (setq last (point))
-             (sit-for 0.5) 
+             (sit-for 0.5)
 	     (progn
                ;; (unless done (forward-char 1))
                (funcall th-function thing-1th)
