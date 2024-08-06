@@ -1,4 +1,4 @@
-;;; ar-thingatpt-basic-definitions.el --- Feste Definitionen
+;;; ar-thingatpt-basic-definitions.el --- Feste Definitionen -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2010-2024 Andreas Röhler
 
@@ -1693,12 +1693,13 @@ If optional positions BEG-2TH END-2TH are given, works on them instead. "
 	     (not (eobp))
              (or (not done) (< last (point)))
 	     (setq last (point))
+             (sit-for 0.5) 
 	     (progn
                ;; (unless done (forward-char 1))
                (funcall th-function thing-1th)
 	       (setq done t)))
 	  (unless (or (eobp) (eq 'char thing-1th))
-            (when (setq inner-end (ar-th-forward thing-1th 1))
+            (setq inner-end (ar-th-forward thing-1th 1)
               ;; (sit-for 0.1)
               ;; (narrow-to-region (point) end)
               ;; (sit-for 0.1)
@@ -1825,15 +1826,13 @@ If optional positions BEG-2TH END-2TH are given, works on them instead. "
 
 Return position, if successful, nil otherwise.
 Move backward with negative argument "
-  (let* ((pps (parse-partial-sexp (point-min) (point)))
-         (orig (point))
+  (let* ((orig (point))
 	 (arg (or arg 1)))
     (if (< 0 arg)
         (progn
           (funcall (get thing 'forward-op-at))
           (and (< orig (point)) (point)))
       (funcall (get thing 'backward-op-at))
-      ;; (and (< (point) orig))
       )))
 
 (defun ar-th-un-ml (thing &optional beg end)
