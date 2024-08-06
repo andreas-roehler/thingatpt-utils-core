@@ -1636,8 +1636,6 @@ If optional positions BEG-2TH END-2TH are given, works on them instead. "
                  (cadr (cadr bounds)))
                 ((numberp (ignore-errors (cdr (cadr bounds))))
                  (cdr (cadr bounds))))))
-	 ;; (end (copy-marker (or (ignore-errors (car (car (cdr bounds))))(ignore-errors (car (cdr (cadr bounds))))(ignore-errors (cdr (cadr bounds)))(cdr-safe bounds))))
-         ;; ar-scan-whole-buffer
 	 (last 1)
 	 inner-end done)
     ;; (sit-for 0.1)
@@ -1652,18 +1650,11 @@ If optional positions BEG-2TH END-2TH are given, works on them instead. "
 	    (and
 	     (not (eobp))
              (or (not done) (< last (point)))
-	     (setq last (point))
-             (sit-for 0.5)
-	     (progn
-               ;; (unless done (forward-char 1))
-               (funcall th-function thing-1th)
-	       (setq done t)))
+	     (setq last (point)))
+          (funcall th-function thing-1th)
+	  (setq done t)
 	  (unless (or (eobp) (eq 'char thing-1th))
-            (setq inner-end (ar-th-forward thing-1th 1)
-              ;; (sit-for 0.1)
-              ;; (narrow-to-region (point) end)
-              ;; (sit-for 0.1)
-              )))))))
+            (setq inner-end (ar-th-forward thing-1th 1))))))))
 
 (defun ar-th-kill (thing &optional no-delimiters)
   " "
