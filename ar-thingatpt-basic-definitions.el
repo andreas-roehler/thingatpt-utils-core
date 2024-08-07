@@ -1223,7 +1223,8 @@ it would doublequote a word at point "
                         (beg
                          (if (consp beg-raw)
                              (if no-delimiters
-                                 (cond ((cdr-safe beg-raw))
+                                 (cond ((car-safe (cdr-safe beg-raw)))
+                                       ((cdr-safe beg-raw))
                                        (t (cadr beg-raw)))
                                (car beg-raw))
                            beg-raw))
