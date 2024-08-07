@@ -188,5 +188,40 @@ BODY is code to be executed within the temp buffer.  Point is
        (font-lock-fontify-region (point-min) (point-max))
        ,@body)))
 
+(defmacro ar-test-with-scala-buffer-point-min (contents &rest body)
+  "Create temp buffer in `scala-mode' inserting CONTENTS.
+BODY is code to be executed within the temp buffer.  Point is
+ at the beginning of buffer."
+  (declare (indent 1) (debug t))
+  `(with-temp-buffer
+     ;; requires scala.el
+     ;; (and (featurep 'semantic) (unload-feature 'semantic))
+     ;; (and (featurep 'scala) (unload-feature 'scala))
+     (let (hs-minor-mode py--imenu-create-index-p)
+       (insert ,contents)
+       (scala-mode)
+       (goto-char (point-min))
+       ;; (message "(current-buffer): %s" (current-buffer))
+       (when ar-debug-p (switch-to-buffer (current-buffer))
+	     (font-lock-fontify-region (point-min) (point-max)))
+       ,@body)
+     (sit-for 0.1)))
+
+(defmacro ar-test-with-scala-buffer (contents &rest body)
+  "Create temp buffer in `scala-mode' inserting CONTENTS.
+BODY is code to be executed within the temp buffer.  Point is
+ at the end of buffer."
+  (declare (indent 1) (debug t))
+  `(with-temp-buffer
+     ;; (and (featurep 'scala) (unload-feature 'scala))
+     (let (hs-minor-mode py--imenu-create-index-p)
+       (insert ,contents)
+       (scala-mode)
+       (when ar-debug-p (switch-to-buffer (current-buffer))
+	     (font-lock-fontify-region (point-min) (point-max)))
+       ;; (message "ERT %s" (point))
+       ,@body)
+     (sit-for 0.1)))
+
 (provide 'ar-thingatpt-setup-tests)
 ;; ar-thingatpt-setup-tests.el ends here
