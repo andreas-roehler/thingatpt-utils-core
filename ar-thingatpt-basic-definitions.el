@@ -1223,7 +1223,8 @@ it would doublequote a word at point "
                         (beg
                          (if (consp beg-raw)
                              (if no-delimiters
-                                 (cdr beg-raw)
+                                 (cond ((cdr-safe beg-raw))
+                                       (t (cadr beg-raw)))
                                (car beg-raw))
                            beg-raw))
 			(end-raw (and beg (goto-char (if (consp beg-raw) (car beg-raw) beg)) (funcall (get thing 'end-op-at))))
@@ -1236,7 +1237,7 @@ it would doublequote a word at point "
                                      (t (cadr end-raw))))
                            end-raw)))
                    (and beg end (cons beg end))
-                   )))))))
+)))))))
 
 (defun ar-th (thing &optional arg)
   "Returns a buffer substring according to THING.
