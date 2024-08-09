@@ -206,6 +206,11 @@ entfernt () {
 -f ert-run-tests-batch-and-exit
 }
 
+WGE=$HOME/werkstatt/emacs-generics
+
+cp -p ${WGE}/ar-beg-end.el .
+
+
 if [ $IFLOCAL -eq 0 ]; then
 
     while getopts 123456789abcdefghijklmnpqrstuvx option

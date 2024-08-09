@@ -164,15 +164,12 @@ Default is t, escaped characters don't match."
 
 (defun beginning-of-form-core (begstr endstr regexp nesting condition searchform bound noerror match-in-comment match-in-string orig)
   (let* ((form (if regexp 're-search-backward 'search-backward))
-         ;; (pps (parse-partial-sexp (point-min) (point)))
-         ;; (match-in-comment (nth 4 pps))
-         ;; (match-in-string (and (nth 3 pps)(not (eq 7 (car-safe (syntax-after (point)))))))
          (nesting (or nesting 0))
          first)
     (while
-        (and (not (bobp)) (or (< 0 nesting) (not first))
-             (funcall form searchform bound noerror)
-             (setq last (point)))
+        (and (not (bobp)) (or (< 0 nesting) (not first)))
+      (funcall form searchform bound noerror)
+      (setq last (point))
       (unless
           (beg-end--related-exceptions match-in-comment match-in-string (point) 'beg)
         ;; ";;;" "Write 'etc. "
@@ -186,7 +183,7 @@ Default is t, escaped characters don't match."
               ((looking-at (beg-end-regexp-quote-maybe begstr))
                (setq nesting (1- nesting))
                (setq first t))
-              ((looking-at (beg-end-regexp-quote-maybe endstr) (line-beginning-position))
+              ((looking-at (beg-end-regexp-quote-maybe endstr))
                (setq nesting (1+ nesting))
                (setq first t)))))
     nesting))
