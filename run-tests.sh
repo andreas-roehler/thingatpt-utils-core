@@ -209,6 +209,7 @@ entfernt () {
 WGE=$HOME/werkstatt/emacs-generics
 
 cp -p ${WGE}/ar-beg-end.el .
+cp -p ${WGE}/ar-subr.el .
 
 
 if [ $IFLOCAL -eq 0 ]; then
