@@ -130,7 +130,7 @@ which is defined by `string-chars-preserve'.")
 
 (defun ar-string-strip (str &optional chars-before chars-after)
   "Return a copy of STR, CHARS removed.
-`CHARS-BEFORE' and `CHARS-AFTER' default is \"[ \t\r\n]*\",
+`CHARS-BEFORE' and `CHARS-AFTER' default are whitespace chars,
 i.e. spaces, tabs, carriage returns, newlines and newpages."
   (let* (end
 	 (s-c-b (or chars-before
@@ -1315,7 +1315,6 @@ unless not already there"
 	       (delete-region (point) (scan-sexps (point) 1))
 	       (insert expr))))))
 
-
 (defun ar-in-string-or-comment-p ()
   "If inside or at beginning of a string or comment."
   (interactive)
@@ -1408,71 +1407,8 @@ This function does not move point.  Also see ‘line-beginning-position’.
      (and (eq (char-before (point)) ?\\ )
           (ar-escaped))))
 
-(defun ar-align-equal-sign (&optional arg)
-  (interactive "*p")
-  (unless (nth 8 (parse-partial-sexp (point-min) (point)))
-    ;; (when t
-    (when (or (eq this-command 'self-insert-command)(eq (prefix-numeric-value arg) 1))
-      (ar-align-equal-sign-intern))))
-
-(defun ar-align-equal-sign-intern ()
-  (let (;; (pps (parse-partial-sexp (point-min) (point)))
-        (regexp "\\(=>\\|->\\|<-\\|=\\)")
-        (negated-re "^=>\\|->\\|<-\\|=+"))
-    (save-excursion
-      (let ((end (copy-marker (line-end-position)))
-            (secondcolumn (and (looking-back (concat ".+" regexp "[[:space:]]*") (line-beginning-position))
-                               (not
-                                (save-excursion (goto-char (match-beginning 0))
-                                                (looking-back (concat ".+" regexp ".*") (line-beginning-position))))
-                               ;; (member (char-after) (list 32 ?\n ?\t ?\f))
-                               ;;  haskell
-                               (not (looking-back "main +\\(=+\\) *" (line-beginning-position)))
-                               (goto-char (match-beginning 1))
-                               ;; better match-data then from looking-back
-                               (looking-at regexp)
-                               (current-column)))
-            (maxcolumn 0)
-            (indent (current-indentation))
-            (orig (copy-marker (point)))
-            erg col)
-        ;; an equal-sign at current line
-        (when secondcolumn
-          ;; (message "(match-string-no-properties 1): %s" (match-string-no-properties 1))
-          (setq erg (match-string-no-properties 1))
-          ;; (message "erg: %s" erg)
-          (setq maxcolumn secondcolumn)
-          (setq orig (copy-marker (point)))
-          (while
-              (and (progn (beginning-of-line)
-                          (not (bobp)))
-                   (progn (forward-line -1)
-                          (not (looking-at comment-start)))
-                   (not (ar-empty-line-p))
-                   (<= (current-indentation) indent)
-                   (or
-                    (and (eq major-mode 'scala-mode) (looking-at " *case *$"))
-                    (setq col (string-match erg (buffer-substring-no-properties (line-beginning-position) (line-end-position))))))
-            (when col (move-to-column col))
-            (when (< maxcolumn (current-column))
-              (setq maxcolumn (current-column))))
-          ;; before going downward, reach the last match
-          ;; (when (match-beginning 1) (goto-char (match-beginning 1)))
-          (while (< (line-end-position) end)
-            (setq col (string-match erg (buffer-substring-no-properties (line-beginning-position) (line-end-position))))
-            (when col (move-to-column col)
-                  (when (< (current-column) maxcolumn)
-                    (insert (make-string (- maxcolumn (current-column)) 32))))
-            (forward-line 1))
-          (goto-char orig)
-          (when (concat negated-re "+ +\\(" regexp "\\)[[:blank:]]+.*")
-            (when (< (current-column) maxcolumn)
-              (insert (make-string (- maxcolumn (current-column)) 32)))))))))
-
-
-(defun ar-align-in-current-buffer ()
-  (interactive)
-  (add-hook 'post-command-hook #'ar-align-equal-sign nil t))
+(defvar ar-align-default-re "\\(=>\\|->\\|<-\\|=\\)"
+  "Used by ar-align-symbol")
 
 
 (provide 'ar-subr)
