@@ -847,154 +847,154 @@ XEmacs-users: ‘unibyte’ and ‘multibyte’ class is unused i.e. set to \".\
 ;; Braced
 (put 'braced 'beginning-op-at
      (lambda ()
-       (beginning-of-form-base "{" "}" nil 'move 0 nil 'ar-syntax)))
+       (beginning-of-form-base "{" "}" nil t 0)))
 
 (put 'braced 'end-op-at
      (lambda ()
-       (end-of-form-base "{" "}" nil 'move 0 nil 'ar-syntax)))
+       (end-of-form-base "{" "}" nil t 0)))
 
 (put 'braced 'forward-op-at
      (lambda ()
        (unless (eobp)
-         (end-of-form-base "{" "}" nil 'move 0  nil 'ar-syntax t))))
+         (end-of-form-base "{" "}" nil t 0))))
 
 (put 'braced 'backward-op-at
      (lambda ()
        (unless (bobp)
-         (beginning-of-form-base "{" "}" nil 'move 0  nil 'ar-syntax t))))
+         (beginning-of-form-base "{" "}" nil t 0))))
 
 ;; Symboled
 (put 'symboled 'beginning-op-at
      (lambda ()
-       (beginning-of-form-base "`" "'" nil 'move 0 nil 'ar-syntax)))
+       (beginning-of-form-base "`" "'" nil t 0)))
 
 (put 'symboled 'end-op-at
      (lambda ()
-       (end-of-form-base "`" "'" nil 'move 0 nil 'ar-syntax)))
+       (end-of-form-base "`" "'" nil t 0)))
 
 (put 'symboled 'forward-op-at
      (lambda ()
        (unless (eobp)
-         (end-of-form-base "`" "'" nil 'move 0  nil 'ar-syntax t))))
+         (end-of-form-base "`" "'" nil t 0))))
 
 (put 'symboled 'backward-op-at
      (lambda ()
        (unless (bobp)
-         (beginning-of-form-base "`" "'" nil 'move 0  nil 'ar-syntax t))))
+         (beginning-of-form-base "`" "'" nil t 0))))
 
 ;; Bracketed
 (put 'bracketed 'beginning-op-at
      (lambda ()
-       (beginning-of-form-base "\\[" "\]" nil 'move 0 t 'ar-syntax)))
+       (beginning-of-form-base "\\[" "\]" nil t 0 t)))
 
 (put 'bracketed 'end-op-at
      (lambda ()
-       (end-of-form-base "\\[" "\]" nil 'move 0 t 'ar-syntax)))
+       (end-of-form-base "\\[" "\]" nil t 0 t)))
 
 (put 'bracketed 'forward-op-at
      (lambda ()
        (unless (eobp)
-         (end-of-form-base "\\[" "\]" nil 'move 0  t 'ar-syntax t))))
+         (end-of-form-base "\\[" "\]" nil t 0 t t))))
 
 (put 'bracketed 'backward-op-at
      (lambda ()
        (unless (bobp)
-         (beginning-of-form-base "\\[" "\]" nil 'move 0  t 'ar-syntax t))))
+         (beginning-of-form-base "\\[" "\]" nil t 0 t t))))
 
 ;; Lesserangled
 (put 'lesserangled 'beginning-op-at
      (lambda ()
-       (beginning-of-form-base "<" ">" nil 'move 0 nil 'ar-syntax)))
+       (beginning-of-form-base "<" ">" nil t 0)))
 
 (put 'lesserangled 'end-op-at
      (lambda ()
-       (end-of-form-base "<" ">" nil 'move 0 nil 'ar-syntax)))
+       (end-of-form-base "<" ">" nil t 0)))
 
 (put 'lesserangled 'forward-op-at
      (lambda ()
        (unless (eobp)
-         (end-of-form-base "<" ">" nil 'move 0  nil 'ar-syntax t))))
+         (end-of-form-base "<" ">" nil t 0))))
 
 (put 'lesserangled 'backward-op-at
      (lambda ()
        (unless (bobp)
-         (beginning-of-form-base "<" ">" nil 'move 0  nil 'ar-syntax t))))
+         (beginning-of-form-base "<" ">" nil t 0))))
 
 ;; Greaterangled
 (put 'greaterangled 'beginning-op-at
      (lambda ()
-       (beginning-of-form-base ">" "<" nil 'move 0 nil 'ar-syntax)))
+       (beginning-of-form-base ">" "<" nil t 0)))
 
 (put 'greaterangled 'end-op-at
      (lambda ()
-       (end-of-form-base ">" "<" nil 'move 0 nil 'ar-syntax)))
+       (end-of-form-base ">" "<" nil t 0)))
 
 (put 'greaterangled 'forward-op-at
      (lambda ()
        (unless (eobp)
-         (end-of-form-base ">" "<" nil 'move 0  nil 'ar-syntax t))))
+         (end-of-form-base ">" "<" nil t 0))))
 
 (put 'greaterangled 'backward-op-at
      (lambda ()
        (unless (bobp)
-         (beginning-of-form-base ">" "<" nil 'move 0  nil 'ar-syntax t))))
+         (beginning-of-form-base ">" "<" nil t 0))))
 
 ;; Curvedsinglequoted
 (put 'curvedsinglequoted 'beginning-op-at
      (lambda ()
-       (beginning-of-form-base "‘" "’" nil 'move 0 nil 'ar-syntax)))
+       (beginning-of-form-base "‘" "’" nil t 0)))
 
 (put 'curvedsinglequoted 'end-op-at
      (lambda ()
-       (end-of-form-base "‘" "’" nil 'move 0 nil 'ar-syntax)))
+       (end-of-form-base "‘" "’" nil t 0)))
 
 (put 'curvedsinglequoted 'forward-op-at
      (lambda ()
        (unless (eobp)
-         (end-of-form-base "‘" "’" nil 'move 0  nil 'ar-syntax t))))
+         (end-of-form-base "‘" "’" nil t 0))))
 
 (put 'curvedsinglequoted 'backward-op-at
      (lambda ()
        (unless (bobp)
-         (beginning-of-form-base "‘" "’" nil 'move 0  nil 'ar-syntax t))))
+         (beginning-of-form-base "‘" "’" nil t 0))))
 
 ;; Curveddoublequoted
 (put 'curveddoublequoted 'beginning-op-at
      (lambda ()
-       (beginning-of-form-base "“" "”" nil 'move 0 nil 'ar-syntax)))
+       (beginning-of-form-base "“" "”" nil t 0)))
 
 (put 'curveddoublequoted 'end-op-at
      (lambda ()
-       (end-of-form-base "“" "”" nil 'move 0 nil 'ar-syntax)))
+       (end-of-form-base "“" "”" nil t 0)))
 
 (put 'curveddoublequoted 'forward-op-at
      (lambda ()
        (unless (eobp)
-         (end-of-form-base "“" "”" nil 'move 0  nil 'ar-syntax t))))
+         (end-of-form-base "“" "”" nil t 0))))
 
 (put 'curveddoublequoted 'backward-op-at
      (lambda ()
        (unless (bobp)
-         (beginning-of-form-base "“" "”" nil 'move 0  nil 'ar-syntax t))))
+         (beginning-of-form-base "“" "”" nil t 0))))
 
 ;; Parentized
 (put 'parentized 'beginning-op-at
      (lambda ()
-       (beginning-of-form-base "\(" "\)" nil 'move 0 nil 'ar-syntax)))
+       (beginning-of-form-base "\(" "\)" nil t 0)))
 
 (put 'parentized 'end-op-at
      (lambda ()
-       (end-of-form-base "\(" "\)" nil 'move 0 nil 'ar-syntax)))
+       (end-of-form-base "\(" "\)" nil t 0)))
 
 (put 'parentized 'forward-op-at
      (lambda ()
        (unless (eobp)
-         (end-of-form-base "\(" "\)" nil 'move 0  nil 'ar-syntax t))))
+         (end-of-form-base "\(" "\)" nil t 0))))
 
 (put 'parentized 'backward-op-at
      (lambda ()
        (unless (bobp)
-         (beginning-of-form-base "\(" "\)" nil 'move 0  nil 'ar-syntax t))))
+         (beginning-of-form-base "\(" "\)" nil t 0))))
 
 ;; Paired delimited forms end
 
@@ -1003,217 +1003,216 @@ XEmacs-users: ‘unibyte’ and ‘multibyte’ class is unused i.e. set to \".\
 ;; Backslashed
 (put 'backslashed 'beginning-op-at
      (lambda ()
-       (beginning-of-form-base "\\" "\\" nil 'move 0 nil 'ar-syntax)))
+       (beginning-of-form-base "\\" "\\" nil t 0)))
 
 (put 'backslashed 'end-op-at
      (lambda ()
-       (end-of-form-base "\\" "\\" nil 'move 0 nil 'ar-syntax)))
+       (end-of-form-base "\\" "\\" nil t 0)))
 
 (put 'backslashed 'forward-op-at
      (lambda ()
-       (end-of-form-base "\\" "\\" nil 'move 0 nil 'ar-syntax t)))
+       (end-of-form-base "\\" "\\" nil t 0)))
 
 (put 'backslashed 'backward-op-at
      (lambda ()
-       (beginning-of-form-base "\\" "\\" nil 'move 0 nil 'ar-syntax)))
-
+       (beginning-of-form-base "\\" "\\" nil t 0)))
 
 ;; Backticked
 (put 'backticked 'beginning-op-at
      (lambda ()
-       (beginning-of-form-base "`" "`" nil 'move 0 nil 'ar-syntax)))
+       (beginning-of-form-base "`" "`" nil t 0)))
 
 (put 'backticked 'end-op-at
      (lambda ()
-       (end-of-form-base "`" "`" nil 'move 0 nil 'ar-syntax)))
+       (end-of-form-base "`" "`" nil t 0)))
 
 (put 'backticked 'forward-op-at
      (lambda ()
-       (end-of-form-base "`" "`" nil 'move 0 nil 'ar-syntax t)))
+       (end-of-form-base "`" "`" nil t 0 t)))
 
 (put 'backticked 'backward-op-at
      (lambda ()
-       (beginning-of-form-base "`" "`" nil 'move 0 nil 'ar-syntax)))
+       (beginning-of-form-base "`" "`" nil t 0)))
 
 
 ;; Coloned
 (put 'coloned 'beginning-op-at
      (lambda ()
-       (beginning-of-form-base ":" ":" nil 'move 0 nil 'ar-syntax)))
+       (beginning-of-form-base ":" ":" nil t 0)))
 
 (put 'coloned 'end-op-at
      (lambda ()
-       (end-of-form-base ":" ":" nil 'move 0 nil 'ar-syntax)))
+       (end-of-form-base ":" ":" nil t 0)))
 
 (put 'coloned 'forward-op-at
      (lambda ()
-       (end-of-form-base ":" ":" nil 'move 0 nil 'ar-syntax t)))
+       (end-of-form-base ":" ":" nil t 0 t)))
 
 (put 'coloned 'backward-op-at
      (lambda ()
-       (beginning-of-form-base ":" ":" nil 'move 0 nil 'ar-syntax)))
+       (beginning-of-form-base ":" ":" nil t 0)))
 
 
 ;; Dollared
 (put 'dollared 'beginning-op-at
      (lambda ()
-       (beginning-of-form-base "$" "$" nil 'move 0 nil 'ar-syntax)))
+       (beginning-of-form-base "$" "$" nil t 0)))
 
 (put 'dollared 'end-op-at
      (lambda ()
-       (end-of-form-base "$" "$" nil 'move 0 nil 'ar-syntax)))
+       (end-of-form-base "$" "$" nil t 0)))
 
 (put 'dollared 'forward-op-at
      (lambda ()
-       (end-of-form-base "$" "$" nil 'move 0 nil 'ar-syntax t)))
+       (end-of-form-base "$" "$" nil t 0 t)))
 
 (put 'dollared 'backward-op-at
      (lambda ()
-       (beginning-of-form-base "$" "$" nil 'move 0 nil 'ar-syntax)))
+       (beginning-of-form-base "$" "$" nil t 0)))
 
 
 ;; Doublequoted
 (put 'doublequoted 'beginning-op-at
      (lambda ()
-       (beginning-of-form-base "\"" "\"" nil 'move 0 nil 'ar-syntax)))
+       (beginning-of-form-base "\"" "\"" nil t 0)))
 
 (put 'doublequoted 'end-op-at
      (lambda ()
-       (end-of-form-base "\"" "\"" nil 'move 0 nil 'ar-syntax)))
+       (end-of-form-base "\"" "\"" nil t 0)))
 
 (put 'doublequoted 'forward-op-at
      (lambda ()
-       (end-of-form-base "\"" "\"" nil 'move 0 nil 'ar-syntax t)))
+       (end-of-form-base "\"" "\"" nil t 0 t)))
 
 (put 'doublequoted 'backward-op-at
      (lambda ()
-       (beginning-of-form-base "\"" "\"" nil 'move 0 nil 'ar-syntax)))
+       (beginning-of-form-base "\"" "\"" nil t 0)))
 
 
 ;; Equalized
 (put 'equalized 'beginning-op-at
      (lambda ()
-       (beginning-of-form-base "=" "=" nil 'move 0 nil 'ar-syntax)))
+       (beginning-of-form-base "=" "=" nil t 0)))
 
 (put 'equalized 'end-op-at
      (lambda ()
-       (end-of-form-base "=" "=" nil 'move 0 nil 'ar-syntax)))
+       (end-of-form-base "=" "=" nil t 0)))
 
 (put 'equalized 'forward-op-at
      (lambda ()
-       (end-of-form-base "=" "=" nil 'move 0 nil 'ar-syntax t)))
+       (end-of-form-base "=" "=" nil t 0 t)))
 
 (put 'equalized 'backward-op-at
      (lambda ()
-       (beginning-of-form-base "=" "=" nil 'move 0 nil 'ar-syntax)))
+       (beginning-of-form-base "=" "=" nil t 0)))
 
 
 ;; Hyphened
 (put 'hyphened 'beginning-op-at
      (lambda ()
-       (beginning-of-form-base "-" "-" nil 'move 0 nil 'ar-syntax)))
+       (beginning-of-form-base "-" "-" nil t 0)))
 
 (put 'hyphened 'end-op-at
      (lambda ()
-       (end-of-form-base "-" "-" nil 'move 0 nil 'ar-syntax)))
+       (end-of-form-base "-" "-" nil t 0)))
 
 (put 'hyphened 'forward-op-at
      (lambda ()
-       (end-of-form-base "-" "-" nil 'move 0 nil 'ar-syntax t)))
+       (end-of-form-base "-" "-" nil t 0 t)))
 
 (put 'hyphened 'backward-op-at
      (lambda ()
-       (beginning-of-form-base "-" "-" nil 'move 0 nil 'ar-syntax)))
+       (beginning-of-form-base "-" "-" nil t 0)))
 
 
 ;; Singlequoted
 (put 'singlequoted 'beginning-op-at
      (lambda ()
-       (beginning-of-form-base "'" "'" nil 'move 0 nil 'ar-syntax)))
+       (beginning-of-form-base "'" "'" nil t 0)))
 
 (put 'singlequoted 'end-op-at
      (lambda ()
-       (end-of-form-base "'" "'" nil 'move 0 nil 'ar-syntax)))
+       (end-of-form-base "'" "'" nil t 0)))
 
 (put 'singlequoted 'forward-op-at
      (lambda ()
-       (end-of-form-base "'" "'" nil 'move 0 nil 'ar-syntax t)))
+       (end-of-form-base "'" "'" nil t 0 t)))
 
 (put 'singlequoted 'backward-op-at
      (lambda ()
-       (beginning-of-form-base "'" "'" nil 'move 0 nil 'ar-syntax)))
+       (beginning-of-form-base "'" "'" nil t 0)))
 
 
 ;; Slashed
 (put 'slashed 'beginning-op-at
      (lambda ()
-       (beginning-of-form-base "/" "/" nil 'move 0 nil 'ar-syntax)))
+       (beginning-of-form-base "/" "/" nil t 0)))
 
 (put 'slashed 'end-op-at
      (lambda ()
-       (end-of-form-base "/" "/" nil 'move 0 nil 'ar-syntax)))
+       (end-of-form-base "/" "/" nil t 0)))
 
 (put 'slashed 'forward-op-at
      (lambda ()
-       (end-of-form-base "/" "/" nil 'move 0 nil 'ar-syntax t)))
+       (end-of-form-base "/" "/" nil t 0 t)))
 
 (put 'slashed 'backward-op-at
      (lambda ()
-       (beginning-of-form-base "/" "/" nil 'move 0 nil 'ar-syntax)))
+       (beginning-of-form-base "/" "/" nil t 0)))
 
 
 ;; Stared
 (put 'stared 'beginning-op-at
      (lambda ()
-       (beginning-of-form-base "*" "*" nil 'move 0 nil 'ar-syntax)))
+       (beginning-of-form-base "*" "*" nil t 0)))
 
 (put 'stared 'end-op-at
      (lambda ()
-       (end-of-form-base "*" "*" nil 'move 0 nil 'ar-syntax)))
+       (end-of-form-base "*" "*" nil t 0)))
 
 (put 'stared 'forward-op-at
      (lambda ()
-       (end-of-form-base "*" "*" nil 'move 0 nil 'ar-syntax t)))
+       (end-of-form-base "*" "*" nil t 0 t)))
 
 (put 'stared 'backward-op-at
      (lambda ()
-       (beginning-of-form-base "*" "*" nil 'move 0 nil 'ar-syntax)))
+       (beginning-of-form-base "*" "*" nil t 0)))
 
 
 ;; Underscored
 (put 'underscored 'beginning-op-at
      (lambda ()
-       (beginning-of-form-base "_" "_" nil 'move 0 nil 'ar-syntax)))
+       (beginning-of-form-base "_" "_" nil t 0)))
 
 (put 'underscored 'end-op-at
      (lambda ()
-       (end-of-form-base "_" "_" nil 'move 0 nil 'ar-syntax)))
+       (end-of-form-base "_" "_" nil t 0)))
 
 (put 'underscored 'forward-op-at
      (lambda ()
-       (end-of-form-base "_" "_" nil 'move 0 nil 'ar-syntax t)))
+       (end-of-form-base "_" "_" nil t 0 t)))
 
 (put 'underscored 'backward-op-at
      (lambda ()
-       (beginning-of-form-base "_" "_" nil 'move 0 nil 'ar-syntax)))
+       (beginning-of-form-base "_" "_" nil t 0)))
 
 
 ;; Whitespaced
 (put 'whitespaced 'beginning-op-at
      (lambda ()
-       (beginning-of-form-base " " " " nil 'move 0 nil 'ar-syntax)))
+       (beginning-of-form-base " " " " nil t 0)))
 
 (put 'whitespaced 'end-op-at
      (lambda ()
-       (end-of-form-base " " " " nil 'move 0 nil 'ar-syntax)))
+       (end-of-form-base " " " " nil t 0)))
 
 (put 'whitespaced 'forward-op-at
      (lambda ()
-       (end-of-form-base " " " " nil 'move 0 nil 'ar-syntax t)))
+       (end-of-form-base " " " " nil t 0)))
 
 (put 'whitespaced 'backward-op-at
      (lambda ()
-       (beginning-of-form-base " " " " nil 'move 0 nil 'ar-syntax)))
+       (beginning-of-form-base " " " " nil t 0)))
 
 
 ;; Unpaired delimited forms end

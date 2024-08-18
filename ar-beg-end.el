@@ -134,9 +134,12 @@ Default is t, escaped characters don't match."
   "Check for contradiction, return t if it fails.
 
   FLAG: if moving forward or backward"
-  (unless (bobp)
-    (let* (;; (pos pos)
-           (pps (save-excursion (parse-partial-sexp (point-min) (if (eq flag 'beg) (1+ pos) pos)))))
+  (unless (or (bobp)
+              ;; (ignore-errors (eq (car-safe (syntax-after (point))) 7))
+              )
+    (let* ((pps (save-excursion (parse-partial-sexp (point-min) pos
+                                                    ;; (if (eq flag 'beg) (1+ pos) pos)
+                                                    ))))
       (or
        ;; (and (ar-escaped-p (1- (point))) ar-ignore-escaped-chars)
        (and ar-ignore-escaped-chars (ar-escaped-p (if (eq flag 'beg) (point) (1- (point)))))
@@ -156,19 +159,19 @@ Default is t, escaped characters don't match."
             )
        (and (not (nth 3 pps))
             match-in-string
+            (not (eq (car (syntax-after (point))) 7))  
             )
        (and (nth 3 pps)
             (not match-in-string)
-            )
-         ))))
+            )))))
 
 (defun beginning-of-form-core (begstr endstr regexp nesting condition searchform bound noerror match-in-comment match-in-string orig)
   (let* ((form (if regexp 're-search-backward 'search-backward))
          (nesting (or nesting 0))
          first)
     (while
-        (and (not (bobp)) (or (< 0 nesting) (not first)))
-      (funcall form searchform bound noerror)
+        (and (not (bobp)) (or (< 0 nesting) (not first))
+             (funcall form searchform bound noerror))
       (setq last (point))
       (unless
           (beg-end--related-exceptions match-in-comment match-in-string (point) 'beg)
@@ -176,9 +179,8 @@ Default is t, escaped characters don't match."
         ;; doublequoted starts either right behind closer or must travel some distanz
         (cond ((string= begstr endstr)
                (if (< (point) orig) ;; (not first)
-                 (setq nesting (1- nesting))
-                   (setq nesting (1+ nesting))
-                 )
+                   (setq nesting (1- nesting))
+                 (setq nesting (1+ nesting)))
                (setq first t))
               ((looking-at (beg-end-regexp-quote-maybe begstr))
                (setq nesting (1- nesting))
@@ -188,7 +190,9 @@ Default is t, escaped characters don't match."
                (setq first t)))))
     nesting))
 
-(defun beginning-of-form-base (begstr endstr &optional bound noerror nesting regexp condition backward)
+(defun beginning-of-form-base (begstr endstr &optional bound noerror nesting regexp condition match-in-comment match-in-string)
+  "Optional argument CONDITION: may signal 'behind
+when starting from behind unary delimiters like single-quotes"
   (let* ((searchform
           (if (stringp begstr)
 	      (cond ((and (string= begstr endstr))
@@ -202,11 +206,11 @@ Default is t, escaped characters don't match."
 	    begstr))
          (orig (point))
          (pps (parse-partial-sexp (or bound (point-min)) (point)))
-         (match-in-comment (nth 4 pps))
-         (match-in-string (and (nth 3 pps)
-                               ;; looking for opening doublequotes
-                               ;; (not (eq 7 (car-safe (syntax-after (point)))))
-                               ))
+         (match-in-comment (or match-in-comment (nth 4 pps)))
+         (match-in-string (or match-in-string (nth 3 pps)
+                              ;; looking for opening doublequotes
+                              ;; (not (eq 7 (car-safe (syntax-after (point)))))
+                              ))
          first erg)
     (if (and
          (not first) (< nesting 1)
@@ -217,61 +221,68 @@ Default is t, escaped characters don't match."
              (not (ar-escaped-p (point))))
          ;; Check for contradiction, return t if it fails.
          (not (beg-end--related-exceptions match-in-comment match-in-string (point) 'beg)))
-
         (list (match-beginning 0) (match-end 0))
-      (when (and
-             (not first)
-             ;; ((asdf))|
-             (looking-at (beg-end-regexp-quote-maybe endstr))
-             (not (string= begstr endstr))
-             (not (beg-end--related-exceptions match-in-comment match-in-string (point) 'beg)))
-
-        (setq nesting (1+ nesting)))
+      ;; (when (and
+      ;;        (not first)
+      ;;        ;; ((asdf))|
+      ;;        (or (looking-at (beg-end-regexp-quote-maybe endstr))
+      ;;            (not (string= begstr endstr)))
+      ;;        (not (beg-end--related-exceptions match-in-comment match-in-string (point) 'beg)))
+      ;;   (setq nesting (1+ nesting)))
       (while
           (and
            (or (not first) (< 0 nesting)))
-        (setq first t)
-        (setq nesting (beginning-of-form-core begstr endstr regexp nesting condition searchform bound noerror match-in-comment match-in-string orig)))
+        (if (eq condition 'behind)
+            (progn
+              (beginning-of-form-core begstr endstr regexp nesting condition searchform bound noerror match-in-comment match-in-string orig)
+              (setq condition nil))
+          (setq first t)
+        (setq nesting (beginning-of-form-core begstr endstr regexp nesting condition searchform bound noerror match-in-comment match-in-string orig))))
       (cond
        ((<= (point) orig)
         (when (looking-at (beg-end-regexp-quote-maybe begstr))
 
           ;; (unless
-              ;; (beg-end--related-exceptions match-in-comment match-in-string (1+ (point)) 'beg)
-            (list (match-beginning 0) (match-end 0))))
+          ;; (beg-end--related-exceptions match-in-comment match-in-string (1+ (point)) 'beg)
+          (list (match-beginning 0) (match-end 0))))
        ((eq (point) orig)
-        (if backward
-            (cond ((eq (length begstr) 1)
-                   ;; (< 0 (abs (skip-chars-backward (concat "^" begstr))))
-                   (skip-chars-backward (concat "^" endstr))
-                   (when (looking-at endstr)
-                     (unless
-                         (or (and (ar-escaped-p (1- (point))) ar-ignore-escaped-chars)
-                             (beg-end--related-exceptions match-in-comment match-in-string (point) 'beg))
-                       (list (match-beginning 0) (match-end 0)))))
-                  ((characterp begstr)
-                   (and (< 0 (abs (skip-chars-backward (concat "^" begstr))))
-                        (looking-at begstr))
+        (cond ((eq (length begstr) 1)
+               ;; (< 0 (abs (skip-chars-backward (concat "^" begstr))))
+               (skip-chars-backward (concat "^" endstr))
+               (when (looking-at endstr)
+                 (unless
+                     (or (and (ar-escaped-p (1- (point))) ar-ignore-escaped-chars)
+                         (beg-end--related-exceptions match-in-comment match-in-string (point) 'beg))
+                   (list (match-beginning 0) (match-end 0)))))
+              ((characterp begstr)
+               (and (< 0 (abs (skip-chars-backward (concat "^" begstr))))
+                    (looking-at begstr))
+               (unless
+                   (beg-end--related-exceptions match-in-comment match-in-string (point) 'beg)
+                 (list (match-beginning 0) (match-end 0))))
+
+              (t (when (and (re-search-backward endstr nil t)
+                            (looking-back (beg-end-regexp-quote-maybe begstr) (line-beginning-position)))
                    (unless
                        (beg-end--related-exceptions match-in-comment match-in-string (point) 'beg)
-                     (list (match-beginning 0) (match-end 0))))
-
-                  (t (when (and (re-search-backward endstr nil t)
-                                (looking-back (beg-end-regexp-quote-maybe begstr) (line-beginning-position)))
-                       (unless
-                           (beg-end--related-exceptions match-in-comment match-in-string (point) 'beg)
-                         (goto-char (match-beginning 0))
-                         (list (match-beginning 0) (match-end 0))))))))))))
+                     (goto-char (match-beginning 0))
+                     (list (match-beginning 0) (match-end 0)))))))))))
 
 (defun end-of-form-core (begstr endstr regexp nesting condition searchform bound noerror pps forward match-in-comment match-in-string)
   (let* ((form (if regexp 're-search-forward 'search-forward))
          ;; (start (or start (point-min)))
          ;; (pps (parse-partial-sexp start (point)))
-         (match-in-comment (or match-in-comment (nth 4 pps)))
-         (match-in-string (or match-in-string (nth 3 pps)))
+         ;; (match-in-comment (or match-in-comment (nth 4 pps)))
+         ;; (match-in-string (or match-in-string (nth 3 pps)))
          first)
     (while (and (not (eobp))(or (not first) (< 0 nesting)) (or (not bound) (< (point) bound))
-                (funcall form searchform bound noerror)
+                (funcall form
+                         searchform
+                         ;; (if (ignore-errors
+                         ;;            (eq condition 'backslashed))
+                         ;;          (regexp-quote searchform)
+                         ;;        searchform)
+                         bound noerror)
                 (setq last (point))
                 (setq first t))
       (cond ((looking-back (beg-end-regexp-quote-maybe begstr) (line-beginning-position))
@@ -353,10 +364,13 @@ If IN-STRING is non-nil, forms inside string match.
                   (beg-end--related-exceptions match-in-comment match-in-string (point) 'end)
                 (list (match-beginning 0) (match-end 0))))
 )
-          (when (looking-back (beg-end-regexp-quote-maybe endstr) (line-beginning-position))
+          (when
+              (and (looking-back (beg-end-regexp-quote-maybe endstr) (line-beginning-position))
+                   (< orig (match-beginning 0)))
             ;; (unless
                 ;; (beg-end--related-exceptions match-in-comment match-in-string (point) 'end)
-              (list (match-beginning 0) (match-end 0)))))
+              (list (match-beginning 0) (match-end 0))))
+        )
        ((eq orig (point))
         (if forward
             (cond ((eq (length begstr) 1)
@@ -377,7 +391,8 @@ If IN-STRING is non-nil, forms inside string match.
                        (unless (beg-end--related-exceptions match-in-comment match-in-string (point) 'end)
                          (goto-char (match-beginning 0))
                          (list (match-beginning 0) (match-end 0)))
-)))))))))
+)))))))
+    ))
 
 (provide 'ar-beg-end)
 ;;; ar-beg-end.el ends here

@@ -1407,9 +1407,5 @@ This function does not move point.  Also see ‘line-beginning-position’.
      (and (eq (char-before (point)) ?\\ )
           (ar-escaped))))
 
-(defvar ar-align-default-re "\\(=>\\|->\\|<-\\|=\\)"
-  "Used by ar-align-symbol")
-
-
 (provide 'ar-subr)
 ;;; ar-subr.el ends here
