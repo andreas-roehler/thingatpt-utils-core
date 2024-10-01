@@ -88,23 +88,22 @@
     (should (looking-at "(defun foo1"))))
 
 (ert-deftest ar-backward-defun-test-1977ztH ()
-  (with-temp-buffer
-    (insert "(defun foo1 ()
+  (ar-test-with-elisp-buffer
+    "(defun foo1 ()
   \"[Some docu]
 
 \(defun other-foo \"
   (interactive)
-  \;\; defining another function inside
+  ;; defining another function inside
   (defun foo2 ()
     (interactive)
     (message \"%s\"   \"Foo2\")
-\;\; another syntactically correct function just badly indented
+;; another syntactically correct function just badly indented
 \(defun foo3 ()
   (interactive)
   (message \"%s\" \"Foo3\"))
 )
-  (message \"%s\" \"Foo1\"))")
-    (emacs-lisp-mode)
+  (message \"%s\" \"Foo1\"))"
     (goto-char (point-max))
     (search-backward "foo2")
     (if (functionp 'ar-backward-defun)

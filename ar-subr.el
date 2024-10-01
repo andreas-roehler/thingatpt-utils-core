@@ -548,17 +548,17 @@ Return nil if not."
   (interactive)
   (scan-sexps (point-min) (point-max)))
 
-(defun ar-backward-defun-DWIM (&optional outmost pps)
+(defun ar-beginning-of-defun-DWIM (&optional outmost pps)
   "A fault-tolerant backward-function command.
 
 In case of invalid source-code at point, try some heuristics"
   (interactive)
   (if (ar-check-parens)
-      (ar-backward-defun outmost pps)
+      (ar-beginning-of-defun outmost pps)
     (ar--backward-regexp ar-beginning-of-defun-re)))
 
-(defalias 'ar-beginning-of-defun 'ar-backward-defun)
-(defun ar-backward-defun (&optional outmost pps)
+;; (defalias 'ar-beginning-of-defun 'ar-beginning-of-defun)
+(defun ar-beginning-of-defun (&optional outmost pps)
   "Move to the beginning of a function definition.
 
 With OUTMOST don't stop at a nested inner function.
@@ -576,14 +576,14 @@ Optional argument PPS result of `parse-partial-sexp'."
     (cond
      ((and (not liststart)(looking-at ar-beginning-of-defun-re))
       (unless (bobp) (skip-chars-backward " \t\r\n\f")
-	      (ar-backward-defun)))
+	      (ar-beginning-of-defun)))
      (liststart
       (goto-char liststart)
       (while (and (not (looking-at ar-beginning-of-defun-re))(setq liststart (nth 1 (parse-partial-sexp (point-min) (point)))))
 	(goto-char liststart))
-      (and outmost (nth 1 (setq pps (parse-partial-sexp (point-min) (point)))) (ar-backward-defun outmost pps)))
+      (and outmost (nth 1 (setq pps (parse-partial-sexp (point-min) (point)))) (ar-beginning-of-defun outmost pps)))
      ((nth 4 pps) (ar-backward-comment)
-      (ar-backward-defun outmost))
+      (ar-beginning-of-defun outmost))
      ((or (eq ?\)(char-before)) (< 0 (abs (skip-chars-backward "^)"))))
 	  (unless (bobp) (forward-char -1))
 	  (ar-beginning-of-defun outmost)))
@@ -605,7 +605,7 @@ When `end-of-defun-function' is set, call it with optional ARG"
       (cond
        ((nth 1 pps)
 	;; (goto-char (nth 1 pps))
-	(ar-backward-defun)
+	(ar-beginning-of-defun)
 	(forward-sexp))
        (in-comment
 	(end-of-line)

@@ -63,10 +63,10 @@ UTILSDIR=$HOME/werkstatt/thing-at-point-utils/
 
 FILE1=ar-subr.el
 FILE2=ar-beg-end.el
-FILE3=ar-thingatpt-basic-definitions.el
-FILE4=ar-thingatpt-utils-core.el
-# FILE5=ar-thingatpt-utils-map.el
-FILE6=${UTILSDIR}ar-thingatpt-utils.el
+FILE3=ar-emacs-generics-start-Zf98zM.el
+FILE4=ar-thingatpt-basic-definitions.el
+FILE5=ar-thingatpt-utils-core.el
+FILE6=ar-navigate.el
 FILE7=${UTILSDIR}ar-comment-lor.el
 
 SETUP=${TESTDIR}ar-thingatpt-setup-tests.el
@@ -210,6 +210,9 @@ WGE=$HOME/werkstatt/emacs-generics
 
 cp -p ${WGE}/ar-beg-end.el .
 cp -p ${WGE}/ar-subr.el .
+cp -p ${WGE}/ar-navigate.el .
+cp -p ${WGE}/ar-subr.el .
+cp -p ${WGE}/ar-emacs-generics-start-Zf98zM.el .
 
 
 if [ $IFLOCAL -eq 0 ]; then
