@@ -26,6 +26,8 @@ jobs:
             --eval "(message (getenv \"PWD\"))" \
             --eval "(load (expand-file-name \"ar-subr.el\"))" \
             --eval "(load (expand-file-name \"ar-beg-end.el\"))" \
+            --eval "(load (expand-file-name \"ar-emacs-generics-start-Zf98zM.el\"))" \
+            --eval "(load (expand-file-name \"ar-navigate.el\"))" \
             --eval "(load (expand-file-name \"ar-thingatpt-utils-map.el\"))" \
             --eval "(load (expand-file-name \"ar-thingatpt-basic-definitions.el\"))" \
             --eval "(load (expand-file-name \"ar-thingatpt-utils-core.el\"))" \
