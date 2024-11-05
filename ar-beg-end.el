@@ -151,7 +151,7 @@ Default is t, escaped characters don't match."
 
        ;; (and match-in-string
        ;;      (not (eq 7 (car-safe (syntax-after (if (eq flag 'beg) (point) (1- (point))))))))
-       (and (not (nth 4 pps))
+       (and (not (or (and comment-start-skip (looking-at comment-start-skip))(nth 4 pps)))
             match-in-comment
             )
        (and (nth 4 pps)
