@@ -406,7 +406,6 @@ Argument REGEXP determined by form."
         ;; (when ar-verbose-p (message "%s" erg))
         erg))))
 
-
 (defun ar-down-base-bol (regexp)
   "Go to the beginning of next form below in buffer.
 
@@ -1481,27 +1480,6 @@ Return position of moved, nil otherwise."
             (forward-sexp))
       (< orig (point)))))
 
-(defun ar-navigate-update-vars (mode)
-  (pcase mode
-    (`haskell-mode
-     (setq-local
-      ar-def-re ar-haskell-def-re
-      ar-class-re ar-haskell-class-re
-      ar-def-or-class-re ar-haskell-def-or-class-re
-      ar-indent-offset ar-haskell-indent-offset
-      ar-block-re ar-haskell-block-re))
-    (`python-mode
-     (setq-local
-      ar-def-re ar-def-re
-      ar-class-re ar-class-re
-      ar-def-or-class-re ar-def-or-class-re))
-    (`scala-mode
-     (setq-local
-      ar-def-re ar-scala-def-re
-      ar-class-re ar-scala-class-re
-      ar-def-or-class-re ar-scala-def-or-class-re
-      ar-indent-offset ar-emacs-scala-indent-offset))))
-
 (defun ar--end-base-intern (regexp &optional orig bol repeat)
   ""
   (ar-navigate-update-vars major-mode)
@@ -1626,7 +1604,6 @@ Optional ORIG: start position
 Optional BOL: go to beginning of line following end-position"
   (interactive)
   (cdr-safe (ar--end-base 'ar-def-re orig bol)))
-
 
 ;;  Decorator
 (defun ar-backward-decorator ()
@@ -1765,37 +1742,6 @@ When `end-of-defun-function' is set, call it with optional ARG"
       (when (< orig (point))
         (when ar-verbose-p  (message "%s" (point)))
         (point)))))
-
-(defun ar-navigate-update-vars (mode)
-  (pcase mode
-    (`haskell-mode
-     (setq-local
-      ar-def-re ar-scala-def-re
-      ar-block-re ar-scala-block-re
-      ar-minor-block-re ar-scala-minor-block-re
-      ar-block-or-clause-re ar-scala-block-or-clause-re
-      ar-def-re ar-scala-def-re
-      ar-class-re ar-scala-class-re
-      ar-def-or-class-re ar-scala-def-or-class-re
-      ar-indent-offset ar-emacs-scala-indent-offset
-      ))
-    (`python-mode
-     (setq-local
-      ar-def-re py-def-re
-      ar-class-re py-class-re
-      ar-def-or-class-re py-def-or-class-re))
-    (`scala-mode
-     (setq-local
-      ar-def-re ar-scala-def-re
-      ar-block-re ar-scala-block-re
-      ar-minor-block-re ar-scala-minor-block-re
-      ar-block-or-clause-re ar-scala-block-or-clause-re
-      ar-def-re ar-scala-def-re
-      ar-class-re ar-scala-class-re
-      ar-def-or-class-re ar-scala-def-or-class-re
-      ar-indent-offset ar-emacs-scala-indent-offset
-      ))
-    ))
 
 (provide 'ar-navigate)
 ;;; ar-navigate.el ends here

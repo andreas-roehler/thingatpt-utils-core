@@ -481,8 +481,11 @@ Otherwise assume being behind an opening delimiter or at a closing "
   :type 'boolean
   :group 'werkstatt)
 
-(defvar ar-delimiters-atpt "\\\\|\"'`#\\$/=?!:*+~§%&_\\;@’-"
-"Specify the delimiter chars. ")
+(defcustom ar-delimiters-atpt "\\\\|\"'`#\\$/=?!:*+~§%&\\;@’-"
+  "Specify the delimiter chars. "
+  :type 'string
+  :tag "ar-delimiters-atpt"
+  :group 'werkstatt)
 
 (setq ar-delimiters-atpt "\\\\|\"'`#\\$/=?!:*+~§%&_\\;@’-")
 

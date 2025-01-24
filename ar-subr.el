@@ -76,7 +76,7 @@
 (defvar ar-literal-delim-re "\""
   "When looking at beginning of string.")
 
-(defalias 'ar-escaped 'ar-escaped-p)
+(defalias (quote ar-escaped) (quote ar-escaped-p))
 ;; (defmacro ar-escaped-p ()
 ;;   "Return t if char is preceded by an odd number of backslashes."
 ;;   `(save-excursion
@@ -215,7 +215,7 @@ Optional argument LIMIT limit."
   :group 'sytactic-close)
 
 (unless (functionp 'empty-line-p)
-  (defalias 'empty-line-p 'ar-empty-line-p))
+  (defalias 'empty-line-p (quote ar-empty-line-p)))
 (defun ar-empty-line-p (&optional iact)
   "Return t if cursor is at an empty line, nil otherwise.
 Optional argument IACT saying interactively called."
@@ -557,7 +557,7 @@ In case of invalid source-code at point, try some heuristics"
       (ar-beginning-of-defun outmost pps)
     (ar--backward-regexp ar-beginning-of-defun-re)))
 
-;; (defalias 'ar-beginning-of-defun 'ar-beginning-of-defun)
+;; (defalias (quote ar-beginning-of-defun) (quote ar-beginning-of-defun))
 (defun ar-beginning-of-defun (&optional outmost pps)
   "Move to the beginning of a function definition.
 
@@ -589,7 +589,7 @@ Optional argument PPS result of `parse-partial-sexp'."
 	  (ar-beginning-of-defun outmost)))
     liststart)))
 
-(defalias 'ar-end-of-defun 'ar-forward-defun)
+(defalias (quote ar-end-of-defun) (quote ar-forward-defun))
 (defun ar-forward-defun ()
   "Move to the end of a function definition.
 
@@ -1407,5 +1407,38 @@ This function does not move point.  Also see ‘line-beginning-position’.
      (and (eq (char-before (point)) ?\\ )
           (ar-escaped))))
 
-(provide 'ar-subr)
+
+(defun ar-navigate-update-vars (mode)
+  (pcase mode
+    (`haskell-mode
+     (setq-local
+      ar-def-re ar-haskell-def-re
+      ar-block-re ar-haskell-block-re
+      ar-minor-block-re ar-haskell-minor-block-re
+      ar-block-or-clause-re ar-haskell-block-or-clause-re
+      ar-def-re ar-haskell-def-re
+      ar-class-re ar-haskell-class-re
+      ar-def-or-class-re ar-haskell-def-or-class-re
+      ar-indent-offset ar-emacs-scala-indent-offset
+      ))
+    (`python-mode
+     (setq-local
+      ar-def-re py-def-re
+      ar-class-re py-class-re
+      ar-def-or-class-re py-def-or-class-re))
+    (`scala-mode
+     (setq-local
+      ar-def-re ar-scala-def-re
+      ar-block-re ar-scala-block-re
+      ar-minor-block-re ar-scala-minor-block-re
+      ar-block-or-clause-re ar-scala-block-or-clause-re
+      ar-def-re ar-scala-def-re
+      ar-class-re ar-scala-class-re
+      ar-def-or-class-re ar-scala-def-or-class-re
+      ar-indent-offset ar-emacs-scala-indent-offset
+      ))
+    ))
+
+
+(provide (quote ar-subr))
 ;;; ar-subr.el ends here
