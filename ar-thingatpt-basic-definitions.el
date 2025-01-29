@@ -481,7 +481,7 @@ Otherwise assume being behind an opening delimiter or at a closing "
   :type 'boolean
   :group 'werkstatt)
 
-(defcustom ar-delimiters-atpt "\\\\|\"'`#\\$/=?!:*+~§%&\\;@’-"
+(defcustom ar-delimiters-atpt "\\\\|\"'`#\\$/=?!:*+~§%&\\;@’"
   "Specify the delimiter chars. "
   :type 'string
   :tag "ar-delimiters-atpt"
