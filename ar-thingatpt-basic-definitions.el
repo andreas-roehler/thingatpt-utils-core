@@ -362,11 +362,12 @@
          ;; look forward first
          ((and (looking-at (concat "[" ar-delimiters-atpt "]"))
                (not (ar-escaped-p))
-               ;; (save-match-data
-               ;; (and
-               ;; (ar-in-delimited-p (char-after))
                (save-excursion
+                 (when (< 0 (abs (skip-chars-forward (char-to-string (char-after)))))
+                   (forward-char -1)) 
                  (and
+                  ;; only single-char delimiters are supported for number-of-windows
+                  ;; jump to the inner char maybe
                   (end-of-form-base (char-to-string (char-after)) (char-to-string (char-after)) upper-bound t 0 nil nil nil match-in-comment match-in-string)
                   (<= orig (point))
                   (setq delimited-end (list (match-beginning 0) (match-end 0)))))
