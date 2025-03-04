@@ -20,6 +20,8 @@
 
 ;;; Code:
 
+(ar-navigate-update-vars major-mode)
+
 (defcustom ar-mark-decorators nil
   "If decorators should be marked too.
 
@@ -65,7 +67,6 @@ ORIG - consider original position or point.
 DONE - transaktional argument
 REPEAT - count and consider repeats"
   (interactive)
-  (ar-navigate-update-vars major-mode)
   (unless (eobp)
     (let ((repeat (or (and repeat (1+ repeat)) 0))
 	  (orig (or orig (point)))
@@ -481,7 +482,7 @@ Optional IGNOREINDENT: find next keyword at any indentation"
         (t (while
               (not (or (bobp) (and (looking-at regexpvalue)(< (point) orig) (not (nth 8 (parse-partial-sexp (point-min) (point)))))))
              ;; search backward and reduce maxindent, if non-matching forms suggest it
-              (setq erg (ar--backward-regexp regexp maxindent
+              (setq erg (ar--backward-regexp allvalue maxindent
                                          (or condition '<=)
                                          orig regexpvalue)))))
       erg)))

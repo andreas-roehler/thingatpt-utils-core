@@ -151,15 +151,15 @@ Default is t, escaped characters don't match."
 
        ;; (and match-in-string
        ;;      (not (eq 7 (car-safe (syntax-after (if (eq flag 'beg) (point) (1- (point))))))))
-       (and (not (or (and comment-start-skip (looking-at comment-start-skip))(nth 4 pps)))
-            match-in-comment
+       (and (or (and comment-start-skip (looking-at comment-start-skip))(nth 4 pps))
+            (not match-in-comment)
             )
        (and (nth 4 pps)
             (not match-in-comment)
             )
        (and (not (nth 3 pps))
             match-in-string
-            (not (eq (car (syntax-after (point))) 7))  
+            (not (eq (car (syntax-after (point))) 7))
             )
        (and (nth 3 pps)
             (not match-in-string)
@@ -172,6 +172,7 @@ Default is t, escaped characters don't match."
     (while
         (and (not (bobp)) (or (< 0 nesting) (not first))
              (funcall form searchform bound noerror))
+      ;; (setq first t) 
       (setq last (point))
       (unless
           (beg-end--related-exceptions match-in-comment match-in-string (point) 'beg)

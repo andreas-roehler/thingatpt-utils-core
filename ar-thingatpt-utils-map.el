@@ -1,7 +1,7 @@
 ;;; ar-thingatpt-utils-map --- the menu
 
 
-;; Copyright (C) 2010-2024 Andreas Röhler, unless
+;; Copyright (C) 2010-2025 Andreas Röhler, unless
 ;; indicated otherwise
 
 ;; Author: Andreas Röhler <andreas.roehler@easy-emacs.de>, unless
@@ -37,7 +37,7 @@
            `("Werkstatt"
              ;; ("Move"
 
-;; ar-thing-at-point-utils-nodelim-core-menu: ar-atpt-classes end
+;; ar-thingatpt-utils-nodelim-core-menu: ar-atpt-classes end
 ("Forms"
 ("Delimited"
 
@@ -2617,7 +2617,7 @@
 )
 
 )
-
+  
   ("Mark"
 
  ("Character classes"
@@ -7388,11 +7388,10 @@
 
   )
 
-;; ar-thing-at-point-utils-nodelim-core-menu: ar-atpt-classes end
+;; ar-thingatpt-utils-nodelim-core-menu: ar-atpt-classes end
 
 )))
 
     map))
-
 (provide 'ar-thingatpt-utils-map)
 ;;; ar-thingatpt-utils-map.el ends here

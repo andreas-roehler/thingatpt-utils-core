@@ -364,7 +364,8 @@
                (not (ar-escaped-p))
                (save-excursion
                  (when (< 0 (abs (skip-chars-forward (char-to-string (char-after)))))
-                   (forward-char -1)) 
+                   (forward-char -1))
+                 (setq delimited-start (list (match-beginning 0) (match-end 0)))
                  (and
                   ;; only single-char delimiters are supported for number-of-windows
                   ;; jump to the inner char maybe
@@ -372,11 +373,6 @@
                   (<= orig (point))
                   (setq delimited-end (list (match-beginning 0) (match-end 0)))))
                )
-          ;; )
-          ;; )
-          (progn
-            (goto-char (if (consp delimited-end) (cadr delimited-end) delimited-end))
-            (setq delimited-start (beginning-of-form-base (char-to-string (char-before)) (char-to-string (char-before)) lower-bound t 0 nil 'behind match-in-comment match-in-string)))
           (if (< (car delimited-start) (car delimited-end))
               delimited-start
             (delimited-atpt-intern--repeat orig lower-bound upper-bound match-in-comment match-in-string)))
@@ -403,18 +399,25 @@
                             ((and (nth 1 pps)(nth 8 pps))
                              (max (nth 1 pps)(nth 8 pps)))
                             ((nth 1 pps))
-                            ((nth 8 pps))))
+                            ((nth 8 pps))
+                            ((or (eq 4 (car-safe (syntax-after (point))))(eq 7 (car-safe (syntax-after (point)))))
+                             (point))))
+              (lower-bound-syntax-p (and lower-bound (car-safe (syntax-after lower-bound))))
               (upper-bound (when lower-bound
                              (save-excursion
                                (goto-char lower-bound)
                                (ignore-errors (forward-sexp))
                                (and lower-bound (< lower-bound (point)) (point)))))
-	      )
-         (if (and lower-bound upper-bound)
-           (save-restriction
-             ;; (save-excursion
-             (narrow-to-region lower-bound upper-bound)
-             (setq delimited-start (delimited-atpt-intern orig lower-bound upper-bound match-in-comment match-in-string)))
+	      (upper-bound-syntax-p (and upper-bound (car-safe (syntax-after (- upper-bound 1))))))
+         ;; if lower- and upper-bound are syntactically known delimiter, it's done
+         (if (and lower-bound  upper-bound (or (eq orig lower-bound)(eq orig upper-bound)) (or (eq 7 lower-bound-syntax-p) (eq 7 upper-bound-syntax-p) (and (eq 4 lower-bound-syntax-p) (eq 5 upper-bound-syntax-p))))
+             (progn
+               (setq delimited-start (cons lower-bound (+ lower-bound 1))
+                     delimited-end (cons (- upper-bound 1) upper-bound))
+               delimited-start)
+           ;; (save-restriction
+           ;;   (narrow-to-region lower-bound upper-bound)
+           ;;   (setq delimited-start (delimited-atpt-intern orig lower-bound upper-bound match-in-comment match-in-string)))
            (setq delimited-start (delimited-atpt-intern orig lower-bound upper-bound match-in-comment match-in-string))))))
 
 (put 'delimited 'end-op-at
@@ -1666,13 +1669,15 @@ If optional positions BEG-2TH END-2TH are given, works on them instead. "
 	(when (numberp inner-end) (goto-char inner-end))
 	(while
 	    (and
-             (not stop) (not (and (eobp) (eq 'char thing-1th)))
+             (not stop) (not (or (eobp)
+                                 ;; (eq 'char thing-1th)
+                                 ))
              (or (not done) (< last (point)))
 	     (prog1 (setq last (point))
-               (funcall th-function thing-1th))
+               (unless (eobp) (funcall th-function thing-1th)))
 	     (setq done t))
 	  ;; (unless (or (and (eobp) (setq stop t)) (eq 'char thing-1th))w
-	  (unless (eq 'char thing-1th)
+	  (unless (or (eobp) (eq 'char thing-1th))
             (unless (setq inner-end (ar-th-forward thing-1th 1))
               (setq stop t))))))))
 
