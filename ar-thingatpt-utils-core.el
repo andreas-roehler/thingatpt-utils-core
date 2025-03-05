@@ -1515,11 +1515,6 @@ XEmacs-users: ‘unibyte’ and ‘multibyte’ class is unused i.e. set to \".\
   (interactive "*P") 
   (ar-th-delim thing "~" "~" no-delimiters))
 
-(defun ar-th-triplebacktick (thing &optional no-delimiters)
-  " "
-  (interactive "*P") 
-  (ar-th-delim thing "```" "```" no-delimiters))
-
 (defun ar-th-underscore (thing &optional no-delimiters)
   " "
   (interactive "*P") 
@@ -1863,7 +1858,6 @@ Returns final position when called from inside section, nil otherwise"
        '(slash "/")
        '(star "*")
        '(tild "~")
-       '(triplebacktick "```")
        '(underscore "_")
        '(whitespace " ")
        ))
@@ -1886,7 +1880,6 @@ Returns final position when called from inside section, nil otherwise"
        'slash
        'star
        'tild
-       'triplebacktick
        'underscore
        'whitespace
        ))
