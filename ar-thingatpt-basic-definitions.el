@@ -433,12 +433,11 @@
 
 (put 'delimited 'forward-op-at
      (lambda ()
-       (let ((orig (point))
-             (begdel (concat th-beg-delimiter ar-delimiters-atpt))
-             (erg (or
-                   (ar-th-end 'delimited)
-                   (unless (looking-at (concat "[" begdel "]"))
-                     (setq erg (funcall (get 'delimited 'beginning-op-at)))))))
+       (let* ((begdel (concat th-beg-delimiter ar-delimiters-atpt))
+              (erg (or
+                    (ar-th-end 'delimited)
+                    (unless (looking-at (concat "[" begdel "]"))
+                      (funcall (get 'delimited 'beginning-op-at))))))
          (if
              erg
              (goto-char erg)
@@ -450,14 +449,7 @@
 
 (put 'delimited 'backward-op-at
      (lambda ()
-       (let ((orig (point)))
-         (funcall (get 'delimited 'beginning-op-at)))))
-             ;; (when start (goto-char (car start)))
-         ;; (when (< (point) orig)
-         ;;   (and (< 0  (abs (skip-chars-backward (concat "^" th-beg-delimiter ar-delimiters-atpt))))
-         ;;        (looking-back (concat "[" th-beg-delimiter  ar-delimiters-atpt "]") (line-beginning-position))
-         ;;        (forward-char -1)
-         ;;        (list (match-beginning 0) (match-end 0)))))))
+         (funcall (get 'delimited 'beginning-op-at))))
 
 (defun ar-set-delimiter-zeichen ()
   (setq ar-delimiter-zeichen-atpt
@@ -1234,8 +1226,7 @@ it would doublequote a word at point "
 	   (cons (point) (1+ (point))))
 	  (t (save-excursion
 	       (save-restriction
-		 (let* ((orig (point))
-			(beg-raw (funcall (get thing 'beginning-op-at)))
+		 (let* ((beg-raw (funcall (get thing 'beginning-op-at)))
                         (beg
                          (if (consp beg-raw)
                              (if no-delimiters
@@ -1388,15 +1379,16 @@ it would doublequote a word at point "
     (ignore-errors
       (let* (bounds
              (beg (or beg (and (setq bounds (ar-th-bounds thing no-delimiters)) (car bounds))))
-             (end (cond
-               ((numberp (cdr-safe bounds))
-                (cdr-safe bounds))
-               ((numberp (ignore-errors (cadr bounds)))
-                (cadr bounds))
-               ((numberp (ignore-errors (cadr (cadr bounds))))
-                (cadr (cadr bounds)))
-               ((numberp (ignore-errors (cdr (cadr bounds))))
-                (cdr (cadr bounds)))))
+             (end (or end
+                      (cond
+                       ((numberp (cdr-safe bounds))
+                        (cdr-safe bounds))
+                       ((numberp (ignore-errors (cadr bounds)))
+                        (cadr bounds))
+                       ((numberp (ignore-errors (cadr (cadr bounds))))
+                        (cadr (cadr bounds)))
+                       ((numberp (ignore-errors (cdr (cadr bounds))))
+                        (cdr (cadr bounds))))))
              (matchcount 0)
              (erg 0)
              len)
