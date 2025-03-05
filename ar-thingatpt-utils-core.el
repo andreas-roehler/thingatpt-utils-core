@@ -1234,14 +1234,28 @@ XEmacs-users: ‘unibyte’ and ‘multibyte’ class is unused i.e. set to \".\
          (end-of-form-base "\\begin{quote}" "\\end{quote}" nil 'move 1 nil nil nil))))
 
 
-;; Blok
-(put 'blok 'beginning-op-at
+;; Backslashparened
+(put 'backslashparened 'beginning-op-at
+     (lambda ()
+       (if (ignore-errors (looking-at "\\\\("))
+           (list (match-beginning 0) (match-end 0))
+         (beginning-of-form-base "\\\\(" "\\\\)" nil 'move 1 nil nil 'ar-escaped))))
+
+(put 'backslashparened 'end-op-at
+     (lambda ()
+       (when (ignore-errors (looking-at "\\\\("))
+         (goto-char (match-end 0)) 
+         (end-of-form-base "\\\\(" "\\\\)" nil 'move 1 nil nil 'ar-escaped))))
+
+
+;; Bloked
+(put 'bloked 'beginning-op-at
      (lambda ()
        (if (ignore-errors (looking-at "{% "))
            (list (match-beginning 0) (match-end 0))
          (beginning-of-form-base "{% " " %}" nil 'move 1 nil t nil))))
 
-(put 'blok 'end-op-at
+(put 'bloked 'end-op-at
      (lambda ()
        (when (ignore-errors (looking-at "{% "))
          (goto-char (match-end 0)) 
@@ -1260,6 +1274,20 @@ XEmacs-users: ‘unibyte’ and ‘multibyte’ class is unused i.e. set to \".\
        (when (ignore-errors (looking-at "\\\\"))
          (goto-char (match-end 0)) 
          (end-of-form-base "\\\\" "\\\\" nil 'move 1 nil nil 'ar-escaped))))
+
+
+;; Doublebackslashedparen
+(put 'doublebackslashedparen 'beginning-op-at
+     (lambda ()
+       (if (ignore-errors (looking-at "\\\\\\\\("))
+           (list (match-beginning 0) (match-end 0))
+         (beginning-of-form-base "\\\\\\\\(" "\\\\\\\\)" nil 'move 1 nil nil 'ar-escaped))))
+
+(put 'doublebackslashedparen 'end-op-at
+     (lambda ()
+       (when (ignore-errors (looking-at "\\\\\\\\("))
+         (goto-char (match-end 0)) 
+         (end-of-form-base "\\\\\\\\(" "\\\\\\\\)" nil 'move 1 nil nil 'ar-escaped))))
 
 
 ;; Doublebackticked
@@ -1290,18 +1318,18 @@ XEmacs-users: ‘unibyte’ and ‘multibyte’ class is unused i.e. set to \".\
          (end-of-form-base "//" "//" nil 'move 1 nil nil 'ar-escaped))))
 
 
-;; Doublebackslashedparen
-(put 'doublebackslashedparen 'beginning-op-at
+;; Slashparened
+(put 'slashparened 'beginning-op-at
      (lambda ()
-       (if (ignore-errors (looking-at "\\\\\\\\("))
+       (if (ignore-errors (looking-at "////////("))
            (list (match-beginning 0) (match-end 0))
-         (beginning-of-form-base "\\\\\\\\(" "\\\\\\\\)" nil 'move 1 nil nil 'ar-escaped))))
+         (beginning-of-form-base "////////(" "////////)" nil 'move 1 nil nil 'ar-escaped))))
 
-(put 'doublebackslashedparen 'end-op-at
+(put 'slashparened 'end-op-at
      (lambda ()
-       (when (ignore-errors (looking-at "\\\\\\\\("))
+       (when (ignore-errors (looking-at "////////("))
          (goto-char (match-end 0)) 
-         (end-of-form-base "\\\\\\\\(" "\\\\\\\\)" nil 'move 1 nil nil 'ar-escaped))))
+         (end-of-form-base "////////(" "////////)" nil 'move 1 nil nil 'ar-escaped))))
 
 
 ;; Tabledatap
@@ -1318,32 +1346,32 @@ XEmacs-users: ‘unibyte’ and ‘multibyte’ class is unused i.e. set to \".\
          (end-of-form-base "<td[^>]*>" "</td>" nil 'move 1 nil nil nil))))
 
 
-;; Backslashedparen
-(put 'backslashedparen 'beginning-op-at
+;; Triplebacktick
+(put 'triplebacktick 'beginning-op-at
      (lambda ()
-       (if (ignore-errors (looking-at "\\\\("))
+       (if (ignore-errors (looking-at "```"))
            (list (match-beginning 0) (match-end 0))
-         (beginning-of-form-base "\\\\(" "\\\\)" nil 'move 1 nil nil 'ar-escaped))))
+         (beginning-of-form-base "```" "```" 'move 1 nil t 'ar-escaped nil))))
 
-(put 'backslashedparen 'end-op-at
+(put 'triplebacktick 'end-op-at
      (lambda ()
-       (when (ignore-errors (looking-at "\\\\("))
+       (when (ignore-errors (looking-at "```"))
          (goto-char (match-end 0)) 
-         (end-of-form-base "\\\\(" "\\\\)" nil 'move 1 nil nil 'ar-escaped))))
+         (end-of-form-base "```" "```" 'move 1 nil t 'ar-escaped nil))))
 
 
-;; Slashedparen
-(put 'slashedparen 'beginning-op-at
+;; Triplequoted
+(put 'triplequoted 'beginning-op-at
      (lambda ()
-       (if (ignore-errors (looking-at "////////("))
+       (if (ignore-errors (looking-at "\"\"\"\\|'''"))
            (list (match-beginning 0) (match-end 0))
-         (beginning-of-form-base "////////(" "////////)" nil 'move 1 nil nil 'ar-escaped))))
+         (beginning-of-form-base "\"\"\"\\|'''" "\"\"\"\\|'''" nil 'move 1 nil nil 'ar-escaped))))
 
-(put 'slashedparen 'end-op-at
+(put 'triplequoted 'end-op-at
      (lambda ()
-       (when (ignore-errors (looking-at "////////("))
+       (when (ignore-errors (looking-at "\"\"\"\\|'''"))
          (goto-char (match-end 0)) 
-         (end-of-form-base "////////(" "////////)" nil 'move 1 nil nil 'ar-escaped))))
+         (end-of-form-base "\"\"\"\\|'''" "\"\"\"\\|'''" nil 'move 1 nil nil 'ar-escaped))))
 
 
 ;; Triplequoteddq
@@ -1921,14 +1949,16 @@ Returns final position when called from inside section, nil otherwise"
 (setq ar-atpt-data-forms-passiv-raw
       (list
        '("beginendquoted" "\\\\begin{quote}" "\\\\end{quote}" nil 'move 1 nil nil nil)
-       '("blok" "{% " " %}" nil 'move "1" nil t)
+       '("backslashparened" "\\\\\\\\(" "\\\\\\\\)" nil 'move "1" nil nil 'ar-escaped)
+       '("bloked" "{% " " %}" nil 'move "1" nil t)
        '("doublebackslashed" "\\\\\\\\" "\\\\\\\\" nil 'move "1" nil nil 'ar-escaped)
+       '("doublebackslashedparen" "\\\\\\\\\\\\\\\\(" "\\\\\\\\\\\\\\\\)" nil 'move "1" nil nil 'ar-escaped)
        '("doublebackticked" "``" "``" nil 'move "1" nil nil 'ar-escaped)
        '("doubleslashed" "//" "//" nil 'move "1" nil nil 'ar-escaped)
-       '("doublebackslashedparen" "\\\\\\\\\\\\\\\\(" "\\\\\\\\\\\\\\\\)" nil 'move "1" nil nil 'ar-escaped)
+       '("slashparened" "////////(" "////////)" nil 'move "1" nil nil 'ar-escaped)
        '("tabledatap" "<td[^>]*>" "</td>" nil 'move "1" nil nil nil)
-       '("backslashedparen" "\\\\\\\\(" "\\\\\\\\)" nil 'move "1" nil nil 'ar-escaped)
-       '("slashedparen" "////////(" "////////)" nil 'move "1" nil nil 'ar-escaped)
+       '("triplebacktick" "```" "```" 'move "1" nil t 'ar-escaped)
+       '("triplequoted" "\\\"\\\"\\\"\\\\|'''" "\\\"\\\"\\\"\\\\|'''" nil 'move 1 nil nil 'ar-escaped)
        '("triplequoteddq" "\\\"\\\"\\\"\\\\|'''" "\\\"\\\"\\\"\\\\|'''" nil 'move 1 nil nil 'ar-escaped)
        '("triplequotedsq" "\\\"\\\"\\\"\\\\|'''" "\\\"\\\"\\\"\\\\|'''" nil 'move 1 nil nil 'ar-escaped)
        '("xslstylesheetp" "<xsl:stylesheet[^<]+>.*$" "</xsl:stylesheet>" nil 'move "1" nil nil nil)
@@ -1937,14 +1967,16 @@ Returns final position when called from inside section, nil otherwise"
 (setq ar-atpt-data-forms-passiv
       (list
        'beginendquoted
-       'blok
+       'backslashparened
+       'bloked
        'doublebackslashed
+       'doublebackslashedparen
        'doublebackticked
        'doubleslashed
-       'doublebackslashedparen
+       'slashparened
        'tabledatap
-       'backslashedparen
-       'slashedparen
+       'triplebacktick
+       'triplequoted
        'triplequoteddq
        'triplequotedsq
        'xslstylesheetp
