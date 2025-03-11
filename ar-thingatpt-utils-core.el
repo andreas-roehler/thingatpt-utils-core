@@ -2040,7 +2040,6 @@ Returns final position when called from inside section, nil otherwise"
        'mlattribut
        'mltag
        'slashedparen
-       'symbol
        'tabledata
        'xslstylesheet
        'xsltemplate
