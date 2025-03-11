@@ -885,21 +885,21 @@ XEmacs-users: ‘unibyte’ and ‘multibyte’ class is unused i.e. set to \".\
 ;; Bracketed
 (put 'bracketed 'beginning-op-at
      (lambda ()
-       (beginning-of-form-base "\\[" "\]" nil 'move 0 t 'ar-syntax)))
+       (beginning-of-form-base "\[" "]" nil 'move 0 t 'ar-syntax)))
 
 (put 'bracketed 'end-op-at
      (lambda ()
-       (end-of-form-base "\\[" "\]" nil 'move 0 t 'ar-syntax)))
+       (end-of-form-base "\[" "]" nil 'move 0 t 'ar-syntax)))
 
 (put 'bracketed 'forward-op-at
      (lambda ()
        (unless (eobp)
-         (end-of-form-base "\\[" "\]" nil 'move 0  t 'ar-syntax t))))
+         (end-of-form-base "\[" "]" nil 'move 0  t 'ar-syntax t))))
 
 (put 'bracketed 'backward-op-at
      (lambda ()
        (unless (bobp)
-         (beginning-of-form-base "\\[" "\]" nil 'move 0  t 'ar-syntax))))
+         (beginning-of-form-base "\[" "]" nil 'move 0  t 'ar-syntax))))
 
 ;; Lesserangled
 (put 'lesserangled 'beginning-op-at
@@ -980,21 +980,21 @@ XEmacs-users: ‘unibyte’ and ‘multibyte’ class is unused i.e. set to \".\
 ;; Parentized
 (put 'parentized 'beginning-op-at
      (lambda ()
-       (beginning-of-form-base "\(" "\)" nil 'move 0 nil 'ar-syntax)))
+       (beginning-of-form-base "(" ")" nil 'move 0 nil 'ar-syntax)))
 
 (put 'parentized 'end-op-at
      (lambda ()
-       (end-of-form-base "\(" "\)" nil 'move 0 nil 'ar-syntax)))
+       (end-of-form-base "(" ")" nil 'move 0 nil 'ar-syntax)))
 
 (put 'parentized 'forward-op-at
      (lambda ()
        (unless (eobp)
-         (end-of-form-base "\(" "\)" nil 'move 0  nil 'ar-syntax t))))
+         (end-of-form-base "(" ")" nil 'move 0  nil 'ar-syntax t))))
 
 (put 'parentized 'backward-op-at
      (lambda ()
        (unless (bobp)
-         (beginning-of-form-base "\(" "\)" nil 'move 0  nil 'ar-syntax))))
+         (beginning-of-form-base "(" ")" nil 'move 0  nil 'ar-syntax))))
 
 ;; Paired delimited forms end
 
