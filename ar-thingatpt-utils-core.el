@@ -1800,54 +1800,6 @@ Returns final position when called from inside section, nil otherwise"
     (goto-char beg)
     (exchange-point-and-mark)))
 
-
-(defvar ar-restricted-delimit-aktiv
-  (list
-   'colon
-   'cross
-   'doubleslash
-   'backslash
-   'backtick
-   'dollar
-   'doublequote
-   'equalize
-   'escape
-   'hash
-   'hyphen
-   'pipe
-   'singlequote
-   'slash
-   'star
-   'tild
-   'whitespace
-   )
-  "")
-
-(defvar ar-paired-delimited-passiv-raw
-  (list
-   '(symboled "`" "'")
-   '(braced "{" "}")
-   '(bracketed "[" "]")
-   '(lesserangled "<" ">")
-   '(greaterangled ">" "<")
-   '(curvedsinglequoted "‘" "’")
-   '(parentized "(" ")")))
-
-(defvar ar-unpaired-delimited-raw
-  (list
-   '(backslashed "\\\\")
-   '(backticked "`")
-   '(coloned ":")
-   '(dollared "$")
-   '(doublequoted "\\\"")
-   '(equalized "=")
-   '(hyphened "-")
-   '(singlequoted "'")
-   '(slashed "/")
-   '(stared "*")
-   '(underscored "_")
-   '(whitespaced " ")))
-
 (setq ar-paired-delimit-aktiv-raw
       (list
        '(symbol 96 39)
@@ -2187,6 +2139,54 @@ Returns final position when called from inside section, nil otherwise"
        'string
        'buffer
        ))
+
+
+(defvar ar-restricted-delimit-aktiv
+  (list
+   'colon
+   'cross
+   'doubleslash
+   'backslash
+   'backtick
+   'dollar
+   'doublequote
+   'equalize
+   'escape
+   'hash
+   'hyphen
+   'pipe
+   'singlequote
+   'slash
+   'star
+   'tild
+   'whitespace
+   )
+  "")
+
+(defvar ar-paired-delimited-passiv-raw
+  (list
+   '(symboled "`" "'")
+   '(braced "{" "}")
+   '(bracketed "[" "]")
+   '(lesserangled "<" ">")
+   '(greaterangled ">" "<")
+   '(curvedsinglequoted "‘" "’")
+   '(parentized "(" ")")))
+
+(defvar ar-unpaired-delimited-raw
+  (list
+   '(backslashed "\\\\")
+   '(backticked "`")
+   '(coloned ":")
+   '(dollared "$")
+   '(doublequoted "\\\"")
+   '(equalized "=")
+   '(hyphened "-")
+   '(singlequoted "'")
+   '(slashed "/")
+   '(stared "*")
+   '(underscored "_")
+   '(whitespaced " ")))
 
 
 
