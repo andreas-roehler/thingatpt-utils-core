@@ -1346,20 +1346,6 @@ XEmacs-users: ‘unibyte’ and ‘multibyte’ class is unused i.e. set to \".\
          (end-of-form-base "<td[^>]*>" "</td>" nil 'move 1 nil nil nil))))
 
 
-;; Triplebackticked
-(put 'triplebackticked 'beginning-op-at
-     (lambda ()
-       (if (ignore-errors (looking-at "```"))
-           (list (match-beginning 0) (match-end 0))
-         (beginning-of-form-base "```" "```" 'move 1 nil t 'ar-escaped nil))))
-
-(put 'triplebackticked 'end-op-at
-     (lambda ()
-       (when (ignore-errors (looking-at "```"))
-         (goto-char (match-end 0)) 
-         (end-of-form-base "```" "```" 'move 1 nil t 'ar-escaped nil))))
-
-
 ;; Triplequoted
 (put 'triplequoted 'beginning-op-at
      (lambda ()
@@ -1805,6 +1791,54 @@ Returns final position when called from inside section, nil otherwise"
     (goto-char beg)
     (exchange-point-and-mark)))
 
+
+(defvar ar-restricted-delimit-aktiv
+  (list
+   'colon
+   'cross
+   'doubleslash
+   'backslash
+   'backtick
+   'dollar
+   'doublequote
+   'equalize
+   'escape
+   'hash
+   'hyphen
+   'pipe
+   'singlequote
+   'slash
+   'star
+   'tild
+   'whitespace
+   )
+  "")
+
+(defvar ar-paired-delimited-passiv-raw
+  (list
+   '(symboled "`" "'")
+   '(braced "{" "}")
+   '(bracketed "[" "]")
+   '(lesserangled "<" ">")
+   '(greaterangled ">" "<")
+   '(curvedsinglequoted "‘" "’")
+   '(parentized "(" ")")))
+
+(defvar ar-unpaired-delimited-raw
+  (list
+   '(backslashed "\\\\")
+   '(backticked "`")
+   '(coloned ":")
+   '(dollared "$")
+   '(doublequoted "\\\"")
+   '(equalized "=")
+   '(hyphened "-")
+   '(singlequoted "'")
+   '(slashed "/")
+   '(stared "*")
+   '(underscored "_")
+   '(whitespaced " ")))
+
 (setq ar-paired-delimit-aktiv-raw
       (list
        '(symbol 96 39)
@@ -1938,7 +1972,6 @@ Returns final position when called from inside section, nil otherwise"
        '("doubleslashed" "//" "//" nil 'move "1" nil nil 'ar-escaped)
        '("slashparened" "////////(" "////////)" nil 'move "1" nil nil 'ar-escaped)
        '("tabledatap" "<td[^>]*>" "</td>" nil 'move "1" nil nil nil)
-       '("triplebackticked" "```" "```" 'move "1" nil t 'ar-escaped)
        '("triplequoted" "\\\"\\\"\\\"\\\\|'''" "\\\"\\\"\\\"\\\\|'''" nil 'move 1 nil nil 'ar-escaped)
        '("triplequoteddq" "\\\"\\\"\\\"\\\\|'''" "\\\"\\\"\\\"\\\\|'''" nil 'move 1 nil nil 'ar-escaped)
        '("triplequotedsq" "\\\"\\\"\\\"\\\\|'''" "\\\"\\\"\\\"\\\\|'''" nil 'move 1 nil nil 'ar-escaped)
@@ -1956,7 +1989,6 @@ Returns final position when called from inside section, nil otherwise"
        'doubleslashed
        'slashparened
        'tabledatap
-       'triplebackticked
        'triplequoted
        'triplequoteddq
        'triplequotedsq
@@ -2147,54 +2179,6 @@ Returns final position when called from inside section, nil otherwise"
        'string
        'buffer
        ))
-
-
-(defvar ar-restricted-delimit-aktiv
-  (list
-   'colon
-   'cross
-   'doubleslash
-   'backslash
-   'backtick
-   'dollar
-   'doublequote
-   'equalize
-   'escape
-   'hash
-   'hyphen
-   'pipe
-   'singlequote
-   'slash
-   'star
-   'tild
-   'whitespace
-   )
-  "")
-
-(defvar ar-paired-delimited-passiv-raw
-  (list
-   '(symboled "`" "'")
-   '(braced "{" "}")
-   '(bracketed "[" "]")
-   '(lesserangled "<" ">")
-   '(greaterangled ">" "<")
-   '(curvedsinglequoted "‘" "’")
-   '(parentized "(" ")")))
-
-(defvar ar-unpaired-delimited-raw
-  (list
-   '(backslashed "\\\\")
-   '(backticked "`")
-   '(coloned ":")
-   '(dollared "$")
-   '(doublequoted "\\\"")
-   '(equalized "=")
-   '(hyphened "-")
-   '(singlequoted "'")
-   '(slashed "/")
-   '(stared "*")
-   '(underscored "_")
-   '(whitespaced " ")))
 
 
 
