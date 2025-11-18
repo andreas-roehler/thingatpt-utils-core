@@ -2150,6 +2150,7 @@ Returns final position when called from inside section, nil otherwise"
        'page
        'paragraph
        'phone
+       'region
        'sentence
        'sexp
        'shstruct
