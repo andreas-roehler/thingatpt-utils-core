@@ -1852,86 +1852,25 @@ Move backward with negative argument "
     (transpose-regions a b c d)
     d))
 
-(defalias 'ar-th-sort 'sort)
-;; credits to sort-subr, sort.el
-;; (defun ar-th-sort (thing reverse beg end startkeyfun endkeyfun)
-;;   (save-excursion
-;;     (save-restriction
-;;       (unless (buffer-narrowed-p)(narrow-to-region beg end))
-;;       (goto-char (point-min))
-;;       (let ((reverse (or reverse nil))
-;;             (startkeyfun (or startkeyfun nil))
-;;             (endkeyfun (or endkeyfun nil))
-;;         (while (not (or (eobp)(stringp (ar-th thing))))
-;;           (forward-char 1))
-;;         (if (eq thing 'number)
-;;           (ar-sort-numbers-subr reverse
-;;                       (function (lambda () (if (ar-th-forward thing) (ar-th-gotobeg thing) (goto-char (point-max)))))
-;;                       (function (lambda () (ar-th-gotoend thing)(forward-char 1))) startkeyfun endkeyfun)
-;;           (sort-subr reverse
-;;                       (function (lambda () (if (ar-th-forward thing) (ar-th-gotobeg thing) (goto-char (point-max)))))
-;;                       (function (lambda () (ar-th-gotoend thing)(forward-char 1))) startkeyfun endkeyfun)))))))
+;; (defalias 'ar-th-sort 'sort)
+(defun ar-th-sort (thing reverse)
+  "Replaces THING by sorted THING.
 
-;; (defun ar-sort-numbers-subr (reverse nextrecfun endrecfun
-;;                                      &optional startkeyfun endkeyfun)
-;;   "A patched sort-subr. Divides buffer into records and sort them.
-
-;; We divide the accessible portion of the buffer into disjoint pieces
-;; called sort records.  A portion of each sort record (perhaps all of
-;; it) is designated as the sort key.  The records are rearranged in the
-;; buffer in order by their sort keys.  The records may or may not be
-;; contiguous.
-
-;; Usually the records are rearranged in order of ascending sort key.
-;; If REVERSE is non-nil, they are rearranged in order of descending sort key.
-;; The variable ‘sort-fold-case’ determines whether alphabetic case affects
-;; the sort order.
-
-;; The next four arguments are functions to be called to move point
-;; across a sort record.  They will be called many times from within sort-subr.
-
-;; NEXTRECFUN is called with point at the end of the previous record.
-;; It moves point to the start of the next record.
-;; It should move point to the end of the buffer if there are no more records.
-;; The first record is assumed to start at the position of point when sort-subr
-;; is called.
-
-;; ENDRECFUN is called with point within the record.
-;; It should move point to the end of the record.
-
-;; STARTKEYFUN moves from the start of the record to the start of the key.
-;; It may return either a non-nil value to be used as the key, or
-;; else the key is the substring between the values of point after
-;; STARTKEYFUN and ENDKEYFUN are called.  If STARTKEYFUN is nil, the key
-;; starts at the beginning of the record.
-
-;; ENDKEYFUN moves from the start of the sort key to the end of the sort key.
-;; ENDKEYFUN may be nil if STARTKEYFUN returns a value or if it would be the
-;; same as ENDRECFUN.
-
-;; PREDICATE is the function to use to compare keys.  If keys are numbers,
-;; it defaults to `<', otherwise it defaults to `string<'."
-;;   ;; Heuristically try to avoid messages if sorting a small amt of text.
-;;   (let ((messages (> (- (point-max) (point-min)) 50000)))
-;;     (save-excursion
-;;       (if messages (message "Finding sort keys..."))
-;;       (let* ((sort-lists (sort-build-lists nextrecfun endrecfun
-;; 					   startkeyfun endkeyfun))
-;; 	     (old (reverse sort-lists))
-;; 	     (case-fold-search sort-fold-case))
-;; 	(if (null sort-lists)
-;; 	    ()
-;; 	  (or reverse (setq sort-lists (nreverse sort-lists)))
-;; 	  (if messages (message "Sorting records..."))
-;; 	  (setq sort-lists
-;; 		(sort sort-lists
-;;                       (lambda (a b)
-;;                         (< (string-to-number (buffer-substring-no-properties (caar a) (cdar a)))(string-to-number (buffer-substring-no-properties (caar b)(cdar b)))))))
-;; 	  (if reverse (setq sort-lists (nreverse sort-lists)))
-;; 	  (if messages (message "Reordering buffer..."))
-;; 	  (sort-reorder-buffer sort-lists old)))
-;;       (if messages (message "Reordering buffer... Done"))))
-;;   nil)
+Takes THING is a quoted symbol, like ‘'list’. "
+  (let* ((bounds (ar-th-bounds thing))
+         (object (eval (car (read-from-string (ar-th thing))))))
+    (delete-region (car bounds) (cdr bounds))
+    (progn
+      (pcase thing
+        `(list (insert "(list ")
+               (if reverse
+                   (dolist (ele (sort object :key #'< :lessp nil :reverse t))
+                     (insert (concat "?" (char-to-string ele) " ")))
+                 (dolist (ele (sort object #'<))
+                   (insert (concat "?" (char-to-string ele) " "))))
+               (delete-char -1)
+               (insert ")"))))
+    ))
 
 (defun ar-th-delim-intern (beg end begstr endstr)
   (let ((end (copy-marker end)))

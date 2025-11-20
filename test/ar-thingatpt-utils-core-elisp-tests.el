@@ -149,6 +149,5 @@
     (should (eq (char-after) ?\[))
     ))
 
-
 (provide 'ar-thingatpt-utils-core-elisp-tests)
 ;;; ar-thingatpt-utils-core-elisp-tests.el ends here
