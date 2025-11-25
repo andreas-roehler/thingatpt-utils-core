@@ -1118,6 +1118,29 @@ Otherwise assume being behind an opening delimiter or at a closing "
      (lambda () (when (looking-at "\\w")
 		  (forward-word 1)(point))))
 
+(put 'word 'forward-op-at
+     (lambda ()
+       (let ((orig (point)))
+         (skip-syntax-forward "^\\w")
+         (forward-word 1)
+         (if (< (+ orig 1) (point))
+             (progn
+               (backward-char)
+               (point))
+           (skip-syntax-forward "^\\w")
+           (and
+            (< (+ orig 1) (point))
+            (eq 2 (car (syntax-after (point))))
+             (point))))))
+
+(put 'word 'backward-op-at
+     (lambda ()
+       (let ((orig (point)))
+         (skip-syntax-backward "^\\w")
+         (backward-word 1)
+         (when (< (point) orig)
+           (point)))))
+
 ;; Word-alpha-only
 (put 'wordalphaonly 'beginning-op-at
   (lambda () (when (looking-at "[[:alpha:]]")
@@ -1670,7 +1693,9 @@ If optional positions BEG-2TH END-2TH are given, works on them instead. "
 	     (setq done t))
 	  ;; (unless (or (and (eobp) (setq stop t)) (eq 'char thing-1th))w
 	  (unless (or (eobp) (eq 'char thing-1th))
-            (unless (setq inner-end (ar-th-forward thing-1th 1))
+            (unless (setq inner-end
+                          (ar-th-forward thing-1th 1)
+                          )
               (setq stop t))))))))
 
 (defun ar-th-kill (thing &optional no-delimiters)

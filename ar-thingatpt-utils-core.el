@@ -451,19 +451,19 @@ XEmacs-users: ‘unibyte’ and ‘multibyte’ class is unused i.e. set to \".\
 
 (put 'alnum 'forward-op-at
      (lambda ()
-       (if (< 0 (skip-chars-forward "[:alnum:]"))
-	   (point)
-	 (when (< 0 (skip-chars-forward "^[:alnum:]"))
+       (let ((orig (point)))
+         (skip-chars-forward "[:alnum:]")
+         (skip-chars-forward "^[:alnum:]")
+         (when (< orig (point))
            (point)))))
 
 (put 'alnum 'backward-op-at
      (lambda ()
-       (if (< 0 (abs (skip-chars-backward "[:alnum:]")))
-	   (point)
-	 (when (< 0 (abs (skip-chars-backward "^[:alnum:]")))
-	   (and
-	    (< 0 (abs (skip-chars-backward "[:alnum:]")))
-	    (point))))))
+       (let ((orig (point)))
+         (skip-chars-backward "[:alnum :]")
+         (skip-chars-backward "^[:alnum:]")
+         (when (< (point) orig)
+           (point)))))
 
 ;; Alpha
 (put 'alpha 'beginning-op-at
@@ -480,19 +480,19 @@ XEmacs-users: ‘unibyte’ and ‘multibyte’ class is unused i.e. set to \".\
 
 (put 'alpha 'forward-op-at
      (lambda ()
-       (if (< 0 (skip-chars-forward "[:alpha:]"))
-	   (point)
-	 (when (< 0 (skip-chars-forward "^[:alpha:]"))
+       (let ((orig (point)))
+         (skip-chars-forward "[:alpha:]")
+         (skip-chars-forward "^[:alpha:]")
+         (when (< orig (point))
            (point)))))
 
 (put 'alpha 'backward-op-at
      (lambda ()
-       (if (< 0 (abs (skip-chars-backward "[:alpha:]")))
-	   (point)
-	 (when (< 0 (abs (skip-chars-backward "^[:alpha:]")))
-	   (and
-	    (< 0 (abs (skip-chars-backward "[:alpha:]")))
-	    (point))))))
+       (let ((orig (point)))
+         (skip-chars-backward "[:alpha :]")
+         (skip-chars-backward "^[:alpha:]")
+         (when (< (point) orig)
+           (point)))))
 
 ;; Ascii
 (put 'ascii 'beginning-op-at
@@ -509,19 +509,19 @@ XEmacs-users: ‘unibyte’ and ‘multibyte’ class is unused i.e. set to \".\
 
 (put 'ascii 'forward-op-at
      (lambda ()
-       (if (< 0 (skip-chars-forward "[:ascii:]"))
-	   (point)
-	 (when (< 0 (skip-chars-forward "^[:ascii:]"))
+       (let ((orig (point)))
+         (skip-chars-forward "[:ascii:]")
+         (skip-chars-forward "^[:ascii:]")
+         (when (< orig (point))
            (point)))))
 
 (put 'ascii 'backward-op-at
      (lambda ()
-       (if (< 0 (abs (skip-chars-backward "[:ascii:]")))
-	   (point)
-	 (when (< 0 (abs (skip-chars-backward "^[:ascii:]")))
-	   (and
-	    (< 0 (abs (skip-chars-backward "[:ascii:]")))
-	    (point))))))
+       (let ((orig (point)))
+         (skip-chars-backward "[:ascii :]")
+         (skip-chars-backward "^[:ascii:]")
+         (when (< (point) orig)
+           (point)))))
 
 ;; Blank
 (put 'blank 'beginning-op-at
@@ -538,19 +538,19 @@ XEmacs-users: ‘unibyte’ and ‘multibyte’ class is unused i.e. set to \".\
 
 (put 'blank 'forward-op-at
      (lambda ()
-       (if (< 0 (skip-chars-forward "[:blank:]"))
-	   (point)
-	 (when (< 0 (skip-chars-forward "^[:blank:]"))
+       (let ((orig (point)))
+         (skip-chars-forward "[:blank:]")
+         (skip-chars-forward "^[:blank:]")
+         (when (< orig (point))
            (point)))))
 
 (put 'blank 'backward-op-at
      (lambda ()
-       (if (< 0 (abs (skip-chars-backward "[:blank:]")))
-	   (point)
-	 (when (< 0 (abs (skip-chars-backward "^[:blank:]")))
-	   (and
-	    (< 0 (abs (skip-chars-backward "[:blank:]")))
-	    (point))))))
+       (let ((orig (point)))
+         (skip-chars-backward "[:blank :]")
+         (skip-chars-backward "^[:blank:]")
+         (when (< (point) orig)
+           (point)))))
 
 ;; Cntrl
 (put 'cntrl 'beginning-op-at
@@ -567,19 +567,19 @@ XEmacs-users: ‘unibyte’ and ‘multibyte’ class is unused i.e. set to \".\
 
 (put 'cntrl 'forward-op-at
      (lambda ()
-       (if (< 0 (skip-chars-forward "[:cntrl:]"))
-	   (point)
-	 (when (< 0 (skip-chars-forward "^[:cntrl:]"))
+       (let ((orig (point)))
+         (skip-chars-forward "[:cntrl:]")
+         (skip-chars-forward "^[:cntrl:]")
+         (when (< orig (point))
            (point)))))
 
 (put 'cntrl 'backward-op-at
      (lambda ()
-       (if (< 0 (abs (skip-chars-backward "[:cntrl:]")))
-	   (point)
-	 (when (< 0 (abs (skip-chars-backward "^[:cntrl:]")))
-	   (and
-	    (< 0 (abs (skip-chars-backward "[:cntrl:]")))
-	    (point))))))
+       (let ((orig (point)))
+         (skip-chars-backward "[:cntrl :]")
+         (skip-chars-backward "^[:cntrl:]")
+         (when (< (point) orig)
+           (point)))))
 
 ;; Digit
 (put 'digit 'beginning-op-at
@@ -596,19 +596,19 @@ XEmacs-users: ‘unibyte’ and ‘multibyte’ class is unused i.e. set to \".\
 
 (put 'digit 'forward-op-at
      (lambda ()
-       (if (< 0 (skip-chars-forward "[:digit:]"))
-	   (point)
-	 (when (< 0 (skip-chars-forward "^[:digit:]"))
+       (let ((orig (point)))
+         (skip-chars-forward "[:digit:]")
+         (skip-chars-forward "^[:digit:]")
+         (when (< orig (point))
            (point)))))
 
 (put 'digit 'backward-op-at
      (lambda ()
-       (if (< 0 (abs (skip-chars-backward "[:digit:]")))
-	   (point)
-	 (when (< 0 (abs (skip-chars-backward "^[:digit:]")))
-	   (and
-	    (< 0 (abs (skip-chars-backward "[:digit:]")))
-	    (point))))))
+       (let ((orig (point)))
+         (skip-chars-backward "[:digit :]")
+         (skip-chars-backward "^[:digit:]")
+         (when (< (point) orig)
+           (point)))))
 
 ;; Graph
 (put 'graph 'beginning-op-at
@@ -625,19 +625,19 @@ XEmacs-users: ‘unibyte’ and ‘multibyte’ class is unused i.e. set to \".\
 
 (put 'graph 'forward-op-at
      (lambda ()
-       (if (< 0 (skip-chars-forward "[:graph:]"))
-	   (point)
-	 (when (< 0 (skip-chars-forward "^[:graph:]"))
+       (let ((orig (point)))
+         (skip-chars-forward "[:graph:]")
+         (skip-chars-forward "^[:graph:]")
+         (when (< orig (point))
            (point)))))
 
 (put 'graph 'backward-op-at
      (lambda ()
-       (if (< 0 (abs (skip-chars-backward "[:graph:]")))
-	   (point)
-	 (when (< 0 (abs (skip-chars-backward "^[:graph:]")))
-	   (and
-	    (< 0 (abs (skip-chars-backward "[:graph:]")))
-	    (point))))))
+       (let ((orig (point)))
+         (skip-chars-backward "[:graph :]")
+         (skip-chars-backward "^[:graph:]")
+         (when (< (point) orig)
+           (point)))))
 
 ;; Lower
 (put 'lower 'beginning-op-at
@@ -654,19 +654,19 @@ XEmacs-users: ‘unibyte’ and ‘multibyte’ class is unused i.e. set to \".\
 
 (put 'lower 'forward-op-at
      (lambda ()
-       (if (< 0 (skip-chars-forward "[:lower:]"))
-	   (point)
-	 (when (< 0 (skip-chars-forward "^[:lower:]"))
+       (let ((orig (point)))
+         (skip-chars-forward "[:lower:]")
+         (skip-chars-forward "^[:lower:]")
+         (when (< orig (point))
            (point)))))
 
 (put 'lower 'backward-op-at
      (lambda ()
-       (if (< 0 (abs (skip-chars-backward "[:lower:]")))
-	   (point)
-	 (when (< 0 (abs (skip-chars-backward "^[:lower:]")))
-	   (and
-	    (< 0 (abs (skip-chars-backward "[:lower:]")))
-	    (point))))))
+       (let ((orig (point)))
+         (skip-chars-backward "[:lower :]")
+         (skip-chars-backward "^[:lower:]")
+         (when (< (point) orig)
+           (point)))))
 
 ;; Nonascii
 (put 'nonascii 'beginning-op-at
@@ -683,19 +683,19 @@ XEmacs-users: ‘unibyte’ and ‘multibyte’ class is unused i.e. set to \".\
 
 (put 'nonascii 'forward-op-at
      (lambda ()
-       (if (< 0 (skip-chars-forward "[:nonascii:]"))
-	   (point)
-	 (when (< 0 (skip-chars-forward "^[:nonascii:]"))
+       (let ((orig (point)))
+         (skip-chars-forward "[:nonascii:]")
+         (skip-chars-forward "^[:nonascii:]")
+         (when (< orig (point))
            (point)))))
 
 (put 'nonascii 'backward-op-at
      (lambda ()
-       (if (< 0 (abs (skip-chars-backward "[:nonascii:]")))
-	   (point)
-	 (when (< 0 (abs (skip-chars-backward "^[:nonascii:]")))
-	   (and
-	    (< 0 (abs (skip-chars-backward "[:nonascii:]")))
-	    (point))))))
+       (let ((orig (point)))
+         (skip-chars-backward "[:nonascii :]")
+         (skip-chars-backward "^[:nonascii:]")
+         (when (< (point) orig)
+           (point)))))
 
 ;; Print
 (put 'print 'beginning-op-at
@@ -712,19 +712,19 @@ XEmacs-users: ‘unibyte’ and ‘multibyte’ class is unused i.e. set to \".\
 
 (put 'print 'forward-op-at
      (lambda ()
-       (if (< 0 (skip-chars-forward "[:print:]"))
-	   (point)
-	 (when (< 0 (skip-chars-forward "^[:print:]"))
+       (let ((orig (point)))
+         (skip-chars-forward "[:print:]")
+         (skip-chars-forward "^[:print:]")
+         (when (< orig (point))
            (point)))))
 
 (put 'print 'backward-op-at
      (lambda ()
-       (if (< 0 (abs (skip-chars-backward "[:print:]")))
-	   (point)
-	 (when (< 0 (abs (skip-chars-backward "^[:print:]")))
-	   (and
-	    (< 0 (abs (skip-chars-backward "[:print:]")))
-	    (point))))))
+       (let ((orig (point)))
+         (skip-chars-backward "[:print :]")
+         (skip-chars-backward "^[:print:]")
+         (when (< (point) orig)
+           (point)))))
 
 ;; Punct
 (put 'punct 'beginning-op-at
@@ -741,19 +741,19 @@ XEmacs-users: ‘unibyte’ and ‘multibyte’ class is unused i.e. set to \".\
 
 (put 'punct 'forward-op-at
      (lambda ()
-       (if (< 0 (skip-chars-forward "[:punct:]"))
-	   (point)
-	 (when (< 0 (skip-chars-forward "^[:punct:]"))
+       (let ((orig (point)))
+         (skip-chars-forward "[:punct:]")
+         (skip-chars-forward "^[:punct:]")
+         (when (< orig (point))
            (point)))))
 
 (put 'punct 'backward-op-at
      (lambda ()
-       (if (< 0 (abs (skip-chars-backward "[:punct:]")))
-	   (point)
-	 (when (< 0 (abs (skip-chars-backward "^[:punct:]")))
-	   (and
-	    (< 0 (abs (skip-chars-backward "[:punct:]")))
-	    (point))))))
+       (let ((orig (point)))
+         (skip-chars-backward "[:punct :]")
+         (skip-chars-backward "^[:punct:]")
+         (when (< (point) orig)
+           (point)))))
 
 ;; Space
 (put 'space 'beginning-op-at
@@ -770,19 +770,19 @@ XEmacs-users: ‘unibyte’ and ‘multibyte’ class is unused i.e. set to \".\
 
 (put 'space 'forward-op-at
      (lambda ()
-       (if (< 0 (skip-chars-forward "[:space:]"))
-	   (point)
-	 (when (< 0 (skip-chars-forward "^[:space:]"))
+       (let ((orig (point)))
+         (skip-chars-forward "[:space:]")
+         (skip-chars-forward "^[:space:]")
+         (when (< orig (point))
            (point)))))
 
 (put 'space 'backward-op-at
      (lambda ()
-       (if (< 0 (abs (skip-chars-backward "[:space:]")))
-	   (point)
-	 (when (< 0 (abs (skip-chars-backward "^[:space:]")))
-	   (and
-	    (< 0 (abs (skip-chars-backward "[:space:]")))
-	    (point))))))
+       (let ((orig (point)))
+         (skip-chars-backward "[:space :]")
+         (skip-chars-backward "^[:space:]")
+         (when (< (point) orig)
+           (point)))))
 
 ;; Upper
 (put 'upper 'beginning-op-at
@@ -799,19 +799,19 @@ XEmacs-users: ‘unibyte’ and ‘multibyte’ class is unused i.e. set to \".\
 
 (put 'upper 'forward-op-at
      (lambda ()
-       (if (< 0 (skip-chars-forward "[:upper:]"))
-	   (point)
-	 (when (< 0 (skip-chars-forward "^[:upper:]"))
+       (let ((orig (point)))
+         (skip-chars-forward "[:upper:]")
+         (skip-chars-forward "^[:upper:]")
+         (when (< orig (point))
            (point)))))
 
 (put 'upper 'backward-op-at
      (lambda ()
-       (if (< 0 (abs (skip-chars-backward "[:upper:]")))
-	   (point)
-	 (when (< 0 (abs (skip-chars-backward "^[:upper:]")))
-	   (and
-	    (< 0 (abs (skip-chars-backward "[:upper:]")))
-	    (point))))))
+       (let ((orig (point)))
+         (skip-chars-backward "[:upper :]")
+         (skip-chars-backward "^[:upper:]")
+         (when (< (point) orig)
+           (point)))))
 
 ;; Xdigit
 (put 'xdigit 'beginning-op-at
@@ -828,19 +828,19 @@ XEmacs-users: ‘unibyte’ and ‘multibyte’ class is unused i.e. set to \".\
 
 (put 'xdigit 'forward-op-at
      (lambda ()
-       (if (< 0 (skip-chars-forward "[:xdigit:]"))
-	   (point)
-	 (when (< 0 (skip-chars-forward "^[:xdigit:]"))
+       (let ((orig (point)))
+         (skip-chars-forward "[:xdigit:]")
+         (skip-chars-forward "^[:xdigit:]")
+         (when (< orig (point))
            (point)))))
 
 (put 'xdigit 'backward-op-at
      (lambda ()
-       (if (< 0 (abs (skip-chars-backward "[:xdigit:]")))
-	   (point)
-	 (when (< 0 (abs (skip-chars-backward "^[:xdigit:]")))
-	   (and
-	    (< 0 (abs (skip-chars-backward "[:xdigit:]")))
-	    (point))))))
+       (let ((orig (point)))
+         (skip-chars-backward "[:xdigit :]")
+         (skip-chars-backward "^[:xdigit:]")
+         (when (< (point) orig)
+           (point)))))
 
 ;; Paired delimited forms start
 
