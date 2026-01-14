@@ -1,7 +1,7 @@
 ;;; ar-thingatpt-utils-map.el --- the menu -*- lexical-binding: t; -*-
 
 
-;; Copyright (C) 2010-2025 Andreas Röhler, unless
+;; Copyright (C) 2010-2026 Andreas Röhler, unless
 ;; indicated otherwise
 
 ;; Author: Andreas Röhler <andreas.roehler@easy-emacs.de>, unless
@@ -7397,7 +7397,7 @@
 ;;; ar-thingatpt-utils-map.el ends here;;; ar-thingatpt-utils-map.el --- the menu -*- lexical-binding: t; -*-
 
 
-;; Copyright (C) 2010-2025 Andreas Röhler, unless
+;; Copyright (C) 2010-2026 Andreas Röhler, unless
 ;; indicated otherwise
 
 ;; Author: Andreas Röhler <andreas.roehler@easy-emacs.de>, unless
