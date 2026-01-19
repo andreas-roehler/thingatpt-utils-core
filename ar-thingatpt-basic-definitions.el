@@ -1525,13 +1525,13 @@ instead of working ‘-backward’ or ‘-forward’ deletes expression at point
                        (cdr (cadr bounds)))))
                                         ;(or (ignore-errors (cadr (cadr bounds)))(cdr (cadr bounds))(car (cadr bounds)))
                     ))
-
-    (when (eq (point) beg)(forward-char 1))
+    (goto-char beg)
+    (forward-char 1)
     (skip-syntax-forward "^(")
+    (delete-region beg (point))
     (forward-sexp)
-    (delete-region (point) end)
-    (backward-sexp)
-    (delete-region (point) beg)))
+    (delete-region (point) end)))
+
 
 (defun ar-th-comment (thing &optional no-delimiters)
   "Comment or uncomment THING "
