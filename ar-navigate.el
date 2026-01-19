@@ -28,6 +28,7 @@
 ;;; Code:
 
 (require 'ar-subr)
+(require 'ar-subr-x)
 (require 'ar-beg-end)
 
 (defvar ar-block-closing-keywords-re ""
@@ -1655,6 +1656,29 @@ Returns position if succesful"
   (when
       (re-search-backward comint-prompt-regexp nil t 1)
     (comint-skip-prompt)))
+
+(defconst ar-beginning-of-defun-re
+  (concat
+   "[ \t]*\\("
+   (mapconcat 'identity
+              (list
+	       "(defgroup"
+	       "(defconst"
+	       "(defcustom"
+	       "(defface"
+	       "(define-.+-mode"
+	       "(defmacro"
+	       "(defsubst"
+	       "(deftheme"
+	       "(defun"
+	       "(defvar"
+	       "(ert-deftest"
+	       )
+
+              "\\|")
+   "\\)")
+  "Regular expression matching beginning of defun.")
+
 
 (defalias 'ar-beginning-of-defun 'ar-backward-defun)
 (defun ar-backward-defun (&optional outmost pps)

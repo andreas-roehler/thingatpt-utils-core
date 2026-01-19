@@ -2132,7 +2132,6 @@ Returns final position when called from inside section, nil otherwise"
 (setq ar-atpt-rest-list
       (list
        'lesseranglednested
-       'buffer
        'comment
        'csv
        'date
@@ -2161,7 +2160,6 @@ Returns final position when called from inside section, nil otherwise"
 
 (setq ar-atpt-major-forms-restricted-list
       (list
-       'buffer
        'page
        'paragraph
        'region
@@ -2178,7 +2176,6 @@ Returns final position when called from inside section, nil otherwise"
        'region
        'sentence
        'string
-       'buffer
        ))
 
 

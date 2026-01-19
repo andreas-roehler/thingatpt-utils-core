@@ -62,12 +62,13 @@ echo "\$TESTDIR: $TESTDIR"
 UTILSDIR=$HOME/werkstatt/thing-at-point-utils/
 
 FILE1=ar-subr.el
-FILE2=ar-beg-end.el
-FILE3=ar-emacs-generics-start-Zf98zM.el
-FILE4=ar-thingatpt-basic-definitions.el
-FILE5=ar-thingatpt-utils-core.el
-FILE6=ar-navigate.el
-FILE7=${UTILSDIR}ar-comment-lor.el
+FILE2=ar-subr-x.el
+FILE3=ar-beg-end.el
+FILE4=ar-emacs-generics-start-Zf98zM.el
+FILE5=ar-thingatpt-basic-definitions.el
+FILE6=ar-thingatpt-utils-core.el
+FILE7=ar-navigate.el
+FILE8=${UTILSDIR}ar-comment-lor.el
 
 SETUP=${TESTDIR}ar-thingatpt-setup-tests.el
 TEST1=${TESTDIR}ar-thingatpt-utils-core-elisp-tests.el
@@ -97,6 +98,7 @@ h1() {
 -load $FILE4 \
 -load $FILE6 \
 -load $FILE7 \
+-load $FILE8 \
 -load $SETUP \
 -l $TEST1 \
 -f ert-run-tests-batch-and-exit
@@ -114,6 +116,7 @@ h2() {
 -load $FILE4 \
 -load $FILE6 \
 -load $FILE7 \
+-load $FILE8 \
 -load $SETUP \
 -l $TEST2 \
 -f ert-run-tests-batch-and-exit
@@ -131,6 +134,7 @@ h3() {
 -load $FILE4 \
 -load $FILE6 \
 -load $FILE7 \
+-load $FILE8 \
 -load $SETUP \
 -l $TEST3 \
 -f ert-run-tests-batch-and-exit
@@ -148,6 +152,7 @@ h4() {
 -load $FILE4 \
 -load $FILE6 \
 -load $FILE7 \
+-load $FILE8 \
 -load $SETUP \
 -l $TEST4 \
 -f ert-run-tests-batch-and-exit
@@ -165,6 +170,7 @@ h4() {
 -load $FILE4 \
 -load $FILE6 \
 -load $FILE7 \
+-load $FILE8 \
 -load $SETUP \
 -l $TEST5 \
 -f ert-run-tests-batch-and-exit
@@ -184,6 +190,7 @@ hier () {
 -load $FILE4 \
 -load $FILE6 \
 -load $FILE7 \
+-load $FILE8 \
 -load $SETUP \
 \
 -load $TEST1 \
@@ -201,6 +208,7 @@ entfernt () {
 -load $FILE4 \
 -load $FILE6 \
 -load $FILE7 \
+-load $FILE8 \
 \
 -load $TEST1 \
 -f ert-run-tests-batch-and-exit
@@ -212,6 +220,7 @@ cp -p ${WGE}/ar-beg-end.el .
 cp -p ${WGE}/ar-subr.el .
 cp -p ${WGE}/ar-navigate.el .
 cp -p ${WGE}/ar-subr.el .
+cp -p ${WGE}/ar-subr-x.el .
 cp -p ${WGE}/ar-emacs-generics-start-Zf98zM.el .
 
 

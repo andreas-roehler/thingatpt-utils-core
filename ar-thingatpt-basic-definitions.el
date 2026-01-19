@@ -1675,28 +1675,29 @@ If optional positions BEG-2TH END-2TH are given, works on them instead. "
          stop
 	 inner-end done)
     ;; (sit-for 0.1)
-    (save-excursion
-      (save-restriction
-        (narrow-to-region beg end)
-        (goto-char beg)
-        ;; (if (eq th-function 'ar-th-sort)
-        ;;     (ar-th-sort thing-1th nil beg end nil nil nil)
-	(when (numberp inner-end) (goto-char inner-end))
-	(while
-	    (and
-             (not stop) (not (or (eobp)
-                                 ;; (eq 'char thing-1th)
-                                 ))
-             (or (not done) (< last (point)))
-	     (prog1 (setq last (point))
-               (unless (eobp) (funcall th-function thing-1th)))
-	     (setq done t))
-	  ;; (unless (or (and (eobp) (setq stop t)) (eq 'char thing-1th))w
-	  (unless (or (eobp) (eq 'char thing-1th))
-            (unless (setq inner-end
-                          (ar-th-forward thing-1th 1)
-                          )
-              (setq stop t))))))))
+    (if (and (ignore-errors (numberp beg)) (ignore-errors (markerp end)))
+        (save-excursion
+          (save-restriction
+            (narrow-to-region beg end)
+            (goto-char beg)
+            ;; (if (eq th-function 'ar-th-sort)
+            ;;     (ar-th-sort thing-1th nil beg end nil nil nil)
+	    (when (numberp inner-end) (goto-char inner-end))
+	    (while
+	        (and
+                 (not stop) (not (or (eobp)
+                                     ;; (eq 'char thing-1th)
+                                     ))
+                 (or (not done) (< last (point)))
+	         (prog1 (setq last (point))
+                   (unless (eobp) (funcall th-function thing-1th)))
+	         (setq done t))
+	      ;; (unless (or (and (eobp) (setq stop t)) (eq 'char thing-1th))w
+	      (unless (or (eobp) (eq 'char thing-1th))
+                (unless (setq inner-end
+                              (ar-th-forward thing-1th 1))
+                  (setq stop t))))))
+      (error "ar-thing-in-thing: start/end not detected. "))))
 
 (defun ar-th-kill (thing &optional no-delimiters)
   " "
