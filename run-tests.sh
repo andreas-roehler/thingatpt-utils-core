@@ -64,7 +64,7 @@ UTILSDIR=$HOME/werkstatt/thing-at-point-utils/
 FILE1=ar-subr.el
 FILE2=ar-subr-x.el
 FILE3=ar-beg-end.el
-FILE4=ar-emacs-generics-start-Zf98zM.el
+# FILE4=ar-emacs-generics-start-Zf98zM.el
 FILE5=ar-thingatpt-basic-definitions.el
 FILE6=ar-thingatpt-utils-core.el
 FILE7=ar-navigate.el
@@ -95,7 +95,6 @@ h1() {
 -load $FILE1 \
 -load $FILE2 \
 -load $FILE3 \
--load $FILE4 \
 -load $FILE6 \
 -load $FILE7 \
 -load $FILE8 \
@@ -113,7 +112,6 @@ h2() {
 -load $FILE1 \
 -load $FILE2 \
 -load $FILE3 \
--load $FILE4 \
 -load $FILE6 \
 -load $FILE7 \
 -load $FILE8 \
@@ -131,7 +129,6 @@ h3() {
 -load $FILE1 \
 -load $FILE2 \
 -load $FILE3 \
--load $FILE4 \
 -load $FILE6 \
 -load $FILE7 \
 -load $FILE8 \
@@ -149,7 +146,6 @@ h4() {
 -load $FILE1 \
 -load $FILE2 \
 -load $FILE3 \
--load $FILE4 \
 -load $FILE6 \
 -load $FILE7 \
 -load $FILE8 \
@@ -167,7 +163,6 @@ h4() {
 -load $FILE1 \
 -load $FILE2 \
 -load $FILE3 \
--load $FILE4 \
 -load $FILE6 \
 -load $FILE7 \
 -load $FILE8 \
@@ -187,7 +182,6 @@ hier () {
 -load $FILE1 \
 -load $FILE2 \
 -load $FILE3 \
--load $FILE4 \
 -load $FILE6 \
 -load $FILE7 \
 -load $FILE8 \
@@ -205,7 +199,6 @@ entfernt () {
 -load $FILE1 \
 -load $FILE2 \
 -load $FILE3 \
--load $FILE4 \
 -load $FILE6 \
 -load $FILE7 \
 -load $FILE8 \
