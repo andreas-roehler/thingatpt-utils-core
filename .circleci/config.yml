@@ -25,6 +25,7 @@ jobs:
             --eval "(message (emacs-version))" \
             --eval "(message (getenv \"PWD\"))" \
             --eval "(load (expand-file-name \"ar-subr.el\"))" \
+            --eval "(load (expand-file-name \"ar-subr-x.el\"))" \
             --eval "(load (expand-file-name \"ar-beg-end.el\"))" \
             --eval "(load (expand-file-name \"ar-navigate.el\"))" \
             --eval "(load (expand-file-name \"ar-thingatpt-utils-map.el\"))" \
