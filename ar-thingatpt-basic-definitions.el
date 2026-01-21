@@ -993,7 +993,7 @@ Otherwise assume being behind an opening delimiter or at a closing "
          (let (erg)
            (while
                (or (when
-                       (ar-escaped (if (bobp) (point)(1- (point))))
+                       (ar-escaped-p) (if (bobp) (point)(1- (point))))
                      (forward-line -1)
                      (setq erg (point)))
                    (and (< 0 (abs (skip-syntax-backward "w_.'\\")))(setq erg (point)))))
@@ -1005,7 +1005,7 @@ Otherwise assume being behind an opening delimiter or at a closing "
        (let (erg)
          (while
              (or (when
-                     (ar-escaped)
+                     (ar-escaped-p)
                    (forward-char 1)
                    (setq erg (point)))
                  (and (< 0 (skip-syntax-forward "w_.'\\"))(setq erg (point)))))
