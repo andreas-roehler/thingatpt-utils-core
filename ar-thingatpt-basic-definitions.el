@@ -998,7 +998,7 @@ Otherwise assume being behind an opening delimiter or at a closing "
                      (setq erg (point)))
                    (and (< 0 (abs (skip-syntax-backward "w_.'\\")))(setq erg (point)))))
            (unless erg (when (looking-at "[^ ]")(setq erg (point))))
-           erg))))
+           erg)))
 
 (put 'symbol 'end-op-at
      (lambda ()

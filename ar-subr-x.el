@@ -1384,7 +1384,7 @@ This function does not move point.  Also see ‘line-beginning-position’.
      (beginning-of-line)
      (skip-chars-backward " \t\r\n\f")
      (and (eq (char-before (point)) ?\\ )
-          (ar-escaped-p))))
+          (ar-escaped))))
 
 
 (defun ar-navigate-update-vars (mode)
