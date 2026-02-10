@@ -219,7 +219,7 @@ cp -p ${WGE}/ar-emacs-generics-start-Zf98zM.el .
 
 if [ $IFLOCAL -eq 0 ]; then
 
-    while getopts 123456789abcdefghijklmnpqrstuvx option
+    while getopts 123456789abcdefghijklmnpqrstuvxyz option
     do
         case $option in
 	    1) echo "h1: Lade \$TEST1: \"$TEST1\"";h1;;
@@ -244,7 +244,7 @@ if [ $IFLOCAL -eq 0 ]; then
 	    # k) echo "h20: Lade \$TEST20: \"$TEST20\"";h20;;
 	    # l) echo "hier: Lade Testumgebung ‘hier’";hier;;
 	    # m) echo "h20: Lade \$TEST20: \"$TEST20\"";h20;;
-            n) echo "hier: Lade Testumgebung ‘hier’";hier;;
+            z) echo "hier: Lade Testumgebung ‘hier’";hier;;
 
 	esac
 	shift
