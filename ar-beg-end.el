@@ -35,6 +35,7 @@
 ;;; Code:
 
 (require 'ar-subr)
+(require 'ar-subr-x)
 
 (defgroup werkstatt nil
   "Return, mover over or manipulate a given THING."
@@ -172,7 +173,7 @@ Default is t, escaped characters don't match."
     (while
         (and (not (bobp)) (or (< 0 nesting) (not first))
              (funcall form searchform bound noerror))
-      ;; (setq first t) 
+      ;; (setq first t)
       (setq last (point))
       (unless
           (beg-end--related-exceptions match-in-comment match-in-string (point) 'beg)
