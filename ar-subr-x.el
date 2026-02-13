@@ -1386,7 +1386,6 @@ This function does not move point.  Also see ‘line-beginning-position’.
      (and (eq (char-before (point)) ?\\ )
           (ar-escaped))))
 
-
 (defun ar-navigate-update-vars (mode)
   (pcase mode
     (`haskell-mode
@@ -1422,6 +1421,14 @@ This function does not move point.  Also see ‘line-beginning-position’.
   "Checkin file under RCS."
   (interactive)
   (shell-command-to-string (concat "ci -l " (file-name-nondirectory (buffer-file-name (current-buffer))))))
+
+(defun ar-jump-to-list-start ()
+  "Jump to the start of innermost containing list at point. "
+  (interactive) 
+  (let ((erg (nth 1 (parse-partial-sexp (point-min) (point)))))
+    (if erg
+        (goto-char erg)
+      (error "start-of-innermost-containing-list: not inside a list."))))
 
 (provide (quote ar-subr-x))
 ;;; ar-subr-x.el ends here

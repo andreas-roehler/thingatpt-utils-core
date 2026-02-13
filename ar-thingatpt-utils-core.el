@@ -1404,42 +1404,42 @@ XEmacs-users: ‘unibyte’ and ‘multibyte’ class is unused i.e. set to \".\
 
 ;; ML data-forms end
 ;; ar-insert-delimit-forms-intern ar-paired-delimit-aktiv-raw: start
-
+;;;###autoload
 (defun ar-th-symbol (thing &optional no-delimiters)
   " "
   (interactive "*P") 
   (ar-th-delim thing "`" "'" no-delimiters))
-
+;;;###autoload
 (defun ar-th-brace (thing &optional no-delimiters)
   " "
   (interactive "*P") 
   (ar-th-delim thing "{" "}" no-delimiters))
-
+;;;###autoload
 (defun ar-th-bracket (thing &optional no-delimiters)
   " "
   (interactive "*P") 
   (ar-th-delim thing "[" "]" no-delimiters))
-
+;;;###autoload
 (defun ar-th-lesserangle (thing &optional no-delimiters)
   " "
   (interactive "*P") 
   (ar-th-delim thing "<" ">" no-delimiters))
-
+;;;###autoload
 (defun ar-th-greaterangle (thing &optional no-delimiters)
   " "
   (interactive "*P") 
   (ar-th-delim thing ">" "<" no-delimiters))
-
+;;;###autoload
 (defun ar-th-curvedsinglequote (thing &optional no-delimiters)
   " "
   (interactive "*P") 
   (ar-th-delim thing "‘" "’" no-delimiters))
-
+;;;###autoload
 (defun ar-th-curveddoublequote (thing &optional no-delimiters)
   " "
   (interactive "*P") 
   (ar-th-delim thing "“" "”" no-delimiters))
-
+;;;###autoload
 (defun ar-th-parentize (thing &optional no-delimiters)
   " "
   (interactive "*P") 
@@ -1448,92 +1448,92 @@ XEmacs-users: ‘unibyte’ and ‘multibyte’ class is unused i.e. set to \".\
 
 
 ;; ar-insert-delimit-forms-intern ar-unpaired-delimit-aktiv-raw: start
-
+;;;###autoload
 (defun ar-th-colon (thing &optional no-delimiters)
   " "
   (interactive "*P") 
   (ar-th-delim thing ":" ":" no-delimiters))
-
+;;;###autoload
 (defun ar-th-cross (thing &optional no-delimiters)
   " "
   (interactive "*P") 
   (ar-th-delim thing "+" "+" no-delimiters))
-
+;;;###autoload
 (defun ar-th-doubleslash (thing &optional no-delimiters)
   " "
   (interactive "*P") 
   (ar-th-delim thing "//" "//" no-delimiters))
-
+;;;###autoload
 (defun ar-th-backslash (thing &optional no-delimiters)
   " "
   (interactive "*P") 
   (ar-th-delim thing "\\" "\\" no-delimiters))
-
+;;;###autoload
 (defun ar-th-backtick (thing &optional no-delimiters)
   " "
   (interactive "*P") 
   (ar-th-delim thing "`" "`" no-delimiters))
-
+;;;###autoload
 (defun ar-th-dollar (thing &optional no-delimiters)
   " "
   (interactive "*P") 
   (ar-th-delim thing "$" "$" no-delimiters))
-
+;;;###autoload
 (defun ar-th-doublequote (thing &optional no-delimiters)
   " "
   (interactive "*P") 
   (ar-th-delim thing "\"" "\"" no-delimiters))
-
+;;;###autoload
 (defun ar-th-equalize (thing &optional no-delimiters)
   " "
   (interactive "*P") 
   (ar-th-delim thing "=" "=" no-delimiters))
-
+;;;###autoload
 (defun ar-th-escape (thing &optional no-delimiters)
   " "
   (interactive "*P") 
   (ar-th-delim thing "\\" "\\" no-delimiters))
-
+;;;###autoload
 (defun ar-th-hash (thing &optional no-delimiters)
   " "
   (interactive "*P") 
   (ar-th-delim thing "#" "#" no-delimiters))
-
+;;;###autoload
 (defun ar-th-hyphen (thing &optional no-delimiters)
   " "
   (interactive "*P") 
   (ar-th-delim thing "-" "-" no-delimiters))
-
+;;;###autoload
 (defun ar-th-pipe (thing &optional no-delimiters)
   " "
   (interactive "*P") 
   (ar-th-delim thing "|" "|" no-delimiters))
-
+;;;###autoload
 (defun ar-th-singlequote (thing &optional no-delimiters)
   " "
   (interactive "*P") 
   (ar-th-delim thing "'" "'" no-delimiters))
-
+;;;###autoload
 (defun ar-th-slash (thing &optional no-delimiters)
   " "
   (interactive "*P") 
   (ar-th-delim thing "/" "/" no-delimiters))
-
+;;;###autoload
 (defun ar-th-star (thing &optional no-delimiters)
   " "
   (interactive "*P") 
   (ar-th-delim thing "*" "*" no-delimiters))
-
+;;;###autoload
 (defun ar-th-tild (thing &optional no-delimiters)
   " "
   (interactive "*P") 
   (ar-th-delim thing "~" "~" no-delimiters))
-
+;;;###autoload
 (defun ar-th-underscore (thing &optional no-delimiters)
   " "
   (interactive "*P") 
   (ar-th-delim thing "_" "_" no-delimiters))
-
+;;;###autoload
 (defun ar-th-whitespace (thing &optional no-delimiters)
   " "
   (interactive "*P") 
@@ -1541,57 +1541,57 @@ XEmacs-users: ‘unibyte’ and ‘multibyte’ class is unused i.e. set to \".\
 ;; ar-insert-delimit-forms-intern ar-unpaired-delimit-aktiv-raw: end
 
 ;; ar-atpt-data-forms-aktiv start
-
+;;;###autoload
 (defun ar-th-beginendquote (thing &optional no-delimiters)
   " "
   (interactive "*P") 
   (ar-th-delim thing "\\begin{quote}" "\\end{quote}" no-delimiters))
-
+;;;###autoload
 (defun ar-th-blok (thing &optional no-delimiters)
   " "
   (interactive "*P") 
   (ar-th-delim thing "{% " " %}" no-delimiters))
-
+;;;###autoload
 (defun ar-th-doublebackslash (thing &optional no-delimiters)
   " "
   (interactive "*P") 
   (ar-th-delim thing "\\\\" "\\\\" no-delimiters))
-
+;;;###autoload
 (defun ar-th-doublebackslashparen (thing &optional no-delimiters)
   " "
   (interactive "*P") 
   (ar-th-delim thing "\\\\(" "\\\\)" no-delimiters))
-
+;;;###autoload
 (defun ar-th-doublebacktick (thing &optional no-delimiters)
   " "
   (interactive "*P") 
   (ar-th-delim thing "``" "``" no-delimiters))
-
+;;;###autoload
 (defun ar-th-triplebacktick (thing &optional no-delimiters)
   " "
   (interactive "*P") 
   (ar-th-delim thing "```" "```" no-delimiters))
-
+;;;###autoload
 (defun ar-th-backslashparen (thing &optional no-delimiters)
   " "
   (interactive "*P") 
   (ar-th-delim thing "\\(" "\\)" no-delimiters))
-
+;;;###autoload
 (defun ar-th-slashparen (thing &optional no-delimiters)
   " "
   (interactive "*P") 
   (ar-th-delim thing "////(" "////)" no-delimiters))
-
+;;;###autoload
 (defun ar-th-triplequotedq (thing &optional no-delimiters)
   " "
   (interactive "*P") 
   (ar-th-delim thing "\"\"\"" "\"\"\"" no-delimiters))
-
+;;;###autoload
 (defun ar-th-triplequotesq (thing &optional no-delimiters)
   " "
   (interactive "*P") 
   (ar-th-delim thing "'''" "'''" no-delimiters))
-
+;;;###autoload
 (defun ar-th-triplequoted (thing &optional no-delimiters)
   " "
   (interactive "*P") 
@@ -1601,6 +1601,7 @@ XEmacs-users: ‘unibyte’ and ‘multibyte’ class is unused i.e. set to \".\
 
 ;; ar-insert-thingatpt-syntax-funktionen start
 
+;;;###autoload
 (defun ar-syntax-class-atpt (&optional pos)
   "Return the syntax class part of the syntax at point. "
   (interactive "p")
@@ -1608,12 +1609,14 @@ XEmacs-users: ‘unibyte’ and ‘multibyte’ class is unused i.e. set to \".\
          (erg (logand (car (syntax-after pos)) 65535)))
     (when erg (message "%s" erg)) erg))
 
+;;;###autoload
 (defun syntax-class-bfpt ()
   "Return the syntax class part of the syntax at point. "
   (interactive "p")
   (let ((erg (logand (car (syntax-after (1- (point)))) 65535)))
     (when erg (message "%s" erg)) erg))
 
+;;;###autoload
 (defun ar-syntax-atpt (&optional arg docu pos)
   (interactive "p")
   (when pos
@@ -1653,12 +1656,14 @@ XEmacs-users: ‘unibyte’ and ‘multibyte’ class is unused i.e. set to \".\
     (ar-syntax-class-to-char
      (syntax-class syntax)))))
 
+;;;###autoload
 (defun ar-forward-syntax-class ()
   "Behavior like forward-same-syntax."
   (interactive)
   (ar--forward-syntax-class-intern (syntax-after (point))))
 
 (setq ar-forward-syntax-classes-list (list 0 1 2 3 6))
+;;;###autoload
 (defun ar-forward-syntax-classes ()
   "Skip chars forward belonging to syntax-classes ‘ar-forward-syntax-classes-list’"
   (interactive "^p")
@@ -1672,6 +1677,7 @@ XEmacs-users: ‘unibyte’ and ‘multibyte’ class is unused i.e. set to \".\
       (unless (< last (point))(setq done t)))
     (< orig (point))))
 
+;;;###autoload
 (defun ar-syntax-in-region-atpt (beg end)
   (interactive "r")
   (save-excursion
@@ -1683,6 +1689,7 @@ XEmacs-users: ‘unibyte’ and ‘multibyte’ class is unused i.e. set to \".\
       (message "%s" erg)
       erg)))
 
+;;;###autoload
 (defun syntax-bfpt (&optional arg)
   (interactive "p")
   (let ((stax (syntax-after (1- (point)))))
@@ -1691,6 +1698,7 @@ XEmacs-users: ‘unibyte’ and ‘multibyte’ class is unused i.e. set to \".\
     stax))
 
 
+;;;###autoload
 (defun ar-beginning-of-indent ()
   "Go to the beginning of a section of equal indent."
   (interactive)
@@ -1718,6 +1726,7 @@ With optional INDENT travel bigger or equal indentation"
     (goto-char last)
     last))
 
+;;;###autoload
 (defun ar-backward-indent ()
   "Go to the beginning of a section of equal indent.
 
@@ -1730,6 +1739,7 @@ Returns final position when called from inside section, nil otherwise"
       (when erg (goto-char erg))
       erg)))
 
+;;;###autoload
 (defun ar-end-of-indent ()
   "Go to the end of a section of equal indentation."
   (interactive)
@@ -1751,6 +1761,7 @@ Travel this INDENT forward"
     (when last (goto-char last))
     last))
 
+;;;###autoload
 (defun ar-forward-indent ()
   "Go to the end of a section of equal indentation..
 
@@ -1772,6 +1783,7 @@ Returns final position when called from inside section, nil otherwise"
       (skip-chars-backward " \t\r\n\f"))
     (and (< orig (point))(point))))
 
+;;;###autoload
 (defun ar-sort-indent ()
   (interactive)
   (save-excursion
@@ -1782,6 +1794,7 @@ Returns final position when called from inside section, nil otherwise"
 	  (narrow-to-region beg end)
 	  (sort-lines nil beg end))))))
 
+;;;###autoload
 (defun ar-mark-indent ()
   (interactive)
   (let ((beg (ar-beginning-of-indent))

@@ -1233,6 +1233,7 @@ it would doublequote a word at point "
   (interactive)
   (setq thing-copy-region (not thing-copy-region)))
 
+;;;###autoload
 (defun ar-th-bounds (thing &optional no-delimiters)
   "Determine the start and end buffer locations for the THING at point.
   THING is a symbol which specifies the kind entity you want.
@@ -1270,6 +1271,7 @@ it would doublequote a word at point "
                    (and beg end (cons beg end))
 )))))))
 
+;;;###autoload
 (defun ar-th (thing &optional arg)
   "Returns a buffer substring according to THING.
   THING may be a well known form as ‘symbol’,
@@ -1651,6 +1653,7 @@ instead of working ‘-backward’ or ‘-forward’ deletes expression at point
 	      (newline 1)
 	      (indent-according-to-mode))))))
 
+;;;###autoload 
 (defun ar-thing-in-thing (thing-1th thing-2th th-function)
   "Addresses things of 1th kind within the borders of the 2th,
 If optional positions BEG-2TH END-2TH are given, works on them instead. "
